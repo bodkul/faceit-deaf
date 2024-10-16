@@ -4,7 +4,7 @@ export type Database = {
       Row: {
         id: string;
         nickname: string;
-        avatar: string;
+        avatar: string | null;
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;
@@ -12,14 +12,14 @@ export type Database = {
       Insert: {
         id: string;
         nickname: string;
-        avatar: string;
+        avatar: string | null;
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;
       };
       Update: {
         nickname: string;
-        avatar: string;
+        avatar: string | null;
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;

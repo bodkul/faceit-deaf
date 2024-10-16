@@ -1,7 +1,7 @@
 export type Player = {
   player_id: string;
   nickname: string;
-  avatar: string;
+  avatar: string | null;
   games: {
     cs2: {
       skill_level: number;

@@ -23,10 +23,10 @@ export async function upsertPlayers(players: Player[]) {
   await Promise.all(players.map(upsertPlayer));
 }
 
-export async function playersExist(playerIds: string[]): Promise<string[]> {
+export async function getPlayersByIds(playerIds: string[]) {
   const { data: players, error } = await supabase
     .from<"players", Database["Tables"]["players"]>("players")
-    .select("id")
+    .select("id, faceit_elo")
     .in("id", playerIds);
 
   if (error) {
@@ -34,14 +34,17 @@ export async function playersExist(playerIds: string[]): Promise<string[]> {
     return [];
   }
 
-  const existingIds = new Set(players?.map((player) => player.id));
-  return playerIds.filter((id) => existingIds.has(id));
+  return players;
 }
 
 export async function getPlayers() {
   const { data: players, error } = await supabase
     .from<"players", Database["Tables"]["players"]>("players")
-    .select()
+    .select("*, eloHistory ( player_elo, created_at )")
+    .gt(
+      "eloHistory.created_at",
+      new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    )
     .order("faceit_elo", { ascending: false });
 
   if (error) {

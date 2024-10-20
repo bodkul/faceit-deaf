@@ -1,5 +1,6 @@
 import { fetchPlayers } from "@/lib/api";
-import { playersExist, upsertPlayers } from "@/lib/database/players";
+import { insertEloHistory } from "@/lib/database/eloHistory";
+import { getPlayersByIds, upsertPlayers } from "@/lib/database/players";
 
 interface Payload {
   teams: {
@@ -14,7 +15,17 @@ export const handleMatchFinished = async (payload: Payload) => {
     team.roster.map((player) => player.id)
   );
 
-  const existingPlayers = await playersExist(playerIds);
-  const players = await fetchPlayers(existingPlayers);
+  const existingPlayers = await getPlayersByIds(playerIds);
+
+  await insertEloHistory(
+    existingPlayers.flatMap((player) => ({
+      player_id: player.id,
+      player_elo: player.faceit_elo,
+    }))
+  );
+
+  const players = await fetchPlayers(
+    existingPlayers.flatMap((player) => player.id)
+  );
   await upsertPlayers(players);
 };

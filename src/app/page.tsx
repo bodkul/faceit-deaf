@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { supabase } from "@/lib/supabaseClient";
-import { Database } from "@/types/database";
+import { getPlayers } from "@/lib/database/players";
 import {
   Table,
   TableHeader,
@@ -18,11 +17,26 @@ const columns = [
   { key: "elo", label: "Elo" },
 ];
 
+function getEloChangeColor(currentElo: number, historyElo: number) {
+  const difference = currentElo - historyElo;
+  if (difference > 0) {
+    return "green";
+  } else if (difference < 0) {
+    return "red";
+  }
+}
+
+function formatEloDifference(currentElo: number, historyElo: number) {
+  const difference = currentElo - historyElo;
+  if (difference > 0) {
+    return `+${difference}`;
+  } else {
+    return `${difference}`;
+  }
+}
+
 export default async function Home() {
-  const { data: players } = await supabase
-    .from<"players", Database["Tables"]["players"]>("players")
-    .select()
-    .order("faceit_elo", { ascending: false });
+  const players = await getPlayers();
 
   return (
     <main className="grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -81,7 +95,24 @@ export default async function Home() {
                         alt={`Skill level ${player.skill_level}`}
                       />
                     </TableCell>
-                    <TableCell>{player.faceit_elo}</TableCell>
+                    <TableCell>
+                      {player.faceit_elo}{" "}
+                      {!!player.eloHistory.length && (
+                        <sup
+                          style={{
+                            color: getEloChangeColor(
+                              player.faceit_elo,
+                              player.eloHistory[0]?.player_elo
+                            ),
+                          }}
+                        >
+                          {formatEloDifference(
+                            player.faceit_elo,
+                            player.eloHistory[0]?.player_elo
+                          )}
+                        </sup>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (

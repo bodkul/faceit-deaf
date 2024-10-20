@@ -27,5 +27,15 @@ export type Database = {
         faceit_url: string;
       };
     };
+    eloHistory: {
+      Row: {
+        player_elo: number;
+        created_at: Date;
+      };
+      Insert: {
+        player_id: UUID;
+        player_elo: number;
+      };
+    };
   };
 };

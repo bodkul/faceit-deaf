@@ -1,8 +1,10 @@
+import { UUID } from "crypto";
+
 export type Database = {
   Tables: {
     players: {
       Row: {
-        id: string;
+        id: UUID;
         nickname: string;
         avatar: string | null;
         skill_level: number;
@@ -10,7 +12,7 @@ export type Database = {
         faceit_url: string;
       };
       Insert: {
-        id: string;
+        id: UUID;
         nickname: string;
         avatar: string | null;
         skill_level: number;

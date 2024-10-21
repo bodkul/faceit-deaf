@@ -20,23 +20,27 @@ const columns = [
   { key: "elo", label: "Elo" },
 ];
 
-function getEloChangeColor(currentElo: number, historyElo: number) {
-  const difference = currentElo - historyElo;
-  if (difference > 0) {
-    return "green";
-  } else if (difference < 0) {
-    return "red";
+const EloDelta = ({ player }: { player: PlayerWithEloHistory }) => {
+  if (!player.eloHistory.length) {
+    return;
   }
-}
 
-function formatEloDifference(currentElo: number, historyElo: number) {
-  const difference = currentElo - historyElo;
-  if (difference > 0) {
-    return `+${difference}`;
-  } else {
-    return `${difference}`;
+  const difference = player.faceit_elo - player.eloHistory[0].player_elo;
+
+  if (difference === 0) {
+    return;
   }
-}
+
+  const color = difference > 0 ? "green" : "red";
+  const value = difference > 0 ? `+${difference}` : difference;
+
+  return (
+    <>
+      {" "}
+      <sup style={{ color: color }}>{value}</sup>
+    </>
+  );
+};
 
 const Leaderboard = ({ players }: { players: PlayerWithEloHistory[] }) => (
   <Table>
@@ -83,22 +87,8 @@ const Leaderboard = ({ players }: { players: PlayerWithEloHistory[] }) => (
               />
             </TableCell>
             <TableCell>
-              {player.faceit_elo}{" "}
-              {!!player.eloHistory.length && (
-                <sup
-                  style={{
-                    color: getEloChangeColor(
-                      player.faceit_elo,
-                      player.eloHistory[0]?.player_elo
-                    ),
-                  }}
-                >
-                  {formatEloDifference(
-                    player.faceit_elo,
-                    player.eloHistory[0]?.player_elo
-                  )}
-                </sup>
-              )}
+              {player.faceit_elo}
+              <EloDelta player={player} />
             </TableCell>
           </TableRow>
         ))

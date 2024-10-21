@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 const config: Config = {
     darkMode: ["class"],
@@ -58,7 +59,7 @@ const config: Config = {
 			},
     },
     fontFamily: {
-      sans: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+      sans: ['var(--font-geist-sans)', ...defaultTheme.fontFamily.sans]
   	},
   },
   plugins: [require("tailwindcss-animate")],

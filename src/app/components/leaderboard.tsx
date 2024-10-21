@@ -31,13 +31,13 @@ const EloDelta = ({ player }: { player: PlayerWithEloHistory }) => {
     return;
   }
 
-  const color = difference > 0 ? "green" : "red";
+  const color = difference > 0 ? "text-green-500" : "text-red-500";
   const value = difference > 0 ? `+${difference}` : difference;
 
   return (
     <>
       {" "}
-      <sup style={{ color: color }}>{value}</sup>
+      <sup className={color}>{value}</sup>
     </>
   );
 };

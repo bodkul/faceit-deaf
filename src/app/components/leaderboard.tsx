@@ -9,6 +9,7 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlayerWithEloHistory } from "@/types/database";
 
 const columns = [
@@ -54,15 +55,13 @@ const Leaderboard = ({ players }: { players: PlayerWithEloHistory[] }) => (
           <TableRow key={player.id} className="h-[49px]">
             <TableCell>{index + 1}</TableCell>
             <TableCell>
-              {player.avatar && (
-                <Image
+              <Avatar className="h-8 w-8">
+                <AvatarImage
                   src={player.avatar}
-                  className="w-8 h-8 rounded-full"
-                  width={32}
-                  height={32}
                   alt={`Avatar of ${player.nickname}`}
                 />
-              )}
+                <AvatarFallback></AvatarFallback>
+              </Avatar>
             </TableCell>
             <TableCell>
               <a

@@ -6,7 +6,7 @@ export type Database = {
       Row: {
         id: UUID;
         nickname: string;
-        avatar: string | null;
+        avatar: string | undefined;
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;
@@ -14,14 +14,14 @@ export type Database = {
       Insert: {
         id: UUID;
         nickname: string;
-        avatar: string | null;
+        avatar: string | undefined;
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;
       };
       Update: {
         nickname: string;
-        avatar: string | null;
+        avatar: string | undefined;
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;

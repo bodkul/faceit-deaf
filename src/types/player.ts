@@ -3,7 +3,7 @@ import { UUID } from "crypto";
 export type Player = {
   player_id: UUID;
   nickname: string;
-  avatar: string | null;
+  avatar: string | undefined;
   games: {
     cs2: {
       skill_level: number;

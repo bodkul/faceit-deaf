@@ -6,7 +6,6 @@ import {
   TableHead,
 } from "@/components/ui/table";
 import PlayerList from "@/app/components/playerList";
-import { PlayerWithEloHistory } from "@/types/database";
 
 const columns = [
   { key: "index", label: "#" },
@@ -16,7 +15,7 @@ const columns = [
   { key: "elo", label: "Elo" },
 ];
 
-const Leaderboard = ({ players }: { players: PlayerWithEloHistory[] }) => (
+const Leaderboard = () => (
   <Table>
     <TableHeader>
       <TableRow>
@@ -28,7 +27,7 @@ const Leaderboard = ({ players }: { players: PlayerWithEloHistory[] }) => (
       </TableRow>
     </TableHeader>
     <TableBody>
-      <PlayerList players={players} columnsLength={columns.length} />
+      <PlayerList columnsLength={columns.length} />
     </TableBody>
   </Table>
 );

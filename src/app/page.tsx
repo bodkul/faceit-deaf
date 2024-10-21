@@ -1,9 +1,6 @@
-import { getPlayers } from "@/lib/database/players";
 import Leaderboard from "./components/leaderboard";
 
-export default async function Home() {
-  const players = await getPlayers();
-
+export default function Home() {
   return (
     <main className="grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <div className="flex flex-col space-y-20 items-center">
@@ -16,7 +13,7 @@ export default async function Home() {
           </span>
         </div>
         <div className="flex rounded-md border">
-          <Leaderboard players={players} />
+          <Leaderboard />
         </div>
       </div>
     </main>

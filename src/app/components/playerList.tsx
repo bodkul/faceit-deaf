@@ -1,14 +1,19 @@
-import { TableRow, TableCell } from "@/components/ui/table";
-import PlayerRow from "@/app/components/playerRow";
-import { PlayerWithEloHistory } from "@/types/database";
+"use client";
 
-const PlayerList = ({
-  players,
-  columnsLength,
-}: {
-  players: PlayerWithEloHistory[];
-  columnsLength: number;
-}) => {
+import usePlayers from "@/hooks/usePlayers";
+import { TableRow, TableCell } from "@/components/ui/table";
+import LoadingRow from "@/app/components/loadingRow";
+import PlayerRow from "@/app/components/playerRow";
+
+const PlayerList = ({ columnsLength }: { columnsLength: number }) => {
+  const [players, loading] = usePlayers();
+
+  if (loading) {
+    return Array.from({ length: 20 }).map((_, index) => (
+      <LoadingRow key={index} />
+    ));
+  }
+
   if (!players.length) {
     return (
       <TableRow>

@@ -39,3 +39,7 @@ export type Database = {
     };
   };
 };
+
+export type PlayerWithEloHistory = Database["Tables"]["players"]["Row"] & {
+  eloHistory: Database["Tables"]["eloHistory"]["Row"][];
+};

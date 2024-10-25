@@ -10,5 +10,17 @@ export type Player = {
       faceit_elo: number;
     };
   };
+  steam_id_64: string;
   faceit_url: string;
 };
+
+export type PlayerStats = {
+  player_id: UUID;
+  lifetime: {
+    Matches: number;
+    "Average Headshots %": number;
+    "Average K/D Ratio": number;
+  };
+};
+
+export type PlayerWithStats = Player & PlayerStats;

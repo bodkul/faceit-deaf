@@ -1,8 +1,8 @@
 import { supabase } from "@/lib/supabaseClient";
 import { Database } from "@/types/database";
-import { Player } from "@/types/api";
+import { PlayerWithStats } from "@/types/api";
 
-export async function upsertPlayer(player: Player) {
+export async function upsertPlayer(player: PlayerWithStats) {
   const { error } = await supabase
     .from<"players", Database["Tables"]["players"]>("players")
     .upsert({
@@ -12,6 +12,10 @@ export async function upsertPlayer(player: Player) {
       skill_level: player.games.cs2.skill_level,
       faceit_elo: player.games.cs2.faceit_elo,
       faceit_url: player.faceit_url,
+      steam_id_64: player.steam_id_64,
+      matches: player.lifetime.Matches,
+      average_headshots_percent: player.lifetime["Average Headshots %"],
+      average_kd_ratio: player.lifetime["Average K/D Ratio"],
     });
 
   if (error) {
@@ -19,7 +23,7 @@ export async function upsertPlayer(player: Player) {
   }
 }
 
-export async function upsertPlayers(players: Player[]) {
+export async function upsertPlayers(players: PlayerWithStats[]) {
   await Promise.all(players.map(upsertPlayer));
 }
 

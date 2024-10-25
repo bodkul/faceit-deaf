@@ -1,4 +1,4 @@
-import { fetchPlayers } from "@/lib/api";
+import { fetchPlayersWithStats } from "@/lib/api";
 import { insertEloHistory } from "@/lib/database/eloHistory";
 import { getPlayersByIds, upsertPlayers } from "@/lib/database/players";
 
@@ -24,7 +24,7 @@ export const handleMatchFinished = async (payload: Payload) => {
     }))
   );
 
-  const players = await fetchPlayers(
+  const players = await fetchPlayersWithStats(
     existingPlayers.flatMap((player) => player.id)
   );
   await upsertPlayers(players);

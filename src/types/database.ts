@@ -10,6 +10,10 @@ export type Database = {
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;
+        steam_id_64: string;
+        matches: number;
+        average_headshots_percent: number;
+        average_kd_ratio: number;
       };
       Insert: {
         id: UUID;
@@ -18,6 +22,10 @@ export type Database = {
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;
+        steam_id_64: string;
+        matches: number;
+        average_headshots_percent: number;
+        average_kd_ratio: number;
       };
       Update: {
         nickname: string;
@@ -25,6 +33,10 @@ export type Database = {
         skill_level: number;
         faceit_elo: number;
         faceit_url: string;
+        steam_id_64: string;
+        matches: number;
+        average_headshots_percent: number;
+        average_kd_ratio: number;
       };
     };
     eloHistory: {

@@ -1,6 +1,18 @@
 import Image from "next/image";
-import { TableRow, TableCell } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import EloDelta from "@/app/components/eloDelta";
 import { PlayerWithEloHistory } from "@/types/database";
 
@@ -20,19 +32,84 @@ const PlayerRow = ({
       </Avatar>
     </TableCell>
     <TableCell>
-      <a
-        className="font-medium"
-        href={player.faceit_url.replace("{lang}", "ru")}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {player.nickname}
-      </a>
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <div className="font-medium cursor-pointer">{player.nickname}</div>
+        </HoverCardTrigger>
+        <HoverCardContent className="w-96">
+          <div className="flex space-x-4">
+            <div className="flex flex-col items-center space-y-2">
+              <Avatar>
+                <AvatarImage
+                  src={player.avatar}
+                  alt={`Avatar of ${player.nickname}`}
+                />
+                <AvatarFallback></AvatarFallback>
+              </Avatar>
+              <div className="flex flex-row space-x-1">
+                <div className="flex rounded-md border h-6 w-6">
+                  <a
+                    className="m-auto"
+                    href={player.faceit_url.replace("{lang}", "ru")}
+                    target="_blank"
+                  >
+                    <Image
+                      src="/icons/faceit.svg"
+                      width={16}
+                      height={16}
+                      alt="Faceit Icon"
+                    />
+                  </a>
+                </div>
+                <div className="flex rounded-md border h-6 w-6">
+                  <a
+                    className="m-auto"
+                    href={`https://steamcommunity.com/profiles/${player.steam_id_64}`}
+                    target="_blank"
+                  >
+                    <Image
+                      src="/icons/steam.svg"
+                      width={16}
+                      height={16}
+                      alt="Steam Icon"
+                    />
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="grid justify-items-start space-y-1">
+              <h4 className="text-sm font-semibold">{player.nickname}</h4>
+              {player.nickname === "bodkul" && (
+                <p className="text-sm">
+                  The Faceit Deaf – created and maintained by bodkul.
+                </p>
+              )}
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Matches</TableHead>
+                      <TableHead>Avg Headshots</TableHead>
+                      <TableHead>Avg K/D Ratio</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>{player.matches}</TableCell>
+                      <TableCell>{player.average_headshots_percent}%</TableCell>
+                      <TableCell>{player.average_kd_ratio}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
+        </HoverCardContent>
+      </HoverCard>
     </TableCell>
     <TableCell>
       <Image
         src={`/icons/faceit/levels/${player.skill_level}.svg`}
-        className="w-6 h-6"
         width={24}
         height={24}
         alt={`Skill level ${player.skill_level}`}

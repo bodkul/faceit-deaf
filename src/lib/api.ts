@@ -1,4 +1,4 @@
-import { Player } from "@/types/api";
+import { Player, PlayerStats, PlayerWithStats } from "@/types/api";
 
 interface HubMember {
   user_id: string;
@@ -43,8 +43,18 @@ export async function fetchPlayer(playerId: string): Promise<Player> {
   return await fetchFaceitData<Player>(`/players/${playerId}`);
 }
 
-export async function fetchPlayers(playerIds: string[]): Promise<Player[]> {
+export async function fetchPlayerStats(playerId: string) {
+  return await fetchFaceitData<PlayerStats>(`/players/${playerId}/stats/cs2`);
+}
+
+export async function fetchPlayersWithStats(
+  playerIds: string[]
+): Promise<PlayerWithStats[]> {
   return Promise.all(
-    playerIds.map((playerId) => fetchFaceitData<Player>(`/players/${playerId}`))
+    playerIds.map(async (playerId) => {
+      const player = await fetchPlayer(playerId);
+      const playerStats = await fetchPlayerStats(playerId);
+      return { ...player, ...playerStats };
+    })
   );
 }

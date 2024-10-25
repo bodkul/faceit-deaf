@@ -1,4 +1,4 @@
-import { Player } from "@/types/player";
+import { Player } from "@/types/api";
 
 interface HubMember {
   user_id: string;

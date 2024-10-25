@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import { Database } from "@/types/database";
-import { Player } from "@/types/player";
+import { Player } from "@/types/api";
 
 export async function upsertPlayer(player: Player) {
   const { error } = await supabase

@@ -33,7 +33,7 @@ const PlayerRow = ({
     </TableCell>
     <TableCell>
       <HoverCard>
-        <HoverCardTrigger asChild>
+        <HoverCardTrigger tabIndex={0} asChild>
           <div className="font-medium cursor-pointer">{player.nickname}</div>
         </HoverCardTrigger>
         <HoverCardContent className="w-96">

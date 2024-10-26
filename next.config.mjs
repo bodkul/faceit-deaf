@@ -1,19 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: 'distribution.faceit-cdn.net',
-                pathname: '/images/**',
-            },
-            {
-                protocol: 'https',
-                hostname: 'assets.faceit-cdn.net',
-                pathname: '/avatars/**',
-            }
-        ]
-    }
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/i,
+      issuer: /\.[jt]sx?$/,
+      use: ["@svgr/webpack"],
+    });
+
+    return config;
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "distribution.faceit-cdn.net",
+        pathname: "/images/**",
+      },
+      {
+        protocol: "https",
+        hostname: "assets.faceit-cdn.net",
+        pathname: "/avatars/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

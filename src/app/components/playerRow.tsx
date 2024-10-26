@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   Table,
   TableBody,
@@ -15,6 +14,8 @@ import {
 } from "@/components/ui/hover-card";
 import EloDelta from "@/app/components/eloDelta";
 import { PlayerWithEloHistory } from "@/types/database";
+import { FaceitIcon, SteamIcon } from "@/app/icons/platform-icons";
+import SkillLevelIcon from "@/app/icons/skill-level-icon";
 
 const PlayerRow = ({
   player,
@@ -53,12 +54,7 @@ const PlayerRow = ({
                     href={player.faceit_url.replace("{lang}", "ru")}
                     target="_blank"
                   >
-                    <Image
-                      src="/icons/faceit.svg"
-                      width={16}
-                      height={16}
-                      alt="Faceit Icon"
-                    />
+                    <FaceitIcon className="h-4 w-4" />
                   </a>
                 </div>
                 <div className="flex rounded-md border h-6 w-6">
@@ -67,12 +63,7 @@ const PlayerRow = ({
                     href={`https://steamcommunity.com/profiles/${player.steam_id_64}`}
                     target="_blank"
                   >
-                    <Image
-                      src="/icons/steam.svg"
-                      width={16}
-                      height={16}
-                      alt="Steam Icon"
-                    />
+                    <SteamIcon className="h-4 w-4" />
                   </a>
                 </div>
               </div>
@@ -108,12 +99,7 @@ const PlayerRow = ({
       </HoverCard>
     </TableCell>
     <TableCell>
-      <Image
-        src={`/icons/faceit/levels/${player.skill_level}.svg`}
-        width={24}
-        height={24}
-        alt={`Skill level ${player.skill_level}`}
-      />
+      <SkillLevelIcon level={player.skill_level} className="h-6 w-6" />
     </TableCell>
     <TableCell>
       {player.faceit_elo}

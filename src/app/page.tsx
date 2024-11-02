@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FaceitIcon, SteamIcon } from "@/app/icons/platform-icons";
 import SkillLevelIcon from "@/app/icons/skill-level-icon";
@@ -52,9 +53,9 @@ export default function Home() {
     <main className="grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 cursor-default">
       <div className="flex flex-col space-y-20 items-center">
         <div className="flex flex-col text-center items-center">
-          <a href="/">
-            <div className="font-black text-6xl">FACEIT DEAF</div>
-          </a>
+          <Link href="/" className="font-black text-6xl">
+            FACEIT DEAF
+          </Link>
           <span className="text-2xl">
             View your FACEIT CS2 performance for deaf Ukrainians.
           </span>
@@ -122,7 +123,7 @@ export default function Home() {
                                 </Avatar>
                                 <div className="flex flex-row space-x-1">
                                   <div className="flex rounded-md border h-6 w-6">
-                                    <a
+                                    <Link
                                       className="m-auto"
                                       href={player.faceit_url.replace(
                                         "{lang}",
@@ -131,16 +132,16 @@ export default function Home() {
                                       target="_blank"
                                     >
                                       <FaceitIcon className="h-4 w-4" />
-                                    </a>
+                                    </Link>
                                   </div>
                                   <div className="flex rounded-md border h-6 w-6">
-                                    <a
+                                    <Link
                                       className="m-auto"
                                       href={`https://steamcommunity.com/profiles/${player.steam_id_64}`}
                                       target="_blank"
                                     >
                                       <SteamIcon className="h-4 w-4" />
-                                    </a>
+                                    </Link>
                                   </div>
                                 </div>
                               </div>

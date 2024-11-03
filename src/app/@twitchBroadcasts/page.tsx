@@ -1,3 +1,4 @@
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -16,15 +17,19 @@ export default async function Page() {
 
   return (
     <Carousel>
-      <CarouselContent className="h-[360px] w-[640px]">
+      <CarouselContent className="h-auto w-auto">
         {twitchPlayers.map((channel) => (
           <CarouselItem key={`channel_${channel.user_name}`}>
-            <iframe
-              src={`https://player.twitch.tv/?channel=${channel.user_name}&parent=faceitdeaf.pro`}
-              height="360"
-              width="640"
-              allowFullScreen
-            ></iframe>
+            <Card>
+              <CardContent className="flex items-center justify-center p-2">
+                <iframe
+                  src={`https://player.twitch.tv/?channel=${channel.user_name}&parent=faceitdeaf.pro`}
+                  height="360"
+                  width="640"
+                  allowFullScreen
+                ></iframe>
+              </CardContent>
+            </Card>
           </CarouselItem>
         ))}
       </CarouselContent>

@@ -35,7 +35,7 @@ const EloDelta = ({ player }: { player: PlayerWithEloHistory }) => {
   );
 };
 
-export default async function Home() {
+export default async function Page() {
   const players = await getPlayers();
 
   return players.map((player, index) => (

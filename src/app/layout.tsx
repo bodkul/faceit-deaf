@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -16,15 +17,30 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+  leardboard,
+  twitchBroadcasts,
 }: Readonly<{
-  children: React.ReactNode;
+  leardboard: React.ReactNode;
+  twitchBroadcasts: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${geistSans.variable} antialiased`}>
         <ThemeProvider attribute="class" enableSystem enableColorScheme>
-          {children}
+          <main className="grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 cursor-default">
+            <div className="flex flex-col space-y-20 items-center">
+              <div className="flex flex-col text-center items-center">
+                <Link href="/" className="font-black text-6xl uppercase">
+                  Faceit Deaf
+                </Link>
+                <span className="text-2xl">
+                  View your FACEIT CS2 performance for deaf Ukrainians.
+                </span>
+              </div>
+              {twitchBroadcasts}
+              {leardboard}
+            </div>
+          </main>
         </ThemeProvider>
         <Analytics />
       </body>

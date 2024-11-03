@@ -7,11 +7,12 @@ interface TwitchStream {
   viewer_count: number;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+// const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
 export default async function Page() {
-  const response = await fetch(`${baseUrl}/api/twitch`);
-  const twitchPlayers: TwitchStream[] = await response.json();
+  // const response = await fetch(`${baseUrl}/api/twitch`);
+  // const twitchPlayers: TwitchStream[] = await response.json();
+  const twitchPlayers: TwitchStream[] = [];
 
   return twitchPlayers.map((channel) => (
     <CarouselItem key={`channel_${channel.user_name}`}>

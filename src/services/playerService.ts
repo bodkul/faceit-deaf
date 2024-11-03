@@ -1,4 +1,4 @@
-import { fetchPlayersWithStats } from "@/lib/api";
+import { fetchPlayersWithStats } from "@/lib/api/faceit";
 import { insertEloHistory } from "@/lib/database/eloHistory";
 import { getPlayersByIds, upsertPlayers } from "@/lib/database/players";
 

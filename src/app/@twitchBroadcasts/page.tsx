@@ -5,17 +5,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
-interface TwitchStream {
-  id: string;
-  user_name: string;
-  title: string;
-  viewer_count: number;
-}
+import { getTwitchStreams } from "@/lib/api/twitch";
 
 export default async function Page() {
-  const response = await fetch("https://faceitdeaf.pro/api/twitch");
-  const twitchPlayers: TwitchStream[] = await response.json();
+  const twitchPlayers = await getTwitchStreams();
 
   if (!twitchPlayers.length) {
     return;

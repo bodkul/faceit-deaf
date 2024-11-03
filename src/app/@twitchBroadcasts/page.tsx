@@ -7,16 +7,14 @@ interface TwitchStream {
   viewer_count: number;
 }
 
-const baseUrl = "https://faceitdeaf.pro";
-
 export default async function Page() {
-  const response = await fetch(`${baseUrl}/api/twitch`);
+  const response = await fetch("https://faceitdeaf.pro/api/twitch");
   const twitchPlayers: TwitchStream[] = await response.json();
 
   return twitchPlayers.map((channel) => (
     <CarouselItem key={`channel_${channel.user_name}`}>
       <iframe
-        src={`https://player.twitch.tv/?channel=${channel.user_name}&parent=${baseUrl}`}
+        src={`https://player.twitch.tv/?channel=${channel.user_name}&parent=faceitdeaf.pro`}
         height="360"
         width="640"
         allowFullScreen

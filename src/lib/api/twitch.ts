@@ -7,7 +7,6 @@ const TWITCH_PLAYERS = (process.env.NEXT_PUBLIC_TWITCH_PLAYERS || "").split(
 interface TwitchStream {
   id: string;
   user_name: string;
-  title: string;
   viewer_count: number;
 }
 

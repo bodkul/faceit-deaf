@@ -3,10 +3,12 @@ const CLIENT_SECRET = process.env.NEXT_PUBLIC_TWITCH_CLIENT_SECRET as string;
 const TWITCH_PLAYERS = (process.env.NEXT_PUBLIC_TWITCH_PLAYERS || "").split(
   ","
 );
+const TWITCH_CS2_GAME_ID = 32399;
 
 interface TwitchStream {
   id: string;
   user_name: string;
+  game_id: number;
   viewer_count: number;
 }
 
@@ -54,5 +56,7 @@ export async function getTwitchStreams(): Promise<TwitchStream[]> {
 
   const data: TwitchAPIResponse = await response.json();
 
-  return data.data;
+  return data.data
+    .filter((twitchStream) => twitchStream.game_id == TWITCH_CS2_GAME_ID)
+    .sort((a, b) => a.viewer_count - b.viewer_count);
 }

@@ -1,8 +1,7 @@
+import { getTwitchUsernames } from "@/lib/database/players";
+
 const CLIENT_ID = process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID as string;
 const CLIENT_SECRET = process.env.NEXT_PUBLIC_TWITCH_CLIENT_SECRET as string;
-const TWITCH_PLAYERS = (process.env.NEXT_PUBLIC_TWITCH_PLAYERS || "").split(
-  ","
-);
 const TWITCH_CS2_GAME_ID = 32399;
 
 interface TwitchStream {
@@ -39,20 +38,31 @@ async function getAccessToken(): Promise<string> {
   return data.access_token;
 }
 
+async function buildTwitchAPIUrl(twitchUsernames: string[]) {
+  const baseUrl = "https://api.twitch.tv/helix/streams";
+
+  const url = new URL(baseUrl);
+
+  twitchUsernames.forEach((username) => {
+    url.searchParams.append("user_login", username);
+  });
+
+  return url.toString();
+}
+
 export async function getTwitchStreams(): Promise<TwitchStream[]> {
   const token = await getAccessToken();
 
-  const response = await fetch(
-    `https://api.twitch.tv/helix/streams?user_login=${TWITCH_PLAYERS.join(
-      "&user_login="
-    )}`,
-    {
-      headers: {
-        "Client-ID": CLIENT_ID,
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const twitchUsernames = await getTwitchUsernames();
+
+  const apiUrl = await buildTwitchAPIUrl(twitchUsernames);
+
+  const response = await fetch(apiUrl, {
+    headers: {
+      "Client-ID": CLIENT_ID,
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   const data: TwitchAPIResponse = await response.json();
 

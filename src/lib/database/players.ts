@@ -72,3 +72,16 @@ export async function getPlayerIds() {
 
   return players.map((player) => player.id);
 }
+
+export async function getTwitchUsernames() {
+  const { data, error } = await supabase
+    .from<"players", Database["Tables"]["players"]>("players")
+    .select("twitch_username");
+
+  if (error) {
+    console.error("Error fetching twitch usernames", error);
+    return [];
+  }
+
+  return data.map((player) => player.twitch_username);
+}

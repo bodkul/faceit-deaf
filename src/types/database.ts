@@ -14,6 +14,7 @@ export type Database = {
         matches: number;
         average_headshots_percent: number;
         average_kd_ratio: number;
+        twitch_username: string;
       };
       Insert: {
         id: UUID;

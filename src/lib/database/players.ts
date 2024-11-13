@@ -76,7 +76,8 @@ export async function getPlayerIds() {
 export async function getTwitchUsernames() {
   const { data, error } = await supabase
     .from<"players", Database["Tables"]["players"]>("players")
-    .select("twitch_username");
+    .select("twitch_username")
+    .not("twitch_username", "is", null);
 
   if (error) {
     console.error("Error fetching twitch usernames", error);

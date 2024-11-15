@@ -1,5 +1,3 @@
-import { getTwitchUsernames } from "@/lib/database/players";
-
 const CLIENT_ID = process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID as string;
 const CLIENT_SECRET = process.env.NEXT_PUBLIC_TWITCH_CLIENT_SECRET as string;
 const TWITCH_CS2_GAME_ID = 32399;
@@ -50,10 +48,8 @@ async function buildTwitchAPIUrl(twitchUsernames: string[]) {
   return url.toString();
 }
 
-export async function getTwitchStreams(): Promise<TwitchStream[]> {
+export async function getTwitchStreams(twitchUsernames: string[]) {
   const token = await getAccessToken();
-
-  const twitchUsernames = await getTwitchUsernames();
 
   const apiUrl = await buildTwitchAPIUrl(twitchUsernames);
 

@@ -18,10 +18,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   leardboard,
-  twitchBroadcasts,
+  twitchStreams,
 }: Readonly<{
   leardboard: React.ReactNode;
-  twitchBroadcasts: React.ReactNode;
+  twitchStreams: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -37,7 +37,7 @@ export default function RootLayout({
                   View your FACEIT CS2 performance for deaf Ukrainians.
                 </span>
               </div>
-              {twitchBroadcasts}
+              {twitchStreams}
               {leardboard}
             </div>
           </main>

@@ -16,12 +16,16 @@ interface RequestBody {
 export const fetchCache = "force-no-store";
 
 export async function POST(req: NextRequest) {
-  const { event, payload }: RequestBody = await req.json();
+  const body: RequestBody = await req.json();
 
-  console.log(payload);
+  console.log(body);
+  console.log([
+    ...body.payload.teams[0].roster,
+    ...body.payload.teams[1].roster,
+  ]);
 
-  if (event === "match_status_finished") {
-    await handleMatchFinished(payload);
+  if (body.event === "match_status_finished") {
+    await handleMatchFinished(body.payload);
   }
 
   return NextResponse.json({ message: "OK" });

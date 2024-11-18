@@ -36,7 +36,7 @@ async function getAccessToken(): Promise<string> {
   return data.access_token;
 }
 
-async function buildTwitchAPIUrl(twitchUsernames: string[]) {
+function buildTwitchAPIUrl(twitchUsernames: string[]) {
   const baseUrl = "https://api.twitch.tv/helix/streams";
 
   const url = new URL(baseUrl);
@@ -51,7 +51,7 @@ async function buildTwitchAPIUrl(twitchUsernames: string[]) {
 export async function getTwitchStreams(twitchUsernames: string[]) {
   const token = await getAccessToken();
 
-  const apiUrl = await buildTwitchAPIUrl(twitchUsernames);
+  const apiUrl = buildTwitchAPIUrl(twitchUsernames);
 
   const response = await fetch(apiUrl, {
     headers: {

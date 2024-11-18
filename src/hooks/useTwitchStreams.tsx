@@ -1,6 +1,4 @@
-const CLIENT_ID = process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID as string;
-const CLIENT_SECRET = process.env.NEXT_PUBLIC_TWITCH_CLIENT_SECRET as string;
-const TWITCH_CS2_GAME_ID = 32399;
+import useSWR from "swr";
 
 interface TwitchStream {
   id: string;
@@ -13,7 +11,9 @@ interface TwitchAPIResponse {
   data: TwitchStream[];
 }
 
-export const fetchCache = "force-no-store";
+const CLIENT_ID = process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID!;
+const CLIENT_SECRET = process.env.NEXT_PUBLIC_TWITCH_CLIENT_SECRET!;
+const TWITCH_CS2_GAME_ID = 32399;
 
 async function getAccessToken(): Promise<string> {
   const response = await fetch("https://id.twitch.tv/oauth2/token", {
@@ -29,16 +29,11 @@ async function getAccessToken(): Promise<string> {
   });
 
   const data = await response.json();
-  if (!response.ok) {
-    throw new Error(`Ошибка получения токена: ${data.message}`);
-  }
-
   return data.access_token;
 }
 
 function buildTwitchAPIUrl(twitchUsernames: string[]) {
   const baseUrl = "https://api.twitch.tv/helix/streams";
-
   const url = new URL(baseUrl);
 
   twitchUsernames.forEach((username) => {
@@ -48,12 +43,9 @@ function buildTwitchAPIUrl(twitchUsernames: string[]) {
   return url.toString();
 }
 
-export async function getTwitchStreams(twitchUsernames: string[]) {
+export async function fetcher(url: string) {
   const token = await getAccessToken();
-
-  const apiUrl = buildTwitchAPIUrl(twitchUsernames);
-
-  const response = await fetch(apiUrl, {
+  const response = await fetch(url, {
     headers: {
       "Client-ID": CLIENT_ID,
       Authorization: `Bearer ${token}`,
@@ -61,8 +53,18 @@ export async function getTwitchStreams(twitchUsernames: string[]) {
   });
 
   const data: TwitchAPIResponse = await response.json();
+  return data.data.filter((stream) => stream.game_id == TWITCH_CS2_GAME_ID);
+};
 
-  return data.data
-    .filter((twitchStream) => twitchStream.game_id == TWITCH_CS2_GAME_ID)
-    .sort((a, b) => a.viewer_count - b.viewer_count);
+export default function useTwitchStreams(twitchUsernames: string[]) {
+  const apiUrl = buildTwitchAPIUrl(twitchUsernames);
+  const { data, isLoading } = useSWR(
+    twitchUsernames.length ? apiUrl : null,
+    fetcher
+  );
+
+  return {
+    twitchStreams: data || [],
+    isLoading,
+  };
 }

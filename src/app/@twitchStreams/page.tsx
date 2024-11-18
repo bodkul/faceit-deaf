@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -6,16 +8,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getTwitchStreams } from "@/lib/api/twitch";
-import { getTwitchUsernames } from "@/lib/database/players";
+import useTwitchUsernames from "@/hooks/useTwitchUsernames";
+import useTwitchStreams from "@/hooks/useTwitchStreams";
 
 const PARENT_DOMAIN = process.env.NEXT_PUBLIC_PARENT_DOMAIN;
 
-export default async function Page() {
-  const twitchUsernames = await getTwitchUsernames();
-  const twitchStreams = await getTwitchStreams(twitchUsernames);
+export default function Page() {
+  const twitchUsernames = useTwitchUsernames();
+  const { twitchStreams, isLoading } = useTwitchStreams(twitchUsernames);
 
-  if (!twitchStreams.length) {
+  if (isLoading || !twitchStreams.length) {
     return;
   }
 

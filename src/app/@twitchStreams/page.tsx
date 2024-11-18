@@ -9,6 +9,8 @@ import {
 import { getTwitchStreams } from "@/lib/api/twitch";
 import { getTwitchUsernames } from "@/lib/database/players";
 
+const PARENT_DOMAIN = process.env.NEXT_PUBLIC_PARENT_DOMAIN;
+
 export default async function Page() {
   const twitchUsernames = await getTwitchUsernames();
   const twitchStreams = await getTwitchStreams(twitchUsernames);
@@ -25,7 +27,7 @@ export default async function Page() {
             <Card>
               <CardContent className="flex items-center justify-center p-2 sm:h-[360px] min-[480px]:h-[270px] h-[180px]">
                 <iframe
-                  src={`https://player.twitch.tv/?channel=${stream.user_name}&parent=faceitdeaf.pro`}
+                  src={`https://player.twitch.tv/?channel=${stream.user_name}&parent=${PARENT_DOMAIN}`}
                   height="360"
                   width="640"
                   allowFullScreen

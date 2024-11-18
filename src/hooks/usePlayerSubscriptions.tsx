@@ -1,42 +1,51 @@
-import { useEffect, useState } from "react";
-import { PlayerWithEloHistory } from "@/types/database";
+"use client";
+
+import { Database, PlayerWithEloHistory } from "@/types/database";
 import { supabase } from "@/lib/supabaseClient";
-import { getPlayers } from "@/lib/database/players";
+import {
+  useQuery,
+  useSubscription,
+} from "@supabase-cache-helpers/postgrest-swr";
+import { getDayAgo } from "@/lib/utils";
 
-export default function usePlayerSubscriptions(
-  initialPlayers: PlayerWithEloHistory[] = []
-) {
-  const [players, setPlayers] =
-    useState<PlayerWithEloHistory[]>(initialPlayers);
+const dayAgo = getDayAgo();
 
-  useEffect(() => {
-    const playersSubscription = supabase
-      .channel("public:players")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "players" },
-        () => {
-          getPlayers().then(setPlayers);
-        }
-      )
-      .subscribe();
+export default function usePlayerSubscriptions() {
+  const { data, isLoading } = useQuery(
+    supabase
+      .from<"players", Database["Tables"]["players"]>("players")
+      .select("*, eloHistory (player_elo, created_at)")
+      .gt("eloHistory.created_at", dayAgo.toISOString())
+      .limit(1, { referencedTable: "eloHistory" })
+      .order("faceit_elo", { ascending: false })
+      .returns<PlayerWithEloHistory[]>(),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
 
-    const eloHistorySubscription = supabase
-      .channel("public:eloHistory")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "eloHistory" },
-        () => {
-          getPlayers().then(setPlayers);
-        }
-      )
-      .subscribe();
+  useSubscription(
+    supabase,
+    `public:players`,
+    {
+      event: "*",
+      table: "players",
+      schema: "public",
+    },
+    ["id"]
+  );
 
-    return () => {
-      playersSubscription.unsubscribe();
-      eloHistorySubscription.unsubscribe();
-    };
-  }, []);
+  useSubscription(
+    supabase,
+    `public:eloHistory`,
+    {
+      event: "*",
+      table: "eloHistory",
+      schema: "public",
+    },
+    ["id"]
+  );
 
-  return players;
+  return { data, isLoading } as const;
 }

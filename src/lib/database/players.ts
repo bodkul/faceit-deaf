@@ -41,24 +41,6 @@ export async function getPlayersByIds(playerIds: string[]) {
   return players;
 }
 
-export async function getPlayers() {
-  const { data: players, error } = await supabase
-    .from<"players", Database["Tables"]["players"]>("players")
-    .select("*, eloHistory ( player_elo, created_at )")
-    .gt(
-      "eloHistory.created_at",
-      new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    )
-    .order("faceit_elo", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching players", error);
-    return [];
-  }
-
-  return players;
-}
-
 export async function getPlayerIds() {
   const { data: players, error } = await supabase
     .from<"players", Database["Tables"]["players"]>("players")

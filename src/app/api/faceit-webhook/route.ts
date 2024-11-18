@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleMatchFinished } from "@/services/playerService";
+import { UUID } from "crypto";
 
 interface RequestBody {
   event: string;
   payload: {
     teams: {
       roster: {
-        id: string;
+        id: UUID;
       }[];
     }[];
   };

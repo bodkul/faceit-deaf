@@ -18,11 +18,7 @@ export default function usePlayerSubscriptions() {
       .gt("eloHistory.created_at", dayAgo.toISOString())
       .limit(1, { referencedTable: "eloHistory" })
       .order("faceit_elo", { ascending: false })
-      .returns<PlayerWithEloHistory[]>(),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
+      .returns<PlayerWithEloHistory[]>()
   );
 
   useSubscription(

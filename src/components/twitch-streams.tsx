@@ -13,7 +13,7 @@ import useTwitchStreams from "@/hooks/useTwitchStreams";
 
 const PARENT_DOMAIN = process.env.NEXT_PUBLIC_PARENT_DOMAIN;
 
-export default function Page() {
+export default function TwitchStreams() {
   const twitchUsernames = useTwitchUsernames();
   const { twitchStreams, isLoading } = useTwitchStreams(twitchUsernames);
 

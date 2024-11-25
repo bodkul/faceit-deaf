@@ -29,7 +29,8 @@ export default function usePlayerSubscriptions() {
       table: "players",
       schema: "public",
     },
-    ["id"]
+    ["id"],
+    { callback: (payload) => console.log(payload) }
   );
 
   useSubscription(
@@ -40,7 +41,8 @@ export default function usePlayerSubscriptions() {
       table: "eloHistory",
       schema: "public",
     },
-    ["id"]
+    ["id"],
+    { callback: (payload) => console.log(payload) }
   );
 
   return { data, isLoading } as const;

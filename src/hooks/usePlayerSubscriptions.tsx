@@ -11,7 +11,7 @@ import { getDayAgo } from "@/lib/utils";
 const dayAgo = getDayAgo();
 
 export default function usePlayerSubscriptions() {
-  const { data, isLoading } = useQuery(
+  const { data, mutate, isLoading } = useQuery(
     supabase
       .from<"players", Database["Tables"]["players"]>("players")
       .select("*, eloHistory (player_elo, created_at)")
@@ -30,7 +30,12 @@ export default function usePlayerSubscriptions() {
       schema: "public",
     },
     ["id"],
-    { callback: (payload) => console.log(payload) }
+    {
+      callback: (payload) => {
+        mutate();
+        console.log(payload);
+      },
+    }
   );
 
   useSubscription(
@@ -42,7 +47,12 @@ export default function usePlayerSubscriptions() {
       schema: "public",
     },
     ["id"],
-    { callback: (payload) => console.log(payload) }
+    {
+      callback: (payload) => {
+        mutate();
+        console.log(payload);
+      },
+    }
   );
 
   return { data, isLoading } as const;

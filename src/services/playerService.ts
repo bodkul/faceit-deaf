@@ -1,14 +1,7 @@
 import { fetchPlayersWithStats } from "@/lib/api/faceit";
 import { insertEloHistory } from "@/lib/database/eloHistory";
 import { getPlayersByIds, upsertPlayers } from "@/lib/database/players";
-
-interface Payload {
-  teams: {
-    roster: {
-      id: string;
-    }[];
-  }[];
-}
+import type { Payload } from "@/types/match-status-event";
 
 export const handleMatchFinished = async (payload: Payload) => {
   const playerIds = payload.teams.flatMap((team) =>

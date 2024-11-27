@@ -1,9 +1,10 @@
 import { Player, PlayerStats, PlayerWithStats } from "@/types/api";
+import { faceitApiConfig } from "@/lib/config";
 
 async function fetchFaceitData<T>(url: string): Promise<T> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
+  const response = await fetch(`${faceitApiConfig.URL}${url}`, {
     headers: {
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+      Authorization: `Bearer ${faceitApiConfig.TOKEN}`,
     },
   });
 

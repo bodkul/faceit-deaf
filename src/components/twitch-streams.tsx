@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import useTwitchUsernames from "@/hooks/useTwitchUsernames";
 import useTwitchStreams from "@/hooks/useTwitchStreams";
-
-const PARENT_DOMAIN = process.env.NEXT_PUBLIC_PARENT_DOMAIN;
+import { twitchConfig } from "@/lib/config";
 
 export default function TwitchStreams() {
   const twitchUsernames = useTwitchUsernames();
@@ -29,7 +28,7 @@ export default function TwitchStreams() {
             <Card>
               <CardContent className="flex items-center justify-center p-2 sm:h-[360px] min-[480px]:h-[270px] h-[180px]">
                 <iframe
-                  src={`https://player.twitch.tv/?channel=${stream.user_name}&parent=${PARENT_DOMAIN}`}
+                  src={`https://player.twitch.tv/?channel=${stream.user_name}&parent=${twitchConfig.PARENT_DOMAIN}`}
                   height="360"
                   width="640"
                   allowFullScreen

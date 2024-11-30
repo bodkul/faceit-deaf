@@ -1,5 +1,6 @@
 import { Player, PlayerStats, PlayerWithStats } from "@/types/api";
 import { faceitApiConfig } from "@/lib/config";
+import { logger } from "@/lib/logger";
 
 async function fetchFaceitData<T>(url: string): Promise<T> {
   const response = await fetch(`${faceitApiConfig.URL}${url}`, {
@@ -9,7 +10,7 @@ async function fetchFaceitData<T>(url: string): Promise<T> {
   });
 
   if (!response.ok) {
-    console.error(`Error fetching data from ${url}: ${response.statusText}`);
+    logger.error(`Error fetching data from ${url}: ${response.statusText}`);
     throw new Error(`Error fetching data from ${url}: ${response.statusText}`);
   }
 

@@ -7,6 +7,7 @@ import {
   useSubscription,
 } from "@supabase-cache-helpers/postgrest-swr";
 import { getDayAgo } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 const dayAgo = getDayAgo();
 
@@ -33,7 +34,7 @@ export default function usePlayerSubscriptions() {
     {
       callback: (payload) => {
         mutate();
-        console.log(payload);
+        logger.info(payload);
       },
     }
   );
@@ -50,7 +51,7 @@ export default function usePlayerSubscriptions() {
     {
       callback: (payload) => {
         mutate();
-        console.log(payload);
+        logger.info(payload);
       },
     }
   );

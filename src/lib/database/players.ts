@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import { Database } from "@/types/database";
 import { PlayerWithStats } from "@/types/api";
+import { logger } from "@/lib/logger";
 
 export async function upsertPlayer(player: PlayerWithStats) {
   const { error } = await supabase
@@ -19,7 +20,7 @@ export async function upsertPlayer(player: PlayerWithStats) {
     });
 
   if (error) {
-    console.error(`Failed to upsert player: ${player.player_id}`, error);
+    logger.error(`Failed to upsert players: ${error}`);
   }
 }
 
@@ -34,11 +35,10 @@ export async function getPlayersByIds(playerIds: string[]) {
     .in("id", playerIds);
 
   if (error) {
-    console.error("Error fetching players by IDs", error);
-    return [];
+    logger.error(`Error fetching players by IDs: ${error}`);
   }
 
-  return players;
+  return players || [];
 }
 
 export async function getPlayerIds() {
@@ -48,11 +48,10 @@ export async function getPlayerIds() {
     .order("faceit_elo", { ascending: false });
 
   if (error) {
-    console.error("Error fetching player IDs:", error);
-    return [];
+    logger.error(`Error fetching player IDs: ${error}`);
   }
 
-  return players.map((player) => player.id);
+  return players?.map((player) => player.id) || [];
 }
 
 export async function getTwitchUsernames() {
@@ -62,9 +61,8 @@ export async function getTwitchUsernames() {
     .not("twitch_username", "is", null);
 
   if (error) {
-    console.error("Error fetching twitch usernames", error);
-    return [];
+    logger.error(`Error fetching twitch usernames: ${error}`);
   }
 
-  return data.map((player) => player.twitch_username);
+  return data?.map((player) => player.twitch_username) || [];
 }

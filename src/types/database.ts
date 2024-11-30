@@ -50,6 +50,17 @@ export type Database = {
         player_elo: number;
       };
     };
+    logs: {
+      Row: {
+        level: string;
+        message: string;
+        created_at: Date;
+      };
+      Insert: {
+        level: string;
+        message: string;
+      };
+    };
   };
 };
 

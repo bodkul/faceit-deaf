@@ -54,11 +54,13 @@ export type Database = {
       Row: {
         level: string;
         message: string;
+        metadata: object | null;
         created_at: Date;
       };
       Insert: {
         level: string;
         message: string;
+        metadata?: object | null;
       };
     };
   };

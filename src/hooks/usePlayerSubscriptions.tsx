@@ -34,7 +34,7 @@ export default function usePlayerSubscriptions() {
     {
       callback: (payload) => {
         mutate();
-        logger.info(payload);
+        logger.info("Subscription with players", payload);
       },
     }
   );
@@ -51,7 +51,7 @@ export default function usePlayerSubscriptions() {
     {
       callback: (payload) => {
         mutate();
-        logger.info(payload);
+        logger.info("Subscription with eloHistory", payload);
       },
     }
   );

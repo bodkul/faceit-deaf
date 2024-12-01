@@ -8,7 +8,7 @@ export const fetchCache = "force-no-store";
 export async function POST(req: NextRequest) {
   const body: MatchStatusEvent = await req.json();
 
-  logger.info(body);
+  logger.info("Match status event", body);
 
   if (body.event === "match_status_finished") {
     await handleMatchFinished(body.payload);

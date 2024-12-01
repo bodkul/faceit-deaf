@@ -1,32 +1,30 @@
 import { supabase } from "@/lib/supabaseClient";
 
-type Level = "info" | "warn" | "error";
-type Message = string | object | number;
-
 class Logger {
   private supabase = supabase;
 
-  private async log(level: Level, message: Message) {
-    globalThis.console[level]?.(message);
-
+  private async log(
+    level: "info" | "warn" | "error",
+    message: string,
+    metadata?: object
+  ) {
     await this.supabase.from("logs").insert({
       level,
       message,
+      metadata,
     });
-
-    console.log();
   }
 
-  info(message: Message) {
-    this.log("info", message);
+  info(message: string, metadata?: object) {
+    this.log("info", message, metadata);
   }
 
-  warn(message: Message) {
-    this.log("warn", message);
+  warn(message: string, metadata?: object) {
+    this.log("warn", message, metadata);
   }
 
-  error(message: Message) {
-    this.log("error", message);
+  error(message: string, metadata?: object) {
+    this.log("error", message, metadata);
   }
 }
 

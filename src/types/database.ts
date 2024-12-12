@@ -1,10 +1,8 @@
-import { UUID } from "crypto";
-
 export type Database = {
   Tables: {
     players: {
       Row: {
-        id: UUID;
+        id: string;
         nickname: string;
         avatar: string | undefined;
         skill_level: number;
@@ -17,7 +15,7 @@ export type Database = {
         twitch_username: string;
       };
       Insert: {
-        id: UUID;
+        id: string;
         nickname: string;
         avatar: string | undefined;
         skill_level: number;
@@ -46,7 +44,7 @@ export type Database = {
         created_at: Date;
       };
       Insert: {
-        player_id: UUID;
+        player_id: string;
         player_elo: number;
       };
     };

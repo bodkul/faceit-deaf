@@ -1,7 +1,5 @@
-import { UUID } from "crypto";
-
 export type Player = {
-  player_id: UUID;
+  player_id: string;
   nickname: string;
   avatar: string | undefined;
   games: {
@@ -15,7 +13,7 @@ export type Player = {
 };
 
 export type PlayerStats = {
-  player_id: UUID;
+  player_id: string;
   lifetime: {
     Matches: number;
     "Average Headshots %": number;

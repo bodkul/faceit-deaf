@@ -1,13 +1,11 @@
-import { UUID } from "crypto";
-
 interface EventEntity {
-  id: UUID;
+  id: string;
   name: string;
   type: string;
 }
 
 interface Player {
-  id: UUID;
+  id: string;
   nickname: string;
   avatar: string;
   game_id: string;
@@ -18,11 +16,11 @@ interface Player {
 }
 
 interface Team {
-  id: UUID;
+  id: string;
   name: string;
   type: string;
   avatar: string;
-  leader_id: UUID;
+  leader_id: string;
   co_leader_id: string;
   roster: Player[];
   substitutions: number;
@@ -30,7 +28,7 @@ interface Team {
 }
 
 export interface Payload {
-  id: UUID;
+  id: string;
   organizer_id: string;
   region: string;
   game: string;
@@ -44,11 +42,11 @@ export interface Payload {
 }
 
 export interface MatchStatusEvent {
-  transaction_id: UUID;
+  transaction_id: string;
   event: string;
-  event_id: UUID;
-  third_party_id: UUID;
-  app_id: UUID;
+  event_id: string;
+  third_party_id: string;
+  app_id: string;
   timestamp: Date;
   retry_count: number;
   version: number;

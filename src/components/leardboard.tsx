@@ -10,14 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { FaceitIcon, SkillLevelIcon, SteamIcon } from "@/app/icons";
+import { SkillLevelIcon } from "@/app/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import usePlayerSubscriptions from "@/hooks/usePlayerSubscriptions";
+import Link from "next/link";
 
 type PlayerWithEloHistory = Tables<"players"> & {
   eloHistory: Tables<"eloHistory">[];
@@ -48,93 +44,28 @@ const PlayerRow = ({
   index: number;
 }) => {
   return (
-    <TableRow key={player.id} className="h-[49px]">
-      <TableCell>{index + 1}</TableCell>
-      <TableCell>
-        <Avatar className="h-8 w-8">
-          <AvatarImage
-            src={player.avatar}
-            alt={`Avatar of ${player.nickname}`}
-          />
-          <AvatarFallback></AvatarFallback>
-        </Avatar>
-      </TableCell>
-      <TableCell>
-        <HoverCard>
-          <HoverCardTrigger tabIndex={0} asChild>
-            <div className="font-medium cursor-pointer">{player.nickname}</div>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-96">
-            <div className="flex space-x-4">
-              <div className="flex flex-col items-center space-y-2">
-                <Avatar>
-                  <AvatarImage
-                    src={player.avatar}
-                    alt={`Avatar of ${player.nickname}`}
-                  />
-                  <AvatarFallback></AvatarFallback>
-                </Avatar>
-                <div className="flex flex-row space-x-1">
-                  <div className="flex rounded-md border h-6 w-6">
-                    <a
-                      className="m-auto"
-                      href={player.faceit_url.replace("{lang}", "ru")}
-                      target="_blank"
-                    >
-                      <FaceitIcon className="h-4 w-4" />
-                    </a>
-                  </div>
-                  <div className="flex rounded-md border h-6 w-6">
-                    <a
-                      className="m-auto"
-                      href={`https://steamcommunity.com/profiles/${player.steam_id_64}`}
-                      target="_blank"
-                    >
-                      <SteamIcon className="h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div className="grid justify-items-start space-y-1">
-                <h4 className="text-sm font-semibold">{player.nickname}</h4>
-                {player.nickname === "bodkul" && (
-                  <p className="text-sm">
-                    The Faceit Deaf – created and maintained by bodkul.
-                  </p>
-                )}
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Matches</TableHead>
-                        <TableHead>Avg Headshots</TableHead>
-                        <TableHead>Avg K/D Ratio</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell>{player.matches}</TableCell>
-                        <TableCell>
-                          {player.average_headshots_percent}%
-                        </TableCell>
-                        <TableCell>{player.average_kd_ratio}</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            </div>
-          </HoverCardContent>
-        </HoverCard>
-      </TableCell>
-      <TableCell>
-        <SkillLevelIcon level={player.skill_level} className="h-6 w-6" />
-      </TableCell>
-      <TableCell>
-        {player.faceit_elo}
-        <EloDelta player={player} />
-      </TableCell>
-    </TableRow>
+    <Link href={`/player/${player.nickname}`} legacyBehavior>
+      <TableRow key={player.id} className="h-[49px] cursor-pointer">
+        <TableCell>{index + 1}</TableCell>
+        <TableCell className="flex items-center space-x-4">
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              src={player.avatar}
+              alt={`Avatar of ${player.nickname}`}
+            />
+            <AvatarFallback></AvatarFallback>
+          </Avatar>
+          <div className="font-medium">{player.nickname}</div>
+        </TableCell>
+        <TableCell>
+          <SkillLevelIcon level={player.skill_level} className="h-6 w-6" />
+        </TableCell>
+        <TableCell>
+          {player.faceit_elo}
+          <EloDelta player={player} />
+        </TableCell>
+      </TableRow>
+    </Link>
   );
 };
 
@@ -142,10 +73,8 @@ const renderLoadingRows = (count: number) => {
   return Array.from({ length: count }).map((_, index) => (
     <TableRow key={index} className="h-[49px]">
       <TableCell>{index + 1}</TableCell>
-      <TableCell>
+      <TableCell className="flex items-center space-x-4">
         <Skeleton className="h-8 w-8 rounded-full" />
-      </TableCell>
-      <TableCell>
         <Skeleton className="h-4 w-24" />
       </TableCell>
       <TableCell>
@@ -166,11 +95,10 @@ export default function Leardboard() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Rating</TableHead>
-            <TableHead className="w-[100px]">Avatar</TableHead>
-            <TableHead className="w-[125px]">Nickname</TableHead>
-            <TableHead className="w-[100px]">Level</TableHead>
-            <TableHead className="w-[100px]">Elo</TableHead>
+            <TableHead>Rating</TableHead>
+            <TableHead>Player</TableHead>
+            <TableHead>Level</TableHead>
+            <TableHead>Elo</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

@@ -13,6 +13,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -64,7 +65,7 @@ export default function Page({
     mutate,
     isLoading: isLoadingPlayer,
   } = useQuery(
-    supabase.from("players").select().eq("nickname", username).single(),
+    supabase.from("players").select().eq("nickname", username).single()
   );
 
   useSubscription(
@@ -81,7 +82,7 @@ export default function Page({
         mutate();
         reload();
       },
-    },
+    }
   );
   const {
     matches,
@@ -134,6 +135,19 @@ export default function Page({
               </CardContent>
             </Card>
             <Card>
+              <CardHeader>Rating 2.0</CardHeader>
+              <CardContent className="text-2xl font-bold">
+                {isLoadingMatches ? (
+                  <Skeleton className="h-6 w-16" />
+                ) : (
+                  (
+                    matches.reduce((acc, item) => acc + item.rating, 0) /
+                    matches.length
+                  ).toFixed(2)
+                )}
+              </CardContent>
+            </Card>
+            <Card>
               <CardHeader>K/D</CardHeader>
               <CardContent className="text-2xl font-bold">
                 {isLoadingMatches ? (
@@ -142,7 +156,7 @@ export default function Page({
                   (
                     matches.reduce(
                       (acc, item) => acc + item.kills / item.deaths,
-                      0,
+                      0
                     ) / matches.length
                   ).toFixed(2)
                 )}
@@ -157,7 +171,7 @@ export default function Page({
                   (
                     matches.reduce(
                       (acc, item) => acc + item.headshot_precent,
-                      0,
+                      0
                     ) / matches.length
                   ).toFixed(2)
                 )}
@@ -204,7 +218,7 @@ export default function Page({
                             <TableCell>
                               {datefns.format(
                                 new Date(match.date),
-                                "dd/MM/yy hh:mm",
+                                "dd/MM/yy hh:mm"
                               )}
                             </TableCell>
 

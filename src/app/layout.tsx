@@ -12,7 +12,7 @@ const geistSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "FaceitDeaf",
+  title: "faceitdeaf",
   description: "View your FACEIT CS2 performance for deaf Ukrainians.",
 };
 

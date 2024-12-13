@@ -5,6 +5,7 @@ import {
   useSubscription,
 } from "@supabase-cache-helpers/postgrest-swr";
 import * as datefns from "date-fns";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,7 +28,6 @@ import {
 import useMatches from "@/hooks/useMatches";
 import { supabase } from "@/lib/supabaseClient";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 const renderLoadingRows = (count: number) => {
   return Array.from({ length: count }).map((_, index) => (
@@ -64,7 +64,7 @@ export default function Page({
     mutate,
     isLoading: isLoadingPlayer,
   } = useQuery(
-    supabase.from("players").select().eq("nickname", username).single()
+    supabase.from("players").select().eq("nickname", username).single(),
   );
 
   useSubscription(
@@ -81,7 +81,7 @@ export default function Page({
         mutate();
         reload();
       },
-    }
+    },
   );
   const {
     matches,
@@ -142,7 +142,7 @@ export default function Page({
                   (
                     matches.reduce(
                       (acc, item) => acc + item.kills / item.deaths,
-                      0
+                      0,
                     ) / matches.length
                   ).toFixed(2)
                 )}
@@ -157,7 +157,7 @@ export default function Page({
                   (
                     matches.reduce(
                       (acc, item) => acc + item.headshot_precent,
-                      0
+                      0,
                     ) / matches.length
                   ).toFixed(2)
                 )}
@@ -204,7 +204,7 @@ export default function Page({
                             <TableCell>
                               {datefns.format(
                                 new Date(match.date),
-                                "dd/MM/yy hh:mm"
+                                "dd/MM/yy hh:mm",
                               )}
                             </TableCell>
 

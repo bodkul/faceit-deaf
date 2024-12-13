@@ -1,6 +1,6 @@
-import { supabase } from "@/lib/supabaseClient";
-import { PlayerWithStats } from "@/types/api";
 import { logger } from "@/lib/logger";
+import { supabase } from "@/lib/supabaseClient";
+import type { PlayerWithStats } from "@/types/api";
 
 export async function upsertPlayers(players: PlayerWithStats[]) {
   const { error } = await supabase.from("players").upsert(

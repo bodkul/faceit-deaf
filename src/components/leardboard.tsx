@@ -1,6 +1,10 @@
 "use client";
 
-import type { Tables } from "@/types/database";
+import Link from "next/link";
+
+import { SkillLevelIcon } from "@/app/icons";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -9,11 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SkillLevelIcon } from "@/app/icons";
-import { Skeleton } from "@/components/ui/skeleton";
 import usePlayerSubscriptions from "@/hooks/usePlayerSubscriptions";
-import Link from "next/link";
+import type { Tables } from "@/types/database";
 
 type PlayerWithEloHistory = Tables<"players"> & {
   eloHistory: Tables<"eloHistory">[];

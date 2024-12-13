@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+
+import { logger } from "@/lib/logger";
 import { handleMatchFinished } from "@/services/playerService";
 import type { MatchStatusEvent } from "@/types/match-status-event";
-import { logger } from "@/lib/logger";
 
 export const fetchCache = "force-no-store";
 

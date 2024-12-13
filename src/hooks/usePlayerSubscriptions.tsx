@@ -1,12 +1,13 @@
 "use client";
 
-import { supabase } from "@/lib/supabaseClient";
 import {
   useQuery,
   useSubscription,
 } from "@supabase-cache-helpers/postgrest-swr";
-import { getDayAgo } from "@/lib/utils";
+
 import { logger } from "@/lib/logger";
+import { supabase } from "@/lib/supabaseClient";
+import { getDayAgo } from "@/lib/utils";
 
 const dayAgo = getDayAgo();
 

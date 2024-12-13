@@ -1,4 +1,5 @@
 import useSWR from "swr";
+
 import { twitchConfig } from "@/lib/config";
 
 interface TwitchStream {

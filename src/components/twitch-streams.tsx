@@ -8,8 +8,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import useTwitchUsernames from "@/hooks/useTwitchUsernames";
 import useTwitchStreams from "@/hooks/useTwitchStreams";
+import useTwitchUsernames from "@/hooks/useTwitchUsernames";
 import { twitchConfig } from "@/lib/config";
 
 export default function TwitchStreams() {

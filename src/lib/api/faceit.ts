@@ -1,6 +1,6 @@
-import { Player, PlayerStats, PlayerWithStats } from "@/types/api";
 import { faceitApiConfig } from "@/lib/config";
 import { logger } from "@/lib/logger";
+import type { Player, PlayerStats, PlayerWithStats } from "@/types/api";
 
 export async function fetchFaceitData<T>(url: string): Promise<T> {
   const response = await fetch(`${faceitApiConfig.URL}${url}`, {

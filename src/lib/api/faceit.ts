@@ -7,6 +7,7 @@ export async function fetchFaceitData<T>(url: string): Promise<T> {
     headers: {
       Authorization: `Bearer ${faceitApiConfig.TOKEN}`,
     },
+    cache: "force-cache",
   });
 
   if (!response.ok) {

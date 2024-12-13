@@ -55,7 +55,7 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "elo-history_player_id_fkey";
+            foreignKeyName: "eloHistory_player_id_fkey";
             columns: ["player_id"];
             isOneToOne: false;
             referencedRelation: "players";
@@ -89,7 +89,7 @@ export type Database = {
       };
       players: {
         Row: {
-          avatar: string | null;
+          avatar: string;
           average_headshots_percent: number;
           average_kd_ratio: number;
           created_at: string;
@@ -103,7 +103,7 @@ export type Database = {
           twitch_username: string | null;
         };
         Insert: {
-          avatar?: string | null;
+          avatar: string;
           average_headshots_percent?: number;
           average_kd_ratio?: number;
           created_at?: string;
@@ -117,7 +117,7 @@ export type Database = {
           twitch_username?: string | null;
         };
         Update: {
-          avatar?: string | null;
+          avatar?: string;
           average_headshots_percent?: number;
           average_kd_ratio?: number;
           created_at?: string;

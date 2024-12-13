@@ -1,6 +1,5 @@
 "use client";
 
-import { Database, PlayerWithEloHistory } from "@/types/database";
 import { supabase } from "@/lib/supabaseClient";
 import {
   useQuery,
@@ -14,12 +13,11 @@ const dayAgo = getDayAgo();
 export default function usePlayerSubscriptions() {
   const { data, mutate, isLoading } = useQuery(
     supabase
-      .from<"players", Database["Tables"]["players"]>("players")
-      .select("*, eloHistory (player_elo, created_at)")
+      .from("players")
+      .select("*, eloHistory (*)")
       .gt("eloHistory.created_at", dayAgo.toISOString())
       .limit(1, { referencedTable: "eloHistory" })
-      .order("faceit_elo", { ascending: false })
-      .returns<PlayerWithEloHistory[]>(),
+      .order("faceit_elo", { ascending: false }),
   );
 
   useSubscription(

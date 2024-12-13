@@ -6,7 +6,7 @@ class Logger {
   private async log(
     level: "info" | "warn" | "error",
     message: string,
-    metadata?: object,
+    metadata?: any,
   ) {
     await this.supabase.from("logs").insert({
       level,

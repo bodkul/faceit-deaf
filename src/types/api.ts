@@ -8,7 +8,7 @@ export type Player = {
       faceit_elo: number;
     };
   };
-  steam_id_64: string;
+  steam_id_64: number;
   faceit_url: string;
 };
 

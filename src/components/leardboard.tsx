@@ -1,6 +1,6 @@
 "use client";
 
-import { PlayerWithEloHistory } from "@/types/database";
+import type { Tables } from "@/types/database";
 import {
   Table,
   TableBody,
@@ -18,6 +18,10 @@ import {
 import { FaceitIcon, SkillLevelIcon, SteamIcon } from "@/app/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import usePlayerSubscriptions from "@/hooks/usePlayerSubscriptions";
+
+type PlayerWithEloHistory = Tables<"players"> & {
+  eloHistory: Tables<"eloHistory">[];
+};
 
 const EloDelta = ({ player }: { player: PlayerWithEloHistory }) => {
   if (!player.eloHistory.length) return;

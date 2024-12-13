@@ -6,7 +6,7 @@ export default function useTwitchUsernames() {
     supabase
       .from("players")
       .select("twitch_username")
-      .not("twitch_username", "is", null),
+      .neq("twitch_username", null),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,

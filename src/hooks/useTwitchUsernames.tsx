@@ -7,11 +7,12 @@ export default function useTwitchUsernames() {
     supabase
       .from("players")
       .select("twitch_username")
-      .neq("twitch_username", null),
+      .neq("twitch_username", null)
+      .returns<{ twitch_username: string }[]>(),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-    },
+    }
   );
 
   return data?.map((player) => player.twitch_username) || [];

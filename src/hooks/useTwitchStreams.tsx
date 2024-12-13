@@ -51,7 +51,7 @@ export async function fetcher(url: string) {
 
   const data: TwitchAPIResponse = await response.json();
   return data.data.filter(
-    (stream) => stream.game_id == twitchConfig.CS2_GAME_ID
+    (stream) => stream.game_id == twitchConfig.CS2_GAME_ID,
   );
 }
 
@@ -59,7 +59,7 @@ export default function useTwitchStreams(twitchUsernames: string[]) {
   const apiUrl = buildTwitchAPIUrl(twitchUsernames);
   const { data, isLoading } = useSWR(
     twitchUsernames.length ? apiUrl : null,
-    fetcher
+    fetcher,
   );
 
   return {

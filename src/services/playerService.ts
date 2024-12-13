@@ -5,7 +5,7 @@ import type { Payload } from "@/types/match-status-event";
 
 export const handleMatchFinished = async (payload: Payload) => {
   const playerIds = payload.teams.flatMap((team) =>
-    team.roster.map((player) => player.id)
+    team.roster.map((player) => player.id),
   );
 
   const existingPlayers = await getPlayersByIds(playerIds);
@@ -14,11 +14,11 @@ export const handleMatchFinished = async (payload: Payload) => {
     existingPlayers.flatMap((player) => ({
       player_id: player.id,
       player_elo: player.faceit_elo,
-    }))
+    })),
   );
 
   const players = await fetchPlayersWithStats(
-    existingPlayers.flatMap((player) => player.id)
+    existingPlayers.flatMap((player) => player.id),
   );
   await upsertPlayers(players);
 };

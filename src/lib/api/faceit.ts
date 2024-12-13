@@ -26,13 +26,13 @@ export async function fetchPlayerStats(playerId: string) {
 }
 
 export async function fetchPlayersWithStats(
-  playerIds: string[]
+  playerIds: string[],
 ): Promise<PlayerWithStats[]> {
   return Promise.all(
     playerIds.map(async (playerId) => {
       const player = await fetchPlayer(playerId);
       const playerStats = await fetchPlayerStats(playerId);
       return { ...player, ...playerStats };
-    })
+    }),
   );
 }

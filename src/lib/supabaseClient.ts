@@ -10,5 +10,5 @@ export const supabase = createClient(
         return fetch(url, { ...options, cache: "no-store" });
       },
     },
-  }
+  },
 );

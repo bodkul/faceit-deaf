@@ -11,7 +11,7 @@ export default function useTwitchUsernames() {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-    }
+    },
   );
 
   return data?.map((player) => player.twitch_username) || [];

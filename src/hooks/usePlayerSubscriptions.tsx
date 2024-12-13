@@ -19,7 +19,7 @@ export default function usePlayerSubscriptions() {
       .gt("eloHistory.created_at", dayAgo.toISOString())
       .limit(1, { referencedTable: "eloHistory" })
       .order("faceit_elo", { ascending: false })
-      .returns<PlayerWithEloHistory[]>()
+      .returns<PlayerWithEloHistory[]>(),
   );
 
   useSubscription(
@@ -36,7 +36,7 @@ export default function usePlayerSubscriptions() {
         mutate();
         logger.info("Subscription with players", payload);
       },
-    }
+    },
   );
 
   useSubscription(
@@ -53,7 +53,7 @@ export default function usePlayerSubscriptions() {
         mutate();
         logger.info("Subscription with eloHistory", payload);
       },
-    }
+    },
   );
 
   return { data, isLoading } as const;

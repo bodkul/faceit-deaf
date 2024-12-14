@@ -1,9 +1,5 @@
 "use client";
 
-import {
-  useQuery,
-  useSubscription,
-} from "@supabase-cache-helpers/postgrest-swr";
 import * as datefns from "date-fns";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -25,8 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import usePlayer from "@/hooks/queries/usePlayer";
+import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
 import useMatches from "@/hooks/useMatches";
-import { supabase } from "@/lib/supabaseClient";
 import { cn } from "@/lib/utils";
 
 import Stat from "./components/stat";
@@ -70,33 +67,19 @@ export default function Page({
 }) {
   const {
     data: player,
-    mutate,
+    mutate: mutatePlayer,
     isLoading: isLoadingPlayer,
-  } = useQuery(
-    supabase.from("players").select().eq("nickname", username).single(),
-  );
+  } = usePlayer(username);
   const {
-    matches,
+    data: matches,
+    mutate: mutateMatches,
     isLoading: isLoadingMatches,
-    reload,
   } = useMatches(player?.id);
 
-  useSubscription(
-    supabase,
-    `public:players`,
-    {
-      event: "*",
-      table: "players",
-      schema: "public",
-    },
-    ["id"],
-    {
-      callback: async () => {
-        await mutate();
-        await reload();
-      },
-    },
-  );
+  usePlayersSubscription(async () => {
+    await mutatePlayer();
+    await mutateMatches();
+  });
 
   if (!isLoadingPlayer && !player) {
     return notFound();

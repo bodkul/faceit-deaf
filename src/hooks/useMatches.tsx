@@ -222,7 +222,7 @@ function useMatches(playerId?: string) {
   }, [playerId, loadMatches]);
 
   return {
-    matches: matches.map((match) => ({
+    data: matches.map((match) => ({
       date: new Date(match["Created At"]),
       id: match["Match Id"],
       map: match["Map"],
@@ -235,7 +235,7 @@ function useMatches(playerId?: string) {
       headshot_precent: parseInt(match["Headshots %"]),
     })),
     isLoading,
-    reload: loadMatches,
+    mutate: loadMatches,
   };
 }
 

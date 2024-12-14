@@ -13,7 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import usePlayerSubscriptions from "@/hooks/usePlayerSubscriptions";
+import usePlayers from "@/hooks/queries/usePlayers";
+import useEloHistorySubscription from "@/hooks/subscriptions/useEloHistorySubscription";
+import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
 import type { Tables } from "@/types/database";
 
 type PlayerWithEloHistory = Tables<"players"> & {
@@ -89,7 +91,15 @@ const renderLoadingRows = (count: number) => {
 };
 
 export default function Leardboard() {
-  const { data: players, isLoading } = usePlayerSubscriptions();
+  const { data, mutate, isLoading } = usePlayers();
+
+  usePlayersSubscription(async () => {
+    await mutate();
+  });
+
+  useEloHistorySubscription(async () => {
+    await mutate();
+  });
 
   return (
     <div className="flex rounded-md border">
@@ -103,9 +113,9 @@ export default function Leardboard() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {isLoading || players == null
+          {isLoading || data == null
             ? renderLoadingRows(25)
-            : players.map((player, index) => (
+            : data.map((player, index) => (
                 <PlayerRow key={player.id} player={player} index={index} />
               ))}
         </TableBody>

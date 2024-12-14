@@ -34,22 +34,22 @@ const renderLoadingRows = (count: number) => {
   return Array.from({ length: count }).map((_, index) => (
     <TableRow key={index}>
       <TableCell>
-        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-5 w-24" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-4 w-12" />
+        <Skeleton className="h-5 w-12" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-4 w-12" />
+        <Skeleton className="h-5 w-12" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-4 w-12" />
+        <Skeleton className="h-5 w-12" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-4 w-10" />
+        <Skeleton className="h-5 w-10" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-4 w-10" />
+        <Skeleton className="h-5 w-10" />
       </TableCell>
     </TableRow>
   ));
@@ -128,7 +128,7 @@ export default function Page({
               <CardHeader>Elo</CardHeader>
               <CardContent className="text-2xl font-bold">
                 {isLoadingPlayer ? (
-                  <Skeleton className="h-6 w-16" />
+                  <Skeleton className="h-8 w-16" />
                 ) : (
                   player!.faceit_elo
                 )}
@@ -138,7 +138,7 @@ export default function Page({
               <CardHeader>Rating 2.0</CardHeader>
               <CardContent className="text-2xl font-bold">
                 {isLoadingMatches ? (
-                  <Skeleton className="h-6 w-16" />
+                  <Skeleton className="h-8 w-16" />
                 ) : (
                   (
                     matches.reduce((acc, item) => acc + item.rating, 0) /
@@ -151,7 +151,7 @@ export default function Page({
               <CardHeader>K/D</CardHeader>
               <CardContent className="text-2xl font-bold">
                 {isLoadingMatches ? (
-                  <Skeleton className="h-6 w-16" />
+                  <Skeleton className="h-8 w-16" />
                 ) : (
                   (
                     matches.reduce(
@@ -166,7 +166,7 @@ export default function Page({
               <CardHeader>HS %</CardHeader>
               <CardContent className="text-2xl font-bold">
                 {isLoadingMatches ? (
-                  <Skeleton className="h-6 w-16" />
+                  <Skeleton className="h-8 w-16" />
                 ) : (
                   (
                     matches.reduce(

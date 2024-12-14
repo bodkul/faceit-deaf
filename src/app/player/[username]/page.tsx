@@ -75,6 +75,11 @@ export default function Page({
   } = useQuery(
     supabase.from("players").select().eq("nickname", username).single(),
   );
+  const {
+    matches,
+    isLoading: isLoadingMatches,
+    reload,
+  } = useMatches(player?.id);
 
   useSubscription(
     supabase,
@@ -86,17 +91,12 @@ export default function Page({
     },
     ["id"],
     {
-      callback: () => {
-        mutate();
-        reload();
+      callback: async () => {
+        await mutate();
+        await reload();
       },
     },
   );
-  const {
-    matches,
-    isLoading: isLoadingMatches,
-    reload,
-  } = useMatches(player?.id);
 
   if (!isLoadingPlayer && !player) {
     return notFound();

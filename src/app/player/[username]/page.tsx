@@ -13,7 +13,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -29,6 +28,8 @@ import {
 import useMatches from "@/hooks/useMatches";
 import { supabase } from "@/lib/supabaseClient";
 import { cn } from "@/lib/utils";
+
+import Stat from "./components/stat";
 
 const renderLoadingRows = (count: number) => {
   return Array.from({ length: count }).map((_, index) => (
@@ -55,6 +56,13 @@ const renderLoadingRows = (count: number) => {
   ));
 };
 
+const calculateAverage = (items: any[], key: string) =>
+  items.length > 0
+    ? (items.reduce((acc, item) => acc + item[key], 0) / items.length).toFixed(
+        2,
+      )
+    : undefined;
+
 export default function Page({
   params: { username },
 }: {
@@ -65,7 +73,7 @@ export default function Page({
     mutate,
     isLoading: isLoadingPlayer,
   } = useQuery(
-    supabase.from("players").select().eq("nickname", username).single()
+    supabase.from("players").select().eq("nickname", username).single(),
   );
 
   useSubscription(
@@ -82,7 +90,7 @@ export default function Page({
         mutate();
         reload();
       },
-    }
+    },
   );
   const {
     matches,
@@ -124,59 +132,29 @@ export default function Page({
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader>Elo</CardHeader>
-              <CardContent className="text-2xl font-bold">
-                {isLoadingPlayer ? (
-                  <Skeleton className="h-8 w-16" />
-                ) : (
-                  player!.faceit_elo
-                )}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>Rating 2.0</CardHeader>
-              <CardContent className="text-2xl font-bold">
-                {isLoadingMatches ? (
-                  <Skeleton className="h-8 w-16" />
-                ) : (
-                  (
-                    matches.reduce((acc, item) => acc + item.rating, 0) /
-                    matches.length
-                  ).toFixed(2)
-                )}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>K/D</CardHeader>
-              <CardContent className="text-2xl font-bold">
-                {isLoadingMatches ? (
-                  <Skeleton className="h-8 w-16" />
-                ) : (
-                  (
-                    matches.reduce(
-                      (acc, item) => acc + item.kills / item.deaths,
-                      0
-                    ) / matches.length
-                  ).toFixed(2)
-                )}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>HS %</CardHeader>
-              <CardContent className="text-2xl font-bold">
-                {isLoadingMatches ? (
-                  <Skeleton className="h-8 w-16" />
-                ) : (
-                  (
-                    matches.reduce(
-                      (acc, item) => acc + item.headshot_precent,
-                      0
-                    ) / matches.length
-                  ).toFixed(2)
-                )}
-              </CardContent>
-            </Card>
+            <Stat
+              name="Elo"
+              value={player?.faceit_elo}
+              isLoading={isLoadingPlayer}
+            />
+            <Stat
+              name="Rating 2.0"
+              value={calculateAverage(matches, "rating")}
+              isLoading={isLoadingMatches}
+            />
+            <Stat
+              name="K/D"
+              value={calculateAverage(
+                matches.map((item) => ({ kd: item.kills / item.deaths })),
+                "kd",
+              )}
+              isLoading={isLoadingMatches}
+            />
+            <Stat
+              name="HS %"
+              value={calculateAverage(matches, "headshot_precent")}
+              isLoading={isLoadingMatches}
+            />
           </div>
         </CardContent>
       </Card>
@@ -218,7 +196,7 @@ export default function Page({
                             <TableCell>
                               {datefns.format(
                                 new Date(match.date),
-                                "dd/MM/yy hh:mm"
+                                "dd/MM/yy hh:mm",
                               )}
                             </TableCell>
 

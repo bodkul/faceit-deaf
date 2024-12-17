@@ -90,13 +90,10 @@ export type Database = {
       players: {
         Row: {
           avatar: string;
-          average_headshots_percent: number;
-          average_kd_ratio: number;
           created_at: string;
           faceit_elo: number;
           faceit_url: string;
           id: string;
-          matches: number;
           nickname: string;
           skill_level: number;
           steam_id_64: number;
@@ -104,13 +101,10 @@ export type Database = {
         };
         Insert: {
           avatar: string;
-          average_headshots_percent?: number;
-          average_kd_ratio?: number;
           created_at?: string;
           faceit_elo: number;
           faceit_url: string;
           id: string;
-          matches: number;
           nickname: string;
           skill_level: number;
           steam_id_64: number;
@@ -118,13 +112,10 @@ export type Database = {
         };
         Update: {
           avatar?: string;
-          average_headshots_percent?: number;
-          average_kd_ratio?: number;
           created_at?: string;
           faceit_elo?: number;
           faceit_url?: string;
           id?: string;
-          matches?: number;
           nickname?: string;
           skill_level?: number;
           steam_id_64?: number;

@@ -1,8 +1,8 @@
 import { logger } from "@/lib/logger";
 import { supabase } from "@/lib/supabaseClient";
-import type { PlayerWithStats } from "@/types/api";
+import type { Player } from "@/types/api";
 
-export async function upsertPlayers(players: PlayerWithStats[]) {
+export async function upsertPlayers(players: Player[]) {
   const { error } = await supabase.from("players").upsert(
     players.map((player) => ({
       id: player.player_id,
@@ -12,9 +12,6 @@ export async function upsertPlayers(players: PlayerWithStats[]) {
       faceit_elo: player.games.cs2.faceit_elo,
       faceit_url: player.faceit_url,
       steam_id_64: player.steam_id_64,
-      matches: player.lifetime.Matches,
-      average_headshots_percent: player.lifetime["Average Headshots %"],
-      average_kd_ratio: player.lifetime["Average K/D Ratio"],
     })),
   );
 

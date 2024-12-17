@@ -1,4 +1,4 @@
-import { fetchPlayersWithStats } from "@/lib/api/faceit";
+import { fetchPlayers } from "@/lib/api/faceit";
 import { insertEloHistory } from "@/lib/database/eloHistory";
 import { getPlayersByIds, upsertPlayers } from "@/lib/database/players";
 import type { Payload } from "@/types/match-status-event";
@@ -17,7 +17,7 @@ export const handleMatchFinished = async (payload: Payload) => {
     })),
   );
 
-  const players = await fetchPlayersWithStats(
+  const players = await fetchPlayers(
     existingPlayers.flatMap((player) => player.id),
   );
   await upsertPlayers(players);

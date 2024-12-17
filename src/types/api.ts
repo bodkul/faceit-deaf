@@ -11,14 +11,3 @@ export type Player = {
   steam_id_64: number;
   faceit_url: string;
 };
-
-export type PlayerStats = {
-  player_id: string;
-  lifetime: {
-    Matches: number;
-    "Average Headshots %": number;
-    "Average K/D Ratio": number;
-  };
-};
-
-export type PlayerWithStats = Player & PlayerStats;

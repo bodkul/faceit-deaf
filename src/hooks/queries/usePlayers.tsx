@@ -1,11 +1,11 @@
 "use client";
 
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
+import { subHours } from "date-fns";
 
-import { supabase } from "@/lib/supabaseClient";
-import { getDayAgo } from "@/lib/utils";
+import { supabase } from "@/lib/supabase/client";
 
-const dayAgo = getDayAgo();
+const dayAgo = subHours(new Date(), 24);
 
 export default function usePlayers() {
   return useQuery(

@@ -16,7 +16,7 @@ import {
 import usePlayers from "@/hooks/queries/usePlayers";
 import useEloHistorySubscription from "@/hooks/subscriptions/useEloHistorySubscription";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
-import type { Tables } from "@/types/database";
+import type { Tables } from "@/lib/supabase/types";
 
 type PlayerWithEloHistory = Tables<"players"> & {
   eloHistory: Tables<"eloHistory">[];
@@ -47,8 +47,8 @@ const PlayerRow = ({
   index: number;
 }) => {
   return (
-    <Link href={`/player/${player.nickname}`} legacyBehavior>
-      <TableRow key={player.id} className="h-[49px] cursor-pointer">
+    <Link key={player.id} href={`/player/${player.nickname}`} legacyBehavior>
+      <TableRow className="h-[49px] cursor-pointer">
         <TableCell>{index + 1}</TableCell>
         <TableCell className="flex items-center space-x-4">
           <Avatar className="h-8 w-8">

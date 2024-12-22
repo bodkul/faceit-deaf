@@ -1,19 +1,9 @@
 import { logger } from "@/lib/logger";
-import { supabase } from "@/lib/supabaseClient";
-import type { Player } from "@/types/api";
+import { supabase } from "@/lib/supabase/client";
+import type { TablesInsert } from "@/lib/supabase/types";
 
-export async function upsertPlayers(players: Player[]) {
-  const { error } = await supabase.from("players").upsert(
-    players.map((player) => ({
-      id: player.player_id,
-      avatar: player.avatar,
-      nickname: player.nickname,
-      skill_level: player.games.cs2.skill_level,
-      faceit_elo: player.games.cs2.faceit_elo,
-      faceit_url: player.faceit_url,
-      steam_id_64: player.steam_id_64,
-    })),
-  );
+export async function upsertPlayers(players: TablesInsert<"players">[]) {
+  const { error } = await supabase.from("players").upsert(players);
 
   if (error) {
     logger.error(`Failed to upsert players: ${error}`);

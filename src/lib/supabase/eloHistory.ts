@@ -1,6 +1,6 @@
 import { logger } from "@/lib/logger";
-import { supabase } from "@/lib/supabaseClient";
-import type { TablesInsert } from "@/types/database";
+import { supabase } from "@/lib/supabase/client";
+import type { TablesInsert } from "@/lib/supabase/types";
 
 export async function insertEloHistory(rows: TablesInsert<"eloHistory">[]) {
   const { error } = await supabase.from("eloHistory").insert(rows);

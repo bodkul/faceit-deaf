@@ -1,6 +1,6 @@
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 
 export default function useTwitchUsernames() {
   const { data } = useQuery(
@@ -12,7 +12,7 @@ export default function useTwitchUsernames() {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-    }
+    },
   );
 
   return data?.map((player) => player.twitch_username) || [];

@@ -1,6 +1,6 @@
 "use client";
 
-import * as datefns from "date-fns";
+import { formatRelative } from "date-fns";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -24,6 +24,7 @@ import {
 import usePlayer from "@/hooks/queries/usePlayer";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
 import useMatches from "@/hooks/useMatches";
+import { PlayerStats } from "@/lib/faceit/api";
 import { cn } from "@/lib/utils";
 
 import Stat from "./components/stat";
@@ -55,9 +56,9 @@ const renderLoadingRows = (count: number) => {
 
 const calculateAverage = (items: any[], key: string) =>
   items.length > 0
-    ? (items.reduce((acc, item) => acc + item[key], 0) / items.length).toFixed(
-        2,
-      )
+    ? (
+        items.reduce((acc, item) => acc + Number(item[key]), 0) / items.length
+      ).toFixed(2)
     : undefined;
 
 export default function Page({
@@ -70,15 +71,10 @@ export default function Page({
     mutate: mutatePlayer,
     isLoading: isLoadingPlayer,
   } = usePlayer(username);
-  const {
-    data: matches,
-    mutate: mutateMatches,
-    isLoading: isLoadingMatches,
-  } = useMatches(player?.id);
+  const { data: matches, isLoading: isLoadingMatches } = useMatches(player?.id);
 
   usePlayersSubscription(async () => {
     await mutatePlayer();
-    await mutateMatches();
   });
 
   if (!isLoadingPlayer && !player) {
@@ -169,7 +165,11 @@ export default function Page({
                       const rating = match.rating.toFixed(2);
 
                       return (
-                        <Link key={match.id} href={match.faceit} legacyBehavior>
+                        <Link
+                          key={match.id}
+                          href={`/match/${match.id}`}
+                          legacyBehavior
+                        >
                           <TableRow
                             className={cn("cursor-pointer !border-r-4", {
                               "border-r-red-600": match.result === 0,
@@ -177,10 +177,7 @@ export default function Page({
                             })}
                           >
                             <TableCell>
-                              {datefns.format(
-                                new Date(match.date),
-                                "dd/MM/yy hh:mm",
-                              )}
+                              {formatRelative(match.date, new Date())}
                             </TableCell>
 
                             <TableCell className="text-[#87a3bf] capitalize">

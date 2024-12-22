@@ -1,4 +1,4 @@
-import { FaceitIcon, SteamIcon } from "@/app/icons/platform-icons";
-import SkillLevelIcon from "@/app/icons/skill-level-icon";
+import { FaceitIcon, SteamIcon } from "./platform-icons";
+import SkillLevelIcon from "./skill-level-icon";
 
 export { FaceitIcon, SkillLevelIcon, SteamIcon };

@@ -1,33 +1,16 @@
 import useSWR from "swr";
 
 import { twitchConfig } from "@/lib/config";
+import { fetchTwitchAccessToken } from "@/lib/twitch/api";
+import twitchClient from "@/lib/twitch/client";
 
-interface TwitchStream {
-  id: string;
-  user_name: string;
-  game_id: number;
-  viewer_count: number;
-}
-
-interface TwitchAPIResponse {
-  data: TwitchStream[];
-}
-
-async function getAccessToken(): Promise<string> {
-  const response = await fetch("https://id.twitch.tv/oauth2/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      client_id: twitchConfig.CLIENT_ID,
-      client_secret: twitchConfig.CLIENT_SECRET,
-      grant_type: "client_credentials",
-    }),
-  });
-
-  const data = await response.json();
-  return data.access_token;
+interface TwitchStreamsResponse {
+  data: {
+    id: string;
+    user_name: string;
+    game_id: number;
+    viewer_count: number;
+  }[];
 }
 
 function buildTwitchAPIUrl(twitchUsernames: string[]) {
@@ -42,16 +25,15 @@ function buildTwitchAPIUrl(twitchUsernames: string[]) {
 }
 
 export async function fetcher(url: string) {
-  const token = await getAccessToken();
-  const response = await fetch(url, {
+  const token = await fetchTwitchAccessToken();
+  const response = await twitchClient.get<TwitchStreamsResponse>(url, {
     headers: {
-      "Client-ID": twitchConfig.CLIENT_ID,
+      "Client-ID": process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID!,
       Authorization: `Bearer ${token}`,
     },
   });
 
-  const data: TwitchAPIResponse = await response.json();
-  return data.data.filter(
+  return response.data.data.filter(
     (stream) => stream.game_id == twitchConfig.CS2_GAME_ID,
   );
 }

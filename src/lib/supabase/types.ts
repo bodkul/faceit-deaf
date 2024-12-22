@@ -87,6 +87,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      matches: {
+        Row: {
+          competition_id: string;
+          created_at: string;
+          game: string;
+          id: string;
+          organizer_id: string;
+          region: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          competition_id: string;
+          created_at: string;
+          game: string;
+          id: string;
+          organizer_id: string;
+          region: string;
+          updated_at: string;
+          version: number;
+        };
+        Update: {
+          competition_id?: string;
+          created_at?: string;
+          game?: string;
+          id?: string;
+          organizer_id?: string;
+          region?: string;
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
       players: {
         Row: {
           avatar: string;

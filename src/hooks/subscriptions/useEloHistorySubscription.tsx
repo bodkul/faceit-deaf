@@ -1,6 +1,6 @@
 import { useSubscription } from "@supabase-cache-helpers/postgrest-swr";
 
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 
 export default function useEloHistorySubscription(
   callback: () => Promise<void>,

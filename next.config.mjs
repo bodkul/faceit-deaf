@@ -20,6 +20,15 @@ const nextConfig = {
         hostname: "assets.faceit-cdn.net",
         pathname: "/avatars/**",
       },
+      {
+        protocol: "https",
+        hostname: "hltv.org",
+        pathname: "/img/static/maps/**",
+      },
+      {
+        protocol: "https",
+        hostname: "flagcdn.com",
+      },
     ],
   },
   logging: {

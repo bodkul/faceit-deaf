@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 
 class Logger {
   private supabase = supabase;
@@ -15,15 +15,15 @@ class Logger {
     });
   }
 
-  info(message: string, metadata?: object) {
+  info(message: string, metadata?: any) {
     this.log("info", message, metadata);
   }
 
-  warn(message: string, metadata?: object) {
+  warn(message: string, metadata?: any) {
     this.log("warn", message, metadata);
   }
 
-  error(message: string, metadata?: object) {
+  error(message: string, metadata?: any) {
     this.log("error", message, metadata);
   }
 }

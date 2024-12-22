@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { fetchFaceitData } from "@/lib/api/faceit";
+import {
+  fetchPlayerCS2Stats,
+  type PlayerCS2Stats,
+  type PlayerStats,
+} from "@/lib/faceit/api";
 
 const MAX_LIMIT = {
   MATCHES: 100,
@@ -17,55 +21,12 @@ interface ReqWithPagination {
   skip?: number;
 }
 
-interface Match {
-  Assists: string;
-  "Best Of": string;
-  "Competition Id": string;
-  "Created At": string;
-  Deaths: string;
-  "Final Score": string;
-  "First Half Score": string;
-  Game: string;
-  "Game Mode": string;
-  Headshots: string;
-  "Headshots %": string;
-  "K/D Ratio": string;
-  "K/R Ratio": string;
-  Kills: string;
-  MVPs: string;
-  Map: string;
-  "Match Id": string;
-  "Match Round": string;
-  Nickname: string;
-  "Overtime score": string;
-  "Penta Kills": string;
-  "Player Id": string;
-  "Quadro Kills": string;
-  Region: string;
-  Result: string;
-  Rounds: string;
-  Score: string;
-  "Second Half Score": string;
-  Team: string;
-  "Triple Kills": string;
-  "Updated At": string;
-  Winner: string;
-  ADR: string;
-  "Match Finished At": number;
-}
-
 type GetMatchesDto = Dto<
   ReqWithPagination & {
     playerId: string;
     to?: number;
   },
-  {
-    start: number;
-    end: number;
-    items: {
-      stats: Match;
-    }[];
-  }
+  PlayerCS2Stats
 >;
 
 async function getMatches(req: GetMatchesDto["req"]) {
@@ -80,14 +41,12 @@ async function getMatches(req: GetMatchesDto["req"]) {
     params.append("to", req.to.toString());
   }
 
-  const { items: matches } = await fetchFaceitData<GetMatchesDto["res"]>(
-    `/players/${req.playerId}/games/cs2/stats?${params.toString()}`,
-  );
+  const { items } = await fetchPlayerCS2Stats(req.playerId, params);
 
-  return matches.map((match) => match.stats);
+  return items.map((match) => match.stats);
 }
 
-export const calculateAverageStats = (matches: Match[]) => {
+export const calculateAverageStats = (matches: PlayerStats[]) => {
   const DMG_PER_KILL = 105;
   const TRADE_PERCENT = 0.2;
 
@@ -178,7 +137,7 @@ export const calculateAverageStats = (matches: Match[]) => {
 };
 
 function useMatches(playerId?: string) {
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [matches, setMatches] = useState<PlayerStats[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const loadMatches = useCallback(async () => {
@@ -188,7 +147,7 @@ function useMatches(playerId?: string) {
     }
 
     let counter = 0;
-    const loadedMatches: Match[] = [];
+    const loadedMatches: PlayerStats[] = [];
 
     do {
       const lastMatch = loadedMatches[loadedMatches.length - 1];

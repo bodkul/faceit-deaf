@@ -1,5 +1,4 @@
 import "./globals.css";
-import "@/config/dateConfig";
 
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";

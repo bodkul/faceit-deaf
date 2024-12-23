@@ -1,5 +1,7 @@
 "use client";
 
+import "@/config/dateConfig";
+
 import { formatRelative } from "date-fns";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -24,7 +26,6 @@ import {
 import usePlayer from "@/hooks/queries/usePlayer";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
 import useMatches from "@/hooks/useMatches";
-import { PlayerStats } from "@/lib/faceit/api";
 import { cn } from "@/lib/utils";
 
 import Stat from "./components/stat";

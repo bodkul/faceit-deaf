@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
     region: body.payload.region,
     version: body.payload.version,
     organizer_id: body.payload.organizer_id,
-    updated_at: body.payload.updated_at.toISOString(),
-    created_at: body.payload.created_at.toISOString(),
+    updated_at: body.payload.updated_at,
+    created_at: body.payload.created_at,
   });
 
   return NextResponse.json({ message: "OK" });

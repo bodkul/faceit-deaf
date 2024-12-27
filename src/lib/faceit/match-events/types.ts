@@ -21,10 +21,10 @@ export interface MatchPayload {
   region: string;
   version: number;
   organizer_id: string;
-  created_at: Date;
-  updated_at: Date;
-  started_at?: Date;
-  finished_at?: Date;
+  created_at: string;
+  updated_at: string;
+  started_at?: string;
+  finished_at?: string;
   teams: {
     id: string;
     name: string;

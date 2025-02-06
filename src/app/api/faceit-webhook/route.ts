@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { fetchPlayers } from "@/lib/faceit/api";
 import { type MatchStatusEvent } from "@/lib/faceit/match-events";
-import { logger } from "@/lib/logger";
 import { insertEloHistory } from "@/lib/supabase/eloHistory";
 import { upsertMatch } from "@/lib/supabase/matches";
 import { getPlayersByIds, upsertPlayers } from "@/lib/supabase/players";
@@ -10,7 +9,7 @@ import { getPlayersByIds, upsertPlayers } from "@/lib/supabase/players";
 export async function POST(req: NextRequest) {
   const body: MatchStatusEvent = await req.json();
 
-  logger.info("Match status event", body);
+  console.info("Match status event", body);
 
   const playerIds = body.payload.teams.flatMap((team) =>
     team.roster.map((player) => player.id),

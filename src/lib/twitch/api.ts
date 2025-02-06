@@ -1,5 +1,3 @@
-import { logger } from "@/lib/logger";
-
 import twitchClient from "./client";
 import type { TwitchTokenResponse } from "./types";
 
@@ -21,7 +19,7 @@ export async function fetchTwitchAccessToken(): Promise<string> {
 
     return response.data.access_token;
   } catch (error) {
-    logger.error("Failed to fetch Twitch access token:", error);
+    console.error("Failed to fetch Twitch access token:", error);
     throw new Error("Unable to fetch Twitch access token");
   }
 }

@@ -1,7 +1,5 @@
 import axios from "axios";
 
-import { logger } from "@/lib/logger";
-
 const faceitClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL!,
   headers: {
@@ -13,13 +11,15 @@ faceitClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      logger.error(
+      console.error(
         `Error fetching data from ${error.config.url}: ${error.response.status} ${error.response.statusText}`,
       );
     } else if (error.request) {
-      logger.error(`Error in request to ${error.config.url}: ${error.message}`);
+      console.error(
+        `Error in request to ${error.config.url}: ${error.message}`,
+      );
     } else {
-      logger.error(`Error: ${error.message}`);
+      console.error(`Error: ${error.message}`);
     }
     return Promise.reject(error);
   },

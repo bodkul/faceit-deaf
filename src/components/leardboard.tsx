@@ -16,7 +16,7 @@ import {
 import usePlayers from "@/hooks/queries/usePlayers";
 import useEloHistorySubscription from "@/hooks/subscriptions/useEloHistorySubscription";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
-import type { Tables } from "@/lib/supabase/types";
+import { type Tables } from "@/lib/supabase";
 
 type PlayerWithEloHistory = Tables<"players"> & {
   eloHistory: Tables<"eloHistory">[];

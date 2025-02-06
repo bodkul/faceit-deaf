@@ -1,6 +1,6 @@
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 
-import { supabase } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase";
 
 export default function useTwitchUsernames() {
   const { data } = useQuery(

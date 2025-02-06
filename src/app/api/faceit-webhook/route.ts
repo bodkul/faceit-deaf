@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { fetchPlayers } from "@/lib/faceit/api";
 import { type MatchStatusEvent } from "@/lib/faceit/match-events";
-import { insertEloHistory } from "@/lib/supabase/eloHistory";
-import { upsertMatch } from "@/lib/supabase/matches";
-import { getPlayersByIds, upsertPlayers } from "@/lib/supabase/players";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   const body: MatchStatusEvent = await req.json();
@@ -15,41 +13,62 @@ export async function POST(req: NextRequest) {
     team.roster.map((player) => player.id),
   );
 
-  const existingPlayers = await getPlayersByIds(playerIds);
+  const { data: existingPlayers, error: existingPlayersError } = await supabase
+    .from("players")
+    .select("id, faceit_elo")
+    .in("id", playerIds);
 
-  await insertEloHistory(
-    existingPlayers.flatMap((player) => ({
-      player_id: player.id,
-      player_elo: player.faceit_elo,
-    })),
-  );
+  if (existingPlayersError) {
+    console.error(`Error fetching players by IDs: ${existingPlayersError}`);
+  }
 
-  const players = await fetchPlayers(
-    existingPlayers.flatMap((player) => player.id),
-  );
+  if (existingPlayers) {
+    const { error: eloHistoryError } = await supabase.from("eloHistory").insert(
+      existingPlayers.flatMap((player) => ({
+        player_id: player.id,
+        player_elo: player.faceit_elo,
+      })),
+    );
 
-  await upsertPlayers(
-    players.map((player) => ({
-      id: player.player_id,
-      avatar: player.avatar,
-      nickname: player.nickname,
-      skill_level: player.games.cs2.skill_level,
-      faceit_elo: player.games.cs2.faceit_elo,
-      faceit_url: player.faceit_url,
-      steam_id_64: player.steam_id_64,
-    })),
-  );
+    if (eloHistoryError) {
+      console.error(`Failed to insert elo history: ${eloHistoryError}`);
+    }
 
-  await upsertMatch({
-    id: body.payload.id.replace(/^1-/, ""),
-    game: body.payload.game,
-    competition_id: body.payload.entity.id,
-    region: body.payload.region,
-    version: body.payload.version,
-    organizer_id: body.payload.organizer_id,
-    updated_at: body.payload.updated_at,
-    created_at: body.payload.created_at,
-  });
+    const players = await fetchPlayers(
+      existingPlayers.flatMap((player) => player.id),
+    );
+
+    const { error: playersError } = await supabase.from("players").upsert(
+      players.map((player) => ({
+        id: player.player_id,
+        avatar: player.avatar,
+        nickname: player.nickname,
+        skill_level: player.games.cs2.skill_level,
+        faceit_elo: player.games.cs2.faceit_elo,
+        faceit_url: player.faceit_url,
+        steam_id_64: player.steam_id_64,
+      })),
+    );
+
+    if (playersError) {
+      console.error("Failed to upsert players", playersError);
+    }
+
+    const { error: matchError } = await supabase.from("matches").upsert({
+      id: body.payload.id.replace(/^1-/, ""),
+      game: body.payload.game,
+      competition_id: body.payload.entity.id,
+      region: body.payload.region,
+      version: body.payload.version,
+      organizer_id: body.payload.organizer_id,
+      updated_at: body.payload.updated_at,
+      created_at: body.payload.created_at,
+    });
+
+    if (matchError) {
+      console.info("Error upserting match into matches table", matchError);
+    }
+  }
 
   return NextResponse.json({ message: "OK" });
 }

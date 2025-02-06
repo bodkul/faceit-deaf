@@ -3,7 +3,7 @@
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import { subHours } from "date-fns";
 
-import { supabase } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase";
 
 const dayAgo = subHours(new Date(), 24);
 

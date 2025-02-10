@@ -53,21 +53,6 @@ export async function POST(req: NextRequest) {
     if (playersError) {
       console.error("Failed to upsert players", playersError);
     }
-
-    const { error: matchError } = await supabase.from("matches").upsert({
-      id: body.payload.id.replace(/^1-/, ""),
-      game: body.payload.game,
-      competition_id: body.payload.entity.id,
-      region: body.payload.region,
-      version: body.payload.version,
-      organizer_id: body.payload.organizer_id,
-      updated_at: body.payload.updated_at,
-      created_at: body.payload.created_at,
-    });
-
-    if (matchError) {
-      console.info("Error upserting match into matches table", matchError);
-    }
   }
 
   return NextResponse.json({ message: "OK" });

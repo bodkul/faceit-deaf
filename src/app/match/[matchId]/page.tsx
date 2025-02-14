@@ -81,7 +81,7 @@ export default function Page({
 
         <div className="flex justify-between p-6">
           <div className="w-1/3 flex items-center justify-center space-x-5 overflow-hidden">
-            <Avatar className="w-16 h-16">
+            <Avatar className="size-16">
               <AvatarImage src={match.team1.avatar} alt="First team's avatar" />
               <AvatarFallback></AvatarFallback>
             </Avatar>
@@ -93,8 +93,8 @@ export default function Page({
 
               <span
                 className={cn("font-bold text-3xl", {
-                  "!text-green-600": match.winner.team1,
-                  "!text-red-600": match.winner.team2,
+                  "text-green-500": match.winner.team1,
+                  "text-red-500": match.winner.team2,
                 })}
               >
                 {score.team1?.score}
@@ -110,7 +110,7 @@ export default function Page({
               <Image
                 src={match.server.image.sm || ""}
                 alt="Server location country"
-                className="w-auto h-auto rounded"
+                className="size-auto rounded"
                 width={60}
                 height={30}
               />
@@ -130,14 +130,14 @@ export default function Page({
 
               <span
                 className={cn("font-bold text-3xl", {
-                  "!text-green-600": match.winner.team2,
-                  "!text-red-600": match.winner.team1,
+                  "text-green-500": match.winner.team2,
+                  "text-red-500": match.winner.team1,
                 })}
               >
                 {score.team2?.score}
               </span>
             </div>
-            <Avatar className="w-16 h-16">
+            <Avatar className="size-16">
               <AvatarImage
                 src={match.team2.avatar}
                 alt="Second team's avatar"
@@ -158,7 +158,7 @@ export default function Page({
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[52.5%] flex items-center space-x-4">
-                      <Avatar className="w-8 h-8">
+                      <Avatar className="size-8">
                         <AvatarImage
                           src={match.team1.avatar}
                           alt="First team's avatar"
@@ -206,9 +206,9 @@ export default function Page({
 
                         <TableCell
                           className={cn("w-[7.5%]", {
-                            "!text-green-600":
+                            "text-green-500":
                               player.stats.kills > player.stats.deaths,
-                            "!text-red-600":
+                            "text-red-500":
                               player.stats.kills < player.stats.deaths,
                           })}
                         >
@@ -242,7 +242,7 @@ export default function Page({
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[52.5%] flex items-center space-x-4">
-                      <Avatar className="w-8 h-8">
+                      <Avatar className="size-8">
                         <AvatarImage
                           src={match.team2.avatar}
                           alt="Second team's avatar"
@@ -290,9 +290,9 @@ export default function Page({
 
                         <TableCell
                           className={cn("w-[7.5%]", {
-                            "!text-green-600":
+                            "text-green-500":
                               player.stats.kills > player.stats.deaths,
-                            "!text-red-600":
+                            "text-red-500":
                               player.stats.kills < player.stats.deaths,
                           })}
                         >

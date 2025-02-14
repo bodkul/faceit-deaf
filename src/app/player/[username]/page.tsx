@@ -89,12 +89,12 @@ export default function Page({
           <div className="flex items-center space-x-4">
             {isLoadingPlayer ? (
               <>
-                <Skeleton className="h-20 w-20 rounded-full" />
+                <Skeleton className="size-20 rounded-full" />
                 <Skeleton className="h-6 w-40" />
               </>
             ) : (
               <>
-                <Avatar className="h-20 w-20">
+                <Avatar className="size-20">
                   <AvatarImage
                     src={player!.avatar}
                     alt={`Avatar of ${player!.nickname}`}
@@ -174,8 +174,8 @@ export default function Page({
                         >
                           <TableRow
                             className={cn("cursor-pointer !border-r-4", {
-                              "border-r-red-600": match.result === 0,
-                              "border-r-green-600": match.result === 1,
+                              "border-r-red-500": match.result === 0,
+                              "border-r-green-500": match.result === 1,
                             })}
                           >
                             <TableCell>
@@ -194,9 +194,9 @@ export default function Page({
 
                             <TableCell
                               className={cn("font-semibold", {
-                                "!text-red-600": +kd < 0.95,
-                                "!text-green-600": +kd > 1.05,
-                                "!text-[#929a9e]": +kd >= 0.95 && +kd <= 1.05,
+                                "text-red-500": +kd < 0.95,
+                                "text-green-500": +kd > 1.05,
+                                "text-[#929a9e]": +kd >= 0.95 && +kd <= 1.05,
                               })}
                             >
                               {kd}
@@ -204,9 +204,9 @@ export default function Page({
 
                             <TableCell
                               className={cn("font-semibold", {
-                                "!text-red-600": +rating < 0.95,
-                                "!text-green-600": +rating > 1.05,
-                                "!text-[#929a9e]":
+                                "text-red-500": +rating < 0.95,
+                                "text-green-500": +rating > 1.05,
+                                "text-[#929a9e]":
                                   +rating >= 0.95 && +rating <= 1.05,
                               })}
                             >

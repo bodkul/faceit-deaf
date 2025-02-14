@@ -56,7 +56,7 @@ const PlayerRow = ({
       <TableRow className="h-[49px] cursor-pointer">
         <TableCell>{index + 1}</TableCell>
         <TableCell className="flex items-center space-x-4">
-          <Avatar className="h-8 w-8">
+          <Avatar className="size-8">
             <AvatarImage
               src={player.avatar}
               alt={`Avatar of ${player.nickname}`}
@@ -66,7 +66,7 @@ const PlayerRow = ({
           <div className="font-medium">{player.nickname}</div>
         </TableCell>
         <TableCell>
-          <SkillLevelIcon level={player.skill_level} className="h-6 w-6" />
+          <SkillLevelIcon level={player.skill_level} className="size-6" />
         </TableCell>
         <TableCell>
           {player.faceit_elo}
@@ -86,7 +86,7 @@ const renderLoadingRows = (count: number) => {
         <Skeleton className="h-4 w-24" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-6 w-6 rounded-full" />
+        <Skeleton className="size-6 rounded-full" />
       </TableCell>
       <TableCell>
         <Skeleton className="h-4 w-12" />

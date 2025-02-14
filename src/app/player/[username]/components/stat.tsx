@@ -32,10 +32,10 @@ export default function Stat({
           <Progress
             value={progressPercentage}
             className={cn({
-              "[&>*]:bg-green-600": progressPercentage >= 68,
-              "[&>*]:bg-yellow-600":
+              "*:bg-green-600": progressPercentage >= 68,
+              "*:bg-yellow-600":
                 progressPercentage >= 34 && progressPercentage <= 67,
-              "[&>*]:bg-red-600": progressPercentage <= 33,
+              "*:bg-red-600": progressPercentage <= 33,
             })}
           />
         </CardFooter>

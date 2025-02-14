@@ -1,18 +1,12 @@
 import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/react";
+import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import Link from "next/link";
 import { ThemeProvider } from "next-themes";
 
 import { FaceitIcon } from "./icons";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
 
 export const metadata: Metadata = {
   title: "faceitdeaf",
@@ -26,17 +20,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans ${geistSans.variable} antialiased`}>
+      <body className={`font-sans ${GeistSans.className} antialiased`}>
         <ThemeProvider attribute="class" enableSystem enableColorScheme>
-          <div className="flex-col md:flex max-w-screen-xl mx-auto border-x border-b">
-            <div className="border-b sticky top-0 z-10 border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
+          <div className="flex-col md:flex max-w-(--breakpoint-xl) mx-auto border-x border-b">
+            <div className="border-b sticky top-0 z-10 border-border/40 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60 dark:border-border">
               <div className="flex h-14 items-center px-4">
                 <div className="flex mr-4">
                   <Link
                     className="flex mr-4 items-center gap-2 lg:mr-6"
                     href="/"
                   >
-                    <FaceitIcon className="w-6 h-6 text-[#ff5500] fill-[#ff5500]" />
+                    <FaceitIcon className="size-6 text-[#ff5500] fill-[#ff5500]" />
                     <span className="inline-block font-bold">
                       {metadata.title!.toString()}
                     </span>

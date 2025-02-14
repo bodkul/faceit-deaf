@@ -6,8 +6,6 @@ import localFont from "next/font/local";
 import Link from "next/link";
 import { ThemeProvider } from "next-themes";
 
-import { Toaster } from "@/components/ui/sonner";
-
 import { FaceitIcon } from "./icons";
 
 const geistSans = localFont({
@@ -48,7 +46,6 @@ export default function RootLayout({
             </div>
             <main className="flex-1 space-y-4 p-8 pt-6">{children}</main>
           </div>
-          <Toaster />
         </ThemeProvider>
         <Analytics />
       </body>

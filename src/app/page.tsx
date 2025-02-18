@@ -1,4 +1,4 @@
-import Leardboard from "@/components/leardboard";
+import { Leardboard } from "@/components/leardboard";
 
 export default function Page() {
   return (

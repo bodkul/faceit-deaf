@@ -61,7 +61,9 @@ export async function handleMatchStatusEvent(body: MatchStatusEvent) {
     await upsertMatchTeamPlayers(
       team.roster.map((player) => ({
         match_team_id: resTeam.id,
-        player_id_nullable: player.id,
+        player_id_nullable: existingPlayerIds.includes(player.id)
+          ? player.id
+          : null,
         player_id_mandatory: player.id,
         nickname: player.nickname,
         avatar: player.avatar,

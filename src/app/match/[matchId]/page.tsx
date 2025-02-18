@@ -192,10 +192,7 @@ export default function Page({
                             height={16}
                           />
 
-                          <Link
-                            href={`/player/${player.username}`}
-                            prefetch={false}
-                          >
+                          <Link href={`/player/${player.username}`}>
                             {player.username}
                           </Link>
                         </TableCell>
@@ -276,10 +273,7 @@ export default function Page({
                             height={16}
                           />
 
-                          <Link
-                            href={`/player/${player.username}`}
-                            prefetch={false}
-                          >
+                          <Link href={`/player/${player.username}`}>
                             {player.username}
                           </Link>
                         </TableCell>

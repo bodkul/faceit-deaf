@@ -15,12 +15,7 @@ export function PlayerRow({
   index: number;
 }) {
   return (
-    <Link
-      key={player.id}
-      href={`/player/${player.nickname}`}
-      prefetch={false}
-      legacyBehavior
-    >
+    <Link key={player.id} href={`/player/${player.nickname}`} legacyBehavior>
       <TableRow className="h-[49px] cursor-pointer">
         <TableCell>{index + 1}</TableCell>
         <TableCell>

@@ -169,7 +169,6 @@ export default function Page({
                         <Link
                           key={match.id}
                           href={`/match/${match.id}`}
-                          prefetch={false}
                           legacyBehavior
                         >
                           <TableRow

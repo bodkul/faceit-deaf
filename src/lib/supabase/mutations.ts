@@ -41,7 +41,7 @@ export async function upsertMatch(match: TablesInsert<"matches">) {
 export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
   const { data, error } = await supabase
     .from("match_teams")
-    .upsert(team)
+    .upsert(team, { onConflict: "match_id, team_id" })
     .select("id")
     .single();
 
@@ -54,7 +54,7 @@ export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
 }
 
 export async function upsertMatchTeamPlayers(
-  players: TablesInsert<"match_team_players">[],
+  players: TablesInsert<"match_team_players">[]
 ) {
   const { error } = await supabase.from("match_team_players").upsert(players);
   if (error) {

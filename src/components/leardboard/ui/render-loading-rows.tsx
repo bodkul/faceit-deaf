@@ -1,10 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
 
-export function renderLoadingRows(count: number) {
+export function renderLoadingRows(count: number, offset: number) {
   return Array.from({ length: count }).map((_, index) => (
     <TableRow key={index} className="h-[49px]">
-      <TableCell>{index + 1}</TableCell>
+      <TableCell>{offset + index + 1}</TableCell>
       <TableCell>
         <div className="flex items-center space-x-4">
           <Skeleton className="h-8 w-8 rounded-full" />

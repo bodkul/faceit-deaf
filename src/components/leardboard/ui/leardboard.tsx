@@ -26,6 +26,8 @@ import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription
 import { usePlayers, usePlayersCount } from "../queries";
 import { PlayerRow, renderLoadingRows } from ".";
 
+const PAGE_SIZE = 20;
+
 export function Leardboard() {
   const { count } = usePlayersCount();
   const {
@@ -50,6 +52,8 @@ export function Leardboard() {
     await mutate();
   });
 
+  const offset = (indexPage - 1) * PAGE_SIZE;
+
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
@@ -64,9 +68,13 @@ export function Leardboard() {
           </TableHeader>
           <TableBody>
             {isLoading
-              ? renderLoadingRows(20)
+              ? renderLoadingRows(PAGE_SIZE, offset)
               : players.map((player, index) => (
-                  <PlayerRow key={player.id} player={player} index={index} />
+                  <PlayerRow
+                    key={player.id}
+                    player={player}
+                    index={offset + index}
+                  />
                 ))}
           </TableBody>
         </Table>

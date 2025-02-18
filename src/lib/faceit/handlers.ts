@@ -47,6 +47,8 @@ export async function handleMatchStatusEvent(body: MatchStatusEvent) {
     region: body.payload.region,
     game: body.payload.game,
     competition_id: body.payload.entity.id,
+    started_at: body.payload.started_at,
+    finished_at: body.payload.finished_at,
   });
 
   for (const team of body.payload.teams) {

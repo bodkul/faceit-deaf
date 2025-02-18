@@ -54,7 +54,7 @@ export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
 }
 
 export async function upsertMatchTeamPlayers(
-  players: TablesInsert<"match_team_players">[]
+  players: TablesInsert<"match_team_players">[],
 ) {
   const { error } = await supabase.from("match_team_players").upsert(players);
   if (error) {

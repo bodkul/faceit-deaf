@@ -9,16 +9,13 @@ import {
   upsertPlayers,
 } from "@/lib/supabase/mutations";
 
-export async function handleMatchStatusEvent(body: MatchStatusEvent) {
-  console.info("Match status event", body);
-
+async function handleMatchStatusFinished(body: MatchStatusEvent) {
   const matchId = body.payload.id.replace(/^1-/, "");
-
   const playerIds = body.payload.teams.flatMap((team) =>
     team.roster.map((player) => player.id),
   );
-  const existingPlayers = await getExistingPlayers(playerIds);
 
+  const existingPlayers = await getExistingPlayers(playerIds);
   await addEloHistory(
     existingPlayers.map((player) => ({
       player_id: player.id,
@@ -76,5 +73,15 @@ export async function handleMatchStatusEvent(body: MatchStatusEvent) {
         anticheat_required: player.anticheat_required,
       })),
     );
+  }
+}
+
+export async function handleMatchStatusEvent(body: MatchStatusEvent) {
+  console.info("Received match status event", body);
+
+  switch (body.event) {
+    case "match_status_finished":
+      await handleMatchStatusFinished(body);
+      break;
   }
 }

@@ -67,7 +67,7 @@ export type Database = {
         Row: {
           anticheat_required: boolean | null;
           avatar: string | null;
-          game_player_id: number | null;
+          game_player_id: string | null;
           game_player_name: string | null;
           game_skill_level: number | null;
           id: string;
@@ -81,7 +81,7 @@ export type Database = {
         Insert: {
           anticheat_required?: boolean | null;
           avatar?: string | null;
-          game_player_id?: number | null;
+          game_player_id?: string | null;
           game_player_name?: string | null;
           game_skill_level?: number | null;
           id?: string;
@@ -95,7 +95,7 @@ export type Database = {
         Update: {
           anticheat_required?: boolean | null;
           avatar?: string | null;
-          game_player_id?: number | null;
+          game_player_id?: string | null;
           game_player_name?: string | null;
           game_skill_level?: number | null;
           id?: string;
@@ -245,7 +245,7 @@ export type Database = {
           id: string;
           nickname: string;
           skill_level: number;
-          steam_id_64: number;
+          steam_id_64: string;
           twitch_username: string | null;
         };
         Insert: {
@@ -256,7 +256,7 @@ export type Database = {
           id: string;
           nickname: string;
           skill_level: number;
-          steam_id_64: number;
+          steam_id_64: string;
           twitch_username?: string | null;
         };
         Update: {
@@ -267,7 +267,7 @@ export type Database = {
           id?: string;
           nickname?: string;
           skill_level?: number;
-          steam_id_64?: number;
+          steam_id_64?: string;
           twitch_username?: string | null;
         };
         Relationships: [];

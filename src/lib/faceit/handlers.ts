@@ -67,7 +67,7 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
         nickname: player.nickname,
         avatar: player.avatar,
         membership: player.membership,
-        game_player_id: parseInt(player.game_id),
+        game_player_id: player.game_id,
         game_player_name: player.game_name,
         game_skill_level: player.game_skill_level,
         anticheat_required: player.anticheat_required,

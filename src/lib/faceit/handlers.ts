@@ -1,5 +1,5 @@
 import { fetchPlayers } from "@/lib/faceit/api";
-import { type MatchStatusEvent } from "@/lib/faceit/match-events";
+import type { MatchPayload, MatchStatusEvent } from "@/lib/faceit/match-events";
 import {
   addEloHistory,
   getExistingPlayers,
@@ -9,9 +9,9 @@ import {
   upsertPlayers,
 } from "@/lib/supabase/mutations";
 
-async function handleMatchStatusFinished(body: MatchStatusEvent) {
-  const matchId = body.payload.id.replace(/^1-/, "");
-  const playerIds = body.payload.teams.flatMap((team) =>
+async function handleMatchStatusFinished(payload: MatchPayload) {
+  const matchId = payload.id.replace(/^1-/, "");
+  const playerIds = payload.teams.flatMap((team) =>
     team.roster.map((player) => player.id),
   );
 
@@ -40,15 +40,15 @@ async function handleMatchStatusFinished(body: MatchStatusEvent) {
 
   await upsertMatch({
     id: matchId,
-    organizer_id: body.payload.organizer_id,
-    region: body.payload.region,
-    game: body.payload.game,
-    competition_id: body.payload.entity.id,
-    started_at: body.payload.started_at,
-    finished_at: body.payload.finished_at,
+    organizer_id: payload.organizer_id,
+    region: payload.region,
+    game: payload.game,
+    competition_id: payload.entity.id,
+    started_at: payload.started_at,
+    finished_at: payload.finished_at,
   });
 
-  for (const team of body.payload.teams) {
+  for (const team of payload.teams) {
     const resTeam = await upsertMatchTeam({
       match_id: matchId,
       team_id: team.id,
@@ -87,7 +87,7 @@ export async function handleMatchStatusEvent(body: MatchStatusEvent) {
 
   switch (body.event) {
     case "match_status_finished":
-      await handleMatchStatusFinished(body);
+      await handleMatchStatusFinished(body.payload);
       break;
   }
 }

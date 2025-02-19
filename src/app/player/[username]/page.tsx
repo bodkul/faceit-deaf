@@ -6,6 +6,7 @@ import { formatRelative } from "date-fns";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { FaceitIcon, SteamIcon, TwitchIcon } from "@/app/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -101,10 +102,41 @@ export default function Page({
                   />
                   <AvatarFallback></AvatarFallback>
                 </Avatar>
-                <div>
+                <div className="flex flex-col space-y-3">
                   <p className="text-2xl font-medium leading-none">
                     {player!.nickname}
                   </p>
+                  <div className="flex flex-row space-x-1">
+                    <div className="flex rounded-md border size-6">
+                      <Link
+                        className="m-auto"
+                        href={player!.faceit_url.replace("{lang}", "en")}
+                        target="_blank"
+                      >
+                        <FaceitIcon className="size-4" />
+                      </Link>
+                    </div>
+                    <div className="flex rounded-md border size-6">
+                      <Link
+                        className="m-auto"
+                        href={`https://steamcommunity.com/profiles/${player!.steam_id_64}`}
+                        target="_blank"
+                      >
+                        <SteamIcon className="size-4" />
+                      </Link>
+                    </div>
+                    {player!.twitch_username && (
+                      <div className="flex rounded-md border size-6">
+                        <Link
+                          className="m-auto"
+                          href={`https://www.twitch.tv/${player!.twitch_username}`}
+                          target="_blank"
+                        >
+                          <TwitchIcon className="size-4" />
+                        </Link>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </>
             )}

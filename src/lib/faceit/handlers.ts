@@ -77,7 +77,7 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
 }
 
 export async function handleMatchStatusEvent(body: MatchStatusEvent) {
-  console.info("Received match status event", body);
+  console.info(`Handling match status event: ${body.event}`, body.payload);
 
   const isTargetOrganizer =
     body.payload.organizer_id === "faceit" &&

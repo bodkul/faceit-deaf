@@ -91,7 +91,13 @@ export default function Page({
             {isLoadingPlayer ? (
               <>
                 <Skeleton className="size-20 rounded-full" />
-                <Skeleton className="h-6 w-40" />
+                <div className="flex flex-col space-y-3">
+                  <Skeleton className="h-6 w-40" />
+                  <div className="flex flex-row space-x-1">
+                    <Skeleton className="size-6" />
+                    <Skeleton className="size-6" />
+                  </div>
+                </div>
               </>
             ) : (
               <>

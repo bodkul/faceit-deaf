@@ -79,6 +79,12 @@ async function handleMatchStatusFinished(body: MatchStatusEvent) {
 export async function handleMatchStatusEvent(body: MatchStatusEvent) {
   console.info("Received match status event", body);
 
+  const isTargetOrganizer =
+    body.payload.organizer_id === "faceit" &&
+    body.payload.entity.id === "f4148ddd-bce8-41b8-9131-ee83afcdd6dd";
+
+  if (!isTargetOrganizer) return;
+
   switch (body.event) {
     case "match_status_finished":
       await handleMatchStatusFinished(body);

@@ -1,4 +1,4 @@
-import { fetchPlayers } from "@/lib/faceit/api";
+import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload, MatchStatusEvent } from "@/lib/faceit/match-events";
 import {
   addEloHistory,
@@ -74,6 +74,9 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
       })),
     );
   }
+
+  console.log(await fetchMatch(payload.id));
+  console.log(await fetchMatchStats(payload.id));
 }
 
 export async function handleMatchStatusEvent(body: MatchStatusEvent) {

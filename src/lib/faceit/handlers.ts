@@ -1,5 +1,8 @@
+import { fromUnixTime } from "date-fns";
+
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload, MatchStatusEvent } from "@/lib/faceit/match-events";
+import { Json } from "@/lib/supabase";
 import {
   addEloHistory,
   getExistingPlayers,
@@ -16,6 +19,8 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
   );
 
   const existingPlayers = await getExistingPlayers(playerIds);
+  const existingPlayerIds = existingPlayers.map((player) => player.id);
+
   await addEloHistory(
     existingPlayers.map((player) => ({
       player_id: player.id,
@@ -23,7 +28,6 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
     })),
   );
 
-  const existingPlayerIds = existingPlayers.map((player) => player.id);
   const players = await fetchPlayers(existingPlayerIds);
 
   await upsertPlayers(
@@ -38,45 +42,70 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
     })),
   );
 
+  const match = await fetchMatch(payload.id);
+  console.log(match);
+
+  const matchStats = await fetchMatchStats(payload.id);
+  console.log(matchStats);
+
+  const round = matchStats.rounds[0];
+
   await upsertMatch({
     id: matchId,
-    organizer_id: payload.organizer_id,
-    region: payload.region,
-    game: payload.game,
-    competition_id: payload.entity.id,
-    started_at: payload.started_at,
-    finished_at: payload.finished_at,
+    game: match.game,
+    region: match.region,
+    competition_id: match.competition_id,
+    organizer_id: match.organizer_id,
+    location_pick: match.voting.location?.pick[0],
+    map_pick: match.voting.map?.pick[0],
+    started_at: fromUnixTime(Number(match.started_at)).toISOString(),
+    finished_at: fromUnixTime(Number(match.finished_at)).toISOString(),
+    demo_url: match.demo_url[0],
+    status: match.status,
+    faceit_url: match.faceit_url,
+    round_score: round.round_stats.Score,
   });
 
   for (const team of payload.teams) {
+    const roundTeam = round.teams.find((rt) => rt.team_id === team.id);
+    const stats = (roundTeam?.team_stats as Record<string, string>) ?? {};
+
     const resTeam = await upsertMatchTeam({
       match_id: matchId,
       team_id: team.id,
       name: team.name,
       avatar: team.avatar,
       leader: team.leader_id,
+      first_half_score: Number(stats["First Half Score"]) || undefined,
+      second_half_score: Number(stats["Second Half Score"]) || undefined,
+      overtime_score: Number(stats["Overtime score"]) || undefined,
+      final_score: Number(stats["Final Score"]) || undefined,
+      team_win: stats["Team Win"] === "1" || undefined,
+      team_headshots: Number(stats["Team Headshots"]) || undefined,
     });
 
     await upsertMatchTeamPlayers(
-      team.roster.map((player) => ({
-        match_team_id: resTeam.id,
-        player_id_nullable: existingPlayerIds.includes(player.id)
-          ? player.id
-          : null,
-        player_id_mandatory: player.id,
-        nickname: player.nickname,
-        avatar: player.avatar,
-        membership: player.membership,
-        game_player_id: player.game_id,
-        game_player_name: player.game_name,
-        game_skill_level: player.game_skill_level,
-        anticheat_required: player.anticheat_required,
-      })),
+      team.roster.map((player) => {
+        const qwe = roundTeam?.players.find((p) => p.player_id === player.id);
+
+        return {
+          match_team_id: resTeam.id,
+          player_id_nullable: existingPlayerIds.includes(player.id)
+            ? player.id
+            : null,
+          player_id_mandatory: player.id,
+          nickname: player.nickname,
+          avatar: player.avatar,
+          membership: player.membership,
+          game_player_id: player.game_id,
+          game_player_name: player.game_name,
+          game_skill_level: player.game_skill_level,
+          anticheat_required: player.anticheat_required,
+          player_stats: qwe?.player_stats as unknown as Json,
+        };
+      }),
     );
   }
-
-  console.log(await fetchMatch(payload.id));
-  console.log(await fetchMatchStats(payload.id));
 }
 
 export async function handleMatchStatusEvent(body: MatchStatusEvent) {

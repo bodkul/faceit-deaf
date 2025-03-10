@@ -56,7 +56,9 @@ export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
 export async function upsertMatchTeamPlayers(
   players: TablesInsert<"match_team_players">[],
 ) {
-  const { error } = await supabase.from("match_team_players").upsert(players);
+  const { error } = await supabase
+    .from("match_team_players")
+    .upsert(players, { onConflict: "match_team_id, player_id_mandatory" });
   if (error) {
     console.error("Failed to upsert match team players", error);
     throw error;

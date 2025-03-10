@@ -76,12 +76,12 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
       name: team.name,
       avatar: team.avatar,
       leader: team.leader_id,
-      first_half_score: Number(stats["First Half Score"]) || undefined,
-      second_half_score: Number(stats["Second Half Score"]) || undefined,
-      overtime_score: Number(stats["Overtime score"]) || undefined,
-      final_score: Number(stats["Final Score"]) || undefined,
-      team_win: stats["Team Win"] === "1" || undefined,
-      team_headshots: Number(stats["Team Headshots"]) || undefined,
+      first_half_score: Number(stats["First Half Score"]),
+      second_half_score: Number(stats["Second Half Score"]),
+      overtime_score: Number(stats["Overtime score"]),
+      final_score: Number(stats["Final Score"]),
+      team_win: stats["Team Win"] === "1",
+      team_headshots: Number(stats["Team Headshots"]),
     });
 
     await upsertMatchTeamPlayers(
@@ -101,7 +101,7 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
           game_player_name: player.game_name,
           game_skill_level: player.game_skill_level,
           anticheat_required: player.anticheat_required,
-          player_stats: qwe?.player_stats as unknown as Json,
+          player_stats: qwe?.player_stats,
         };
       }),
     );

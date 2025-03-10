@@ -6,6 +6,43 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+type PlayerStats = {
+  Assists: string;
+  "Best Of": string;
+  "Competition Id": string;
+  "Created At": string;
+  Deaths: string;
+  "Final Score": string;
+  "First Half Score": string;
+  Game: string;
+  "Game Mode": string;
+  Headshots: string;
+  "Headshots %": string;
+  "K/D Ratio": string;
+  "K/R Ratio": string;
+  Kills: string;
+  MVPs: string;
+  Map: string;
+  "Match Id": string;
+  "Match Round": string;
+  Nickname: string;
+  "Overtime score": string;
+  "Penta Kills": string;
+  "Player Id": string;
+  "Quadro Kills": string;
+  Region: string;
+  Result: string;
+  Rounds: string;
+  Score: string;
+  "Second Half Score": string;
+  Team: string;
+  "Triple Kills": string;
+  "Updated At": string;
+  Winner: string;
+  ADR: string;
+  "Match Finished At": number;
+};
+
 export type Database = {
   graphql_public: {
     Tables: {
@@ -76,7 +113,7 @@ export type Database = {
           nickname: string;
           player_id_mandatory: string;
           player_id_nullable: string | null;
-          player_stats: Json | null;
+          player_stats: PlayerStats | null;
         };
         Insert: {
           anticheat_required?: boolean | null;
@@ -90,7 +127,7 @@ export type Database = {
           nickname: string;
           player_id_mandatory: string;
           player_id_nullable?: string | null;
-          player_stats?: Json | null;
+          player_stats?: PlayerStats | null;
         };
         Update: {
           anticheat_required?: boolean | null;
@@ -104,7 +141,7 @@ export type Database = {
           nickname?: string;
           player_id_mandatory?: string;
           player_id_nullable?: string | null;
-          player_stats?: Json | null;
+          player_stats?: PlayerStats | null;
         };
         Relationships: [
           {

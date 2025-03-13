@@ -7,7 +7,7 @@ export default function usePlayer(nickname: string) {
     supabase
       .from("players")
       .select(
-        "*, team_players:match_team_players(*, team:match_teams!inner(*, match:matches!inner(*)))",
+        "avatar, nickname, faceit_url, steam_id_64, twitch_username, faceit_elo",
       )
       .match({ nickname })
       .single(),

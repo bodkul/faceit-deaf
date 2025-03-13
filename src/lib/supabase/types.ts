@@ -102,42 +102,36 @@ export type Database = {
       };
       match_team_players: {
         Row: {
-          anticheat_required: boolean | null;
           avatar: string | null;
           game_player_id: string | null;
           game_player_name: string | null;
           game_skill_level: number | null;
           id: string;
           match_team_id: string;
-          membership: string | null;
           nickname: string;
           player_id_mandatory: string;
           player_id_nullable: string | null;
           player_stats: PlayerStats | null;
         };
         Insert: {
-          anticheat_required?: boolean | null;
           avatar?: string | null;
           game_player_id?: string | null;
           game_player_name?: string | null;
           game_skill_level?: number | null;
           id?: string;
           match_team_id: string;
-          membership?: string | null;
           nickname: string;
           player_id_mandatory: string;
           player_id_nullable?: string | null;
           player_stats?: PlayerStats | null;
         };
         Update: {
-          anticheat_required?: boolean | null;
           avatar?: string | null;
           game_player_id?: string | null;
           game_player_name?: string | null;
           game_skill_level?: number | null;
           id?: string;
           match_team_id?: string;
-          membership?: string | null;
           nickname?: string;
           player_id_mandatory?: string;
           player_id_nullable?: string | null;
@@ -163,10 +157,10 @@ export type Database = {
       match_teams: {
         Row: {
           avatar: string | null;
+          faction: number | null;
           final_score: number | null;
           first_half_score: number | null;
           id: string;
-          leader: string;
           match_id: string;
           name: string;
           overtime_score: number | null;
@@ -177,10 +171,10 @@ export type Database = {
         };
         Insert: {
           avatar?: string | null;
+          faction?: number | null;
           final_score?: number | null;
           first_half_score?: number | null;
           id?: string;
-          leader: string;
           match_id: string;
           name: string;
           overtime_score?: number | null;
@@ -191,10 +185,10 @@ export type Database = {
         };
         Update: {
           avatar?: string | null;
+          faction?: number | null;
           final_score?: number | null;
           first_half_score?: number | null;
           id?: string;
-          leader?: string;
           match_id?: string;
           name?: string;
           overtime_score?: number | null;
@@ -215,10 +209,7 @@ export type Database = {
       };
       matches: {
         Row: {
-          best_of: number | null;
-          chat_room_id: string | null;
           competition_id: string;
-          configured_at: string | null;
           demo_url: string | null;
           faceit_url: string | null;
           finished_at: string | null;
@@ -231,13 +222,9 @@ export type Database = {
           round_score: string | null;
           started_at: string | null;
           status: string | null;
-          winner_team_id: string | null;
         };
         Insert: {
-          best_of?: number | null;
-          chat_room_id?: string | null;
           competition_id: string;
-          configured_at?: string | null;
           demo_url?: string | null;
           faceit_url?: string | null;
           finished_at?: string | null;
@@ -250,13 +237,9 @@ export type Database = {
           round_score?: string | null;
           started_at?: string | null;
           status?: string | null;
-          winner_team_id?: string | null;
         };
         Update: {
-          best_of?: number | null;
-          chat_room_id?: string | null;
           competition_id?: string;
-          configured_at?: string | null;
           demo_url?: string | null;
           faceit_url?: string | null;
           finished_at?: string | null;
@@ -269,7 +252,6 @@ export type Database = {
           round_score?: string | null;
           started_at?: string | null;
           status?: string | null;
-          winner_team_id?: string | null;
         };
         Relationships: [];
       };
@@ -319,6 +301,15 @@ export type Database = {
         Returns: {
           map_pick: string;
           count: number;
+        }[];
+      };
+      get_player_stats: {
+        Args: {
+          player_id_param: string;
+        };
+        Returns: {
+          kd_ratio: number;
+          avg_headshots: number;
         }[];
       };
     };

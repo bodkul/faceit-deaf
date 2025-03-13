@@ -314,7 +314,13 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      get_map_picks_count: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          map_pick: string;
+          count: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;

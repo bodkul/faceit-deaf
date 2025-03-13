@@ -1,0 +1,31 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { FaceitIcon } from "@/app/icons";
+import { cn } from "@/lib/utils";
+
+export default function MainNav({ title }: { title: string | undefined }) {
+  const pathname = usePathname();
+
+  return (
+    <div className="flex mr-4">
+      <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6">
+        <FaceitIcon className="size-6 text-[#ff5500] fill-[#ff5500]" />
+        <span className="inline-block font-bold">{title}</span>
+      </Link>
+      <nav className="flex items-center gap-4 text-sm xl:gap-6">
+        <Link
+          href="/maps"
+          className={cn(
+            "transition-colors hover:text-foreground/80",
+            pathname === "/maps" ? "text-foreground" : "text-foreground/80",
+          )}
+        >
+          Maps
+        </Link>
+      </nav>
+    </div>
+  );
+}

@@ -2,7 +2,6 @@ import { fromUnixTime } from "date-fns";
 
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload, MatchStatusEvent } from "@/lib/faceit/match-events";
-import { Json } from "@/lib/supabase";
 import {
   addEloHistory,
   getExistingPlayers,

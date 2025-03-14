@@ -3,11 +3,18 @@
 import "@/config/dateConfig";
 
 import { formatRelative } from "date-fns";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { FaceitIcon, SteamIcon, TwitchIcon } from "@/app/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,6 +22,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -25,6 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useMatchHistory from "@/hooks/queries/useMatchHistory";
+import useMatchHistoryCount from "@/hooks/queries/useMatchHistoryCount";
 import usePlayer from "@/hooks/queries/usePlayer";
 import usePlayerStats from "@/hooks/queries/usePlayerStats";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
@@ -45,9 +58,20 @@ export default function Page({
     isLoading: isLoadingPlayer,
   } = usePlayer(username);
   const { data: playerStats } = usePlayerStats(player?.id);
-  const { data: matchHistory, count: countMatchHistory } = useMatchHistory(
-    player?.id,
-  );
+  const { count: matchHistoryCount } = useMatchHistoryCount(player?.id);
+  const {
+    matches,
+    totalPages,
+    canPreviousPage,
+    canNextPage,
+    isLoadingMatches,
+    indexPage,
+    nextPage,
+    previousPage,
+    firstPage,
+    lastPage,
+    countMatches,
+  } = useMatchHistory(player?.id, matchHistoryCount ?? 0);
 
   usePlayersSubscription(async () => {
     await mutatePlayer();
@@ -127,85 +151,146 @@ export default function Page({
         <CardHeader>
           <CardTitle>Match History</CardTitle>
           <CardDescription>
-            {countMatchHistory ?? 0} matches played
+            {matchHistoryCount ?? countMatches ?? 0} matches played
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[20%]">Date</TableHead>
-                  <TableHead className="w-[16%]">Map</TableHead>
-                  <TableHead className="w-[16%]">Score</TableHead>
-                  <TableHead className="w-[16%]">K - D</TableHead>
-                  <TableHead className="w-[16%]">K/D</TableHead>
-                  <TableHead className="w-[16%]">Rating 2.0</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {matchHistory?.map((match) => {
-                  const team = match.team[0];
-                  const player_stats = team.team_players[0].player_stats;
-                  const kills = Number(player_stats?.Kills ?? 0);
-                  const deaths = Number(player_stats?.Deaths ?? 0);
+          <div className="space-y-4">
+            <div className="flex rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[20%]">Date</TableHead>
+                    <TableHead className="w-[16%]">Map</TableHead>
+                    <TableHead className="w-[16%]">Score</TableHead>
+                    <TableHead className="w-[16%]">K - D</TableHead>
+                    <TableHead className="w-[16%]">K/D</TableHead>
+                    <TableHead className="w-[16%]">Rating 2.0</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {!isLoadingMatches
+                    ? matches?.map((match) => {
+                        const team = match.team[0];
+                        const player_stats = team.team_players[0].player_stats;
+                        const kills = Number(player_stats?.Kills ?? 0);
+                        const deaths = Number(player_stats?.Deaths ?? 0);
 
-                  const kd = player_stats ? kills / deaths : undefined;
+                        const kd = player_stats ? kills / deaths : undefined;
 
-                  return (
-                    <Link
-                      key={match.id}
-                      href={`/match/${match.id}`}
-                      legacyBehavior
+                        return (
+                          <Link
+                            key={match.id}
+                            href={`/match/${match.id}`}
+                            legacyBehavior
+                          >
+                            <TableRow
+                              className={cn("cursor-pointer !border-r-4", {
+                                "border-r-red-500": team.team_win === false,
+                                "border-r-green-500": team.team_win === true,
+                              })}
+                            >
+                              <TableCell>
+                                {match.finished_at ? (
+                                  formatRelative(match.finished_at, new Date())
+                                ) : (
+                                  <Skeleton className="h-5 w-24" />
+                                )}
+                              </TableCell>
+                              <TableCell className="text-[#87a3bf] capitalize">
+                                {match.map_pick?.replace("de_", "") ?? (
+                                  <Skeleton className="h-5 w-12" />
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {match.round_score ?? (
+                                  <Skeleton className="h-5 w-10" />
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {player_stats?.Kills && player_stats?.Deaths ? (
+                                  `${player_stats.Kills} - ${player_stats.Deaths}`
+                                ) : (
+                                  <Skeleton className="h-5 w-12" />
+                                )}
+                              </TableCell>
+                              <TableCell
+                                className={cn("font-semibold", {
+                                  "text-red-500": kd && kd < 0.95,
+                                  "text-green-500": kd && kd > 1.05,
+                                  "text-[#929a9e]":
+                                    kd && kd >= 0.95 && kd <= 1.05,
+                                })}
+                              >
+                                {kd?.toFixed(2) ?? (
+                                  <Skeleton className="h-5 w-8" />
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton className="h-5 w-8" />
+                              </TableCell>
+                            </TableRow>
+                          </Link>
+                        );
+                      })
+                    : renderLoadingRows(20)}
+                </TableBody>
+              </Table>
+            </div>
+
+            <Pagination>
+              <div className="flex items-center space-x-6 lg:space-x-8">
+                <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+                  Page {indexPage} of {totalPages}
+                </div>
+                <PaginationContent className="gap-2">
+                  <PaginationItem>
+                    <Button
+                      variant="outline"
+                      className="hidden h-8 w-8 p-0 lg:flex"
+                      onClick={() => firstPage()}
+                      disabled={!canPreviousPage}
                     >
-                      <TableRow
-                        className={cn("cursor-pointer !border-r-4", {
-                          "border-r-red-500": team.team_win === false,
-                          "border-r-green-500": team.team_win === true,
-                        })}
-                      >
-                        <TableCell>
-                          {match.finished_at ? (
-                            formatRelative(match.finished_at, new Date())
-                          ) : (
-                            <Skeleton className="h-5 w-24" />
-                          )}
-                        </TableCell>
-                        <TableCell className="text-[#87a3bf] capitalize">
-                          {match.map_pick?.replace("de_", "") ?? (
-                            <Skeleton className="h-5 w-12" />
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {match.round_score ?? (
-                            <Skeleton className="h-5 w-10" />
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {player_stats?.Kills && player_stats?.Deaths ? (
-                            `${player_stats.Kills} - ${player_stats.Deaths}`
-                          ) : (
-                            <Skeleton className="h-5 w-12" />
-                          )}
-                        </TableCell>
-                        <TableCell
-                          className={cn("font-semibold", {
-                            "text-red-500": kd && kd < 0.95,
-                            "text-green-500": kd && kd > 1.05,
-                            "text-[#929a9e]": kd && kd >= 0.95 && kd <= 1.05,
-                          })}
-                        >
-                          {kd?.toFixed(2) ?? <Skeleton className="h-5 w-8" />}
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton className="h-5 w-8" />
-                        </TableCell>
-                      </TableRow>
-                    </Link>
-                  );
-                }) ?? renderLoadingRows(20)}
-              </TableBody>
-            </Table>
+                      <span className="sr-only">Go to first page</span>
+                      <ChevronsLeft />
+                    </Button>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <Button
+                      variant="outline"
+                      className="h-8 w-8 p-0"
+                      onClick={() => previousPage()}
+                      disabled={!canPreviousPage}
+                    >
+                      <span className="sr-only">Go to previous page</span>
+                      <ChevronLeft />
+                    </Button>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <Button
+                      variant="outline"
+                      className="h-8 w-8 p-0"
+                      onClick={() => nextPage()}
+                      disabled={!canNextPage}
+                    >
+                      <span className="sr-only">Go to next page</span>
+                      <ChevronRight />
+                    </Button>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <Button
+                      variant="outline"
+                      className="hidden h-8 w-8 p-0 lg:flex"
+                      onClick={() => lastPage()}
+                      disabled={!canNextPage}
+                    >
+                      <span className="sr-only">Go to last page</span>
+                      <ChevronsRight />
+                    </Button>
+                  </PaginationItem>
+                </PaginationContent>
+              </div>
+            </Pagination>
           </div>
         </CardContent>
       </Card>

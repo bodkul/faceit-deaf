@@ -1,11 +1,22 @@
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
+import { useState } from "react";
 
 import { supabase } from "@/lib/supabase";
 
+const PAGE_SIZE = 20;
+
 export default function useMatchHistory(
   player_id_mandatory: string | null | undefined,
+  count: number,
 ) {
-  return useQuery(
+  const [page, setPage] = useState(0);
+
+  const {
+    data,
+    isLoading,
+    mutate,
+    count: countMatches,
+  } = useQuery(
     player_id_mandatory
       ? supabase
           .from("matches")
@@ -18,7 +29,26 @@ export default function useMatchHistory(
           .order("started_at", {
             ascending: false,
           })
-          .limit(20)
+          .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
       : null,
   );
+
+  const totalPages = Math.ceil(count / PAGE_SIZE);
+  const canPreviousPage = page > 0;
+  const canNextPage = page < totalPages - 1;
+
+  return {
+    matches: data || [],
+    isLoadingMatches: isLoading,
+    totalPages,
+    canPreviousPage,
+    canNextPage,
+    indexPage: page + 1,
+    nextPage: () => canNextPage && setPage((p) => p + 1),
+    previousPage: () => canPreviousPage && setPage((p) => p - 1),
+    firstPage: () => setPage(0),
+    lastPage: () => setPage(totalPages - 1),
+    mutateMatches: mutate,
+    countMatches,
+  };
 }

@@ -22,6 +22,30 @@ import { cn } from "@/lib/utils";
 
 import Loading from "./loading";
 
+const countryMap: Record<string, string> = {
+  France: "FR",
+  Sweden: "SE",
+  Germany: "DE",
+  UK: "UK",
+  Netherlands: "NL",
+  Kazakhstan: "KZ",
+  Finland: "FI",
+  Moscow: "RU",
+};
+
+function getCountryCode(country: string) {
+  return countryMap[country];
+}
+
+function getFlagUrl(country: string, size: "sm" | "lg"): string {
+  const sizeMap = {
+    sm: { width: 110, height: 55 },
+    lg: { width: 428, height: 212 },
+  };
+
+  return `https://distribution.faceit-cdn.net/images/flags/v1/${country.toLowerCase()}.jpg?width=${sizeMap[size].width}&height=${sizeMap[size].height}`;
+}
+
 export default function Page({
   params: { matchId },
 }: {
@@ -83,7 +107,16 @@ export default function Page({
               {format(match.started_at!, "HH:mm dd/hh/yyyy")}
             </span>
             <div className="flex space-x-2 items-center rounded-4 overflow-hidden">
-              <Skeleton className="w-16 h-8 rounded" />
+              <Image
+                src={getFlagUrl(
+                  getCountryCode(match.location_pick ?? ""),
+                  "sm",
+                )}
+                alt="Server location country"
+                className="size-auto rounded"
+                width={60}
+                height={30}
+              />
 
               <span>{match.location_pick}</span>
             </div>

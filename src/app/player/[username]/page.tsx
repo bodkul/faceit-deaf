@@ -36,16 +36,108 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import useMatchHistory from "@/hooks/queries/useMatchHistory";
-import useMatchHistoryCount from "@/hooks/queries/useMatchHistoryCount";
+import useMatchHistories from "@/hooks/queries/useMatchHistories";
 import usePlayer from "@/hooks/queries/usePlayer";
 import usePlayerStats from "@/hooks/queries/usePlayerStats";
+import useMatchesSubscription from "@/hooks/subscriptions/useMatchesSubscription";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
+import { PlayerStats } from "@/lib/faceit/api";
 import { cn } from "@/lib/utils";
 
 import renderLoadingRows from "./components/renderLoadingRows";
 import Stat from "./components/stat";
 import Loading from "./loading";
+
+const calculateAverageStats = (matches: PlayerStats[]) => {
+  const DMG_PER_KILL = 105;
+  const TRADE_PERCENT = 0.2;
+
+  const weight = matches.length;
+
+  if (weight === 0) {
+    return {
+      kills: 0,
+      deaths: 0,
+      kd: 0,
+      dpr: 0,
+      kpr: 0,
+      avgk: 0,
+      adr: 0,
+      hs: 0,
+      hsp: 0,
+      apr: 0,
+      kast: 0,
+      impact: 0,
+      rating: 0,
+      weight,
+    };
+  }
+
+  const matchStats = matches.map((match) => {
+    return {
+      kills: Number(match["Kills"]),
+      deaths: Number(match["Deaths"]),
+      rounds: Number(match["Rounds"]),
+      kpr: Number(match["K/R Ratio"]),
+      adr: Number(match["ADR"]) || Number(match["K/R Ratio"]) * DMG_PER_KILL,
+      headshots: Number(match["Headshots"]),
+      assists: Number(match["Assists"]),
+    };
+  });
+
+  const kills = matchStats.reduce((prev, stat) => prev + stat.kills, 0);
+  const deaths = matchStats.reduce((prev, stat) => prev + stat.deaths, 0);
+  const kd = kills / deaths || 0;
+
+  const dpr =
+    matchStats.reduce((prev, stat) => prev + stat.deaths / stat.rounds, 0) /
+    weight;
+  const kpr = matchStats.reduce((prev, stat) => prev + stat.kpr, 0) / weight;
+  const avgk = kills / weight;
+  const adr = matchStats.reduce((prev, stat) => prev + stat.adr, 0) / weight;
+
+  const hs = matchStats.reduce((prev, stat) => prev + stat.headshots, 0);
+  const hsp = (hs / kills) * 100;
+  const apr =
+    matchStats.reduce((prev, stat) => prev + stat.assists / stat.rounds, 0) /
+    weight;
+
+  const kast =
+    matchStats.reduce((prev, stat) => {
+      const survived = stat.rounds - stat.deaths;
+      const traded = TRADE_PERCENT * stat.rounds;
+      const sum = (stat.kills + stat.assists + survived + traded) * 0.45;
+      return prev + Math.min((sum / stat.rounds) * 100, 100);
+    }, 0) / weight;
+
+  const impact = Math.max(2.13 * kpr + 0.42 * apr - 0.41, 0);
+  const rating = Math.max(
+    0.0073 * kast +
+      0.3591 * kpr +
+      -0.5329 * dpr +
+      0.2372 * impact +
+      0.0032 * adr +
+      0.1587,
+    0,
+  );
+
+  return {
+    kills,
+    deaths,
+    kd,
+    dpr,
+    kpr,
+    avgk,
+    adr,
+    hs,
+    hsp,
+    apr,
+    kast,
+    impact,
+    rating,
+    weight,
+  };
+};
 
 export default function Page({
   params: { username },
@@ -58,23 +150,26 @@ export default function Page({
     isLoading: isLoadingPlayer,
   } = usePlayer(username);
   const { data: playerStats } = usePlayerStats(player?.id);
-  const { count: matchHistoryCount } = useMatchHistoryCount(player?.id);
   const {
-    matches,
+    currentPage: matches,
+    pageIndex,
     totalPages,
-    canPreviousPage,
-    canNextPage,
-    isLoadingMatches,
-    indexPage,
-    nextPage,
-    previousPage,
     firstPage,
     lastPage,
-    countMatches,
-  } = useMatchHistory(player?.id, matchHistoryCount ?? 0);
+    previousPage,
+    nextPage,
+    isLoading: isLoadingMatches,
+    isValidating,
+    mutate: mutateMatches,
+    count,
+  } = useMatchHistories(player?.id);
 
   usePlayersSubscription(async () => {
     await mutatePlayer();
+  });
+
+  useMatchesSubscription(async () => {
+    await mutateMatches();
   });
 
   if (isLoadingPlayer) {
@@ -84,6 +179,20 @@ export default function Page({
   if (!player) {
     return notFound();
   }
+
+  const stats = calculateAverageStats(
+    playerStats?.flatMap((item) => {
+      return {
+        Rounds: String(item.rounds),
+        Assists: item.assists,
+        Deaths: item.deaths,
+        Kills: item.kills,
+        Headshots: item.headshots,
+        ADR: item.adr,
+        "K/R Ratio": item.kpr,
+      };
+    }) ?? [],
+  );
 
   return (
     <>
@@ -134,13 +243,18 @@ export default function Page({
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Stat name="Elo" value={player?.faceit_elo} isLoading={!player} />
             <Stat
+              name="Rating 2.0"
+              value={stats?.rating.toFixed(2) ?? "0.00"}
+              isLoading={!playerStats}
+            />
+            <Stat
               name="K/D"
-              value={playerStats?.kd_ratio.toFixed(2) ?? "0.00"}
+              value={stats?.kd.toFixed(2) ?? "0.00"}
               isLoading={!playerStats}
             />
             <Stat
               name="HS %"
-              value={playerStats?.avg_headshots.toFixed(2) ?? "0.00"}
+              value={stats?.hsp.toFixed(2) ?? "0.00"}
               isLoading={!playerStats}
             />
           </div>
@@ -149,10 +263,8 @@ export default function Page({
 
       <Card>
         <CardHeader>
-          <CardTitle>Match History</CardTitle>
-          <CardDescription>
-            {matchHistoryCount ?? countMatches ?? 0} matches played
-          </CardDescription>
+          <CardTitle>Match Histories</CardTitle>
+          <CardDescription>{count ?? 0} matches played</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -169,7 +281,7 @@ export default function Page({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {!isLoadingMatches
+                  {!isLoadingMatches && !isValidating
                     ? matches?.map((match) => {
                         const team = match.team[0];
                         const player_stats = team.team_players[0].player_stats;
@@ -227,7 +339,21 @@ export default function Page({
                                 )}
                               </TableCell>
                               <TableCell>
-                                <Skeleton className="h-5 w-8" />
+                                {player_stats ? (
+                                  calculateAverageStats([
+                                    {
+                                      Rounds:
+                                        match.round_score
+                                          ?.split(" / ")
+                                          .map(Number)
+                                          .reduce((a, b) => a + b, 0)
+                                          .toString() ?? "0",
+                                      ...player_stats,
+                                    },
+                                  ]).rating.toFixed(2)
+                                ) : (
+                                  <Skeleton className="h-5 w-8" />
+                                )}
                               </TableCell>
                             </TableRow>
                           </Link>
@@ -241,15 +367,15 @@ export default function Page({
             <Pagination>
               <div className="flex items-center space-x-6 lg:space-x-8">
                 <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                  Page {indexPage} of {totalPages}
+                  Page {pageIndex} of {totalPages}
                 </div>
                 <PaginationContent className="gap-2">
                   <PaginationItem>
                     <Button
                       variant="outline"
                       className="hidden h-8 w-8 p-0 lg:flex"
-                      onClick={() => firstPage()}
-                      disabled={!canPreviousPage}
+                      onClick={() => firstPage?.()}
+                      disabled={firstPage === null}
                     >
                       <span className="sr-only">Go to first page</span>
                       <ChevronsLeft />
@@ -259,8 +385,8 @@ export default function Page({
                     <Button
                       variant="outline"
                       className="h-8 w-8 p-0"
-                      onClick={() => previousPage()}
-                      disabled={!canPreviousPage}
+                      onClick={() => previousPage?.()}
+                      disabled={previousPage === null}
                     >
                       <span className="sr-only">Go to previous page</span>
                       <ChevronLeft />
@@ -270,8 +396,8 @@ export default function Page({
                     <Button
                       variant="outline"
                       className="h-8 w-8 p-0"
-                      onClick={() => nextPage()}
-                      disabled={!canNextPage}
+                      onClick={() => nextPage?.()}
+                      disabled={nextPage === null}
                     >
                       <span className="sr-only">Go to next page</span>
                       <ChevronRight />
@@ -281,8 +407,8 @@ export default function Page({
                     <Button
                       variant="outline"
                       className="hidden h-8 w-8 p-0 lg:flex"
-                      onClick={() => lastPage()}
-                      disabled={!canNextPage}
+                      onClick={() => lastPage?.()}
+                      disabled={lastPage === null}
                     >
                       <span className="sr-only">Go to last page</span>
                       <ChevronsRight />

@@ -12,11 +12,17 @@ const dayAgo = subHours(new Date(), 24);
 export function usePlayersCount() {
   return useQuery(
     supabase.from("players").select("*", { count: "exact", head: true }),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   );
 }
 
-export function usePlayers(count: number) {
+export function usePlayers() {
   const [page, setPage] = useState(0);
+
+  const { count } = usePlayersCount();
 
   const { data, isLoading, mutate } = useQuery(
     supabase
@@ -29,9 +35,13 @@ export function usePlayers(count: number) {
       .limit(1, { referencedTable: "eloHistory" })
       .order("faceit_elo", { ascending: false })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   );
 
-  const totalPages = Math.ceil(count / PAGE_SIZE);
+  const totalPages = count ? Math.ceil(count / PAGE_SIZE) : 1;
   const canPreviousPage = page > 0;
   const canNextPage = page < totalPages - 1;
 

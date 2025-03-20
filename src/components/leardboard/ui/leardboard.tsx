@@ -42,7 +42,7 @@ export function Leardboard() {
     firstPage,
     lastPage,
     mutate,
-  } = usePlayers(count || 0);
+  } = usePlayers();
 
   usePlayersSubscription(async () => {
     await mutate();

@@ -41,15 +41,21 @@ export default function Loading() {
               </CardContent>
             </Card>
             <Card>
+              <CardHeader>Rating 2.0</CardHeader>
+              <CardContent className="text-2xl font-bold">
+                <Skeleton className="h-8 w-12" />
+              </CardContent>
+            </Card>
+            <Card>
               <CardHeader>K/D</CardHeader>
               <CardContent className="text-2xl font-bold">
-                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-8 w-12" />
               </CardContent>
             </Card>
             <Card>
               <CardHeader>HS %</CardHeader>
               <CardContent className="text-2xl font-bold">
-                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-8 w-12" />
               </CardContent>
             </Card>
           </div>
@@ -58,7 +64,7 @@ export default function Loading() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Match History</CardTitle>
+          <CardTitle>Match Histories</CardTitle>
           <CardDescription>0 matches played</CardDescription>
         </CardHeader>
         <CardContent>

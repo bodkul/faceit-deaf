@@ -305,11 +305,17 @@ export type Database = {
       };
       get_player_stats: {
         Args: {
-          player_id_param: string;
+          player_id: string;
         };
         Returns: {
-          kd_ratio: number;
-          avg_headshots: number;
+          id: string;
+          kills: string;
+          deaths: string;
+          headshots: string;
+          kpr: string;
+          adr: string;
+          assists: string;
+          rounds: number;
         }[];
       };
     };

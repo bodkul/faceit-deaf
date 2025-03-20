@@ -4,6 +4,7 @@ import { format, formatDistanceStrict } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { use } from "react";
 
 import { SkillLevelIcon } from "@/app/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,11 +49,9 @@ function getFlagUrl(country: string, size: "sm" | "lg"): string {
   return `https://distribution.faceit-cdn.net/images/flags/v1/${country.toLowerCase()}.jpg?width=${sizeMap[size].width}&height=${sizeMap[size].height}`;
 }
 
-export default function Page({
-  params: { matchId },
-}: {
-  params: { matchId: string };
-}) {
+export default function Page(props: { params: Promise<{ matchId: string }> }) {
+  const { matchId } = use(props.params);
+
   const { match, isLoading } = useMatch(matchId.replace(/^1-/, ""));
 
   if (isLoading) {

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { type JSX, use } from "react";
 
 import { FaceitIcon, SteamIcon, TwitchIcon } from "@/app/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,11 +49,9 @@ import renderLoadingRows from "./components/renderLoadingRows";
 import Stat from "./components/stat";
 import Loading from "./loading";
 
-export default function Page({
-  params: { username },
-}: {
-  params: { username: string };
-}) {
+export default function Page(props: { params: Promise<{ username: string }> }) {
+  const { username } = use(props.params);
+
   const {
     data: player,
     mutate: mutatePlayer,

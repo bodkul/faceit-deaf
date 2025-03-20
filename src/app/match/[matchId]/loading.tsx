@@ -96,8 +96,8 @@ export default function Loading() {
                 <TableBody>
                   {Array.from({ length: 5 }, (_, index) => (
                     <TableRow key={index}>
-                      <TableCell className="w-[52.5%] space-x-6 flex items-center">
-                        <Skeleton className="w-[22px] h-4 rounded-none" />
+                      <TableCell className="w-[52.5%] space-x-4 flex items-center">
+                        <Skeleton className="size-8 rounded-full" />
                         <Skeleton className="h-5 w-14" />
                       </TableCell>
                       <TableCell className="w-[10%]">

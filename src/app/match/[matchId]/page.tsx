@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { SkillLevelIcon } from "@/app/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -217,7 +218,11 @@ export default function Page({
 
                       return (
                         <TableRow key={player.id}>
-                          <TableCell className="w-[52.5%] space-x-6 flex items-center">
+                          <TableCell className="w-[52.5%] space-x-4 flex items-center">
+                            <SkillLevelIcon
+                              level={player.game_skill_level ?? 0}
+                              className="size-8"
+                            />
                             {player.player_id_nullable ? (
                               <Link href={`/player/${player.nickname}`}>
                                 {player.nickname}

@@ -14,12 +14,12 @@ export interface Player {
       game_player_name: string;
       game_profile_id: string;
       region: string;
-      regions: any;
+      regions: unknown;
       skill_level: number;
       skill_level_label: string;
     }
   >;
-  infractions: any;
+  infractions: unknown;
   membership_type: string;
   memberships: string[];
   new_steam_id: string;

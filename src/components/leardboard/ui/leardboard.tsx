@@ -23,13 +23,12 @@ import {
 import useEloHistorySubscription from "@/hooks/subscriptions/useEloHistorySubscription";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
 
-import { usePlayers, usePlayersCount } from "../queries";
+import { usePlayers } from "../queries";
 import { PlayerRow, renderLoadingRows } from ".";
 
 const PAGE_SIZE = 20;
 
 export function Leardboard() {
-  const { count } = usePlayersCount();
   const {
     players,
     totalPages,

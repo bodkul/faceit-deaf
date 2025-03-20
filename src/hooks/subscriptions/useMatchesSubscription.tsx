@@ -1,7 +1,4 @@
-import {
-  useSubscription,
-  useSubscriptionQuery,
-} from "@supabase-cache-helpers/postgrest-swr";
+import { useSubscription } from "@supabase-cache-helpers/postgrest-swr";
 
 import { supabase } from "@/lib/supabase";
 

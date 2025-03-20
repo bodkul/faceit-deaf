@@ -41,14 +41,23 @@ import usePlayer from "@/hooks/queries/usePlayer";
 import usePlayerStats from "@/hooks/queries/usePlayerStats";
 import useMatchesSubscription from "@/hooks/subscriptions/useMatchesSubscription";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
-import { PlayerStats } from "@/lib/faceit/api";
 import { cn } from "@/lib/utils";
 
 import renderLoadingRows from "./components/renderLoadingRows";
 import Stat from "./components/stat";
 import Loading from "./loading";
 
-const calculateAverageStats = (matches: PlayerStats[]) => {
+type Match = {
+  Rounds: string;
+  Assists: string;
+  Deaths: string;
+  Kills: string;
+  Headshots: string;
+  ADR: string;
+  "K/R Ratio": string;
+};
+
+const calculateAverageStats = (matches: Match[]) => {
   const DMG_PER_KILL = 105;
   const TRADE_PERCENT = 0.2;
 
@@ -348,7 +357,12 @@ export default function Page({
                                           .map(Number)
                                           .reduce((a, b) => a + b, 0)
                                           .toString() ?? "0",
-                                      ...player_stats,
+                                      Assists: player_stats.Assists,
+                                      Kills: player_stats.Kills,
+                                      Deaths: player_stats.Deaths,
+                                      Headshots: player_stats.Headshots,
+                                      ADR: player_stats.ADR,
+                                      "K/R Ratio": player_stats["K/R Ratio"],
                                     },
                                   ]).rating.toFixed(2)
                                 ) : (

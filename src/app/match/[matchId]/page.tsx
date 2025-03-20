@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useMatch from "@/hooks/queries/useMatch";
+import calculateAverageStats from "@/lib/calculateAverageStats";
 import { insertNumberSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 
@@ -60,6 +61,11 @@ export default function Page({
   if (!match) {
     return notFound();
   }
+
+  const totalScore = match.teams.reduce(
+    (sum, team) => sum + (team.final_score ?? 0),
+    0,
+  );
 
   return (
     <>
@@ -195,6 +201,20 @@ export default function Page({
                   </TableHeader>
                   <TableBody>
                     {team.team_players.map((player) => {
+                      const stats = player.player_stats
+                        ? calculateAverageStats([
+                            {
+                              Rounds: totalScore.toString(),
+                              Assists: player.player_stats.Assists,
+                              Kills: player.player_stats.Kills,
+                              Deaths: player.player_stats.Deaths,
+                              Headshots: player.player_stats.Headshots,
+                              ADR: player.player_stats.ADR,
+                              "K/R Ratio": player.player_stats["K/R Ratio"],
+                            },
+                          ])
+                        : null;
+
                       return (
                         <TableRow key={player.id}>
                           <TableCell className="w-[52.5%] space-x-6 flex items-center">
@@ -246,11 +266,19 @@ export default function Page({
                           </TableCell>
 
                           <TableCell className="w-[10%]">
-                            <Skeleton className="h-5 w-8" />
+                            {stats ? (
+                              stats.kast.toFixed(1)
+                            ) : (
+                              <Skeleton className="h-5 w-8" />
+                            )}
                           </TableCell>
 
                           <TableCell className="w-[10%]">
-                            <Skeleton className="h-5 w-8" />
+                            {stats ? (
+                              stats.rating.toFixed(2)
+                            ) : (
+                              <Skeleton className="h-5 w-8" />
+                            )}
                           </TableCell>
                         </TableRow>
                       );

@@ -6,6 +6,43 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+type PlayerStats = {
+  Assists: string;
+  "Best Of": string;
+  "Competition Id": string;
+  "Created At": string;
+  Deaths: string;
+  "Final Score": string;
+  "First Half Score": string;
+  Game: string;
+  "Game Mode": string;
+  Headshots: string;
+  "Headshots %": string;
+  "K/D Ratio": string;
+  "K/R Ratio": string;
+  Kills: string;
+  MVPs: string;
+  Map: string;
+  "Match Id": string;
+  "Match Round": string;
+  Nickname: string;
+  "Overtime score": string;
+  "Penta Kills": string;
+  "Player Id": string;
+  "Quadro Kills": string;
+  Region: string;
+  Result: string;
+  Rounds: string;
+  Score: string;
+  "Second Half Score": string;
+  Team: string;
+  "Triple Kills": string;
+  "Updated At": string;
+  Winner: string;
+  ADR: string;
+  "Match Finished At": number;
+};
+
 export type Database = {
   graphql_public: {
     Tables: {
@@ -63,60 +100,158 @@ export type Database = {
           },
         ];
       };
-      logs: {
+      match_team_players: {
         Row: {
-          created_at: string;
+          avatar: string | null;
+          game_player_id: string | null;
+          game_player_name: string | null;
+          game_skill_level: number | null;
           id: string;
-          level: string;
-          message: string | null;
-          metadata: Json | null;
+          match_team_id: string;
+          nickname: string;
+          player_id_mandatory: string;
+          player_id_nullable: string | null;
+          player_stats: PlayerStats | null;
         };
         Insert: {
-          created_at?: string;
+          avatar?: string | null;
+          game_player_id?: string | null;
+          game_player_name?: string | null;
+          game_skill_level?: number | null;
           id?: string;
-          level: string;
-          message?: string | null;
-          metadata?: Json | null;
+          match_team_id: string;
+          nickname: string;
+          player_id_mandatory: string;
+          player_id_nullable?: string | null;
+          player_stats?: PlayerStats | null;
         };
         Update: {
-          created_at?: string;
+          avatar?: string | null;
+          game_player_id?: string | null;
+          game_player_name?: string | null;
+          game_skill_level?: number | null;
           id?: string;
-          level?: string;
-          message?: string | null;
-          metadata?: Json | null;
+          match_team_id?: string;
+          nickname?: string;
+          player_id_mandatory?: string;
+          player_id_nullable?: string | null;
+          player_stats?: PlayerStats | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "match_team_players_match_team_id_fkey";
+            columns: ["match_team_id"];
+            isOneToOne: false;
+            referencedRelation: "match_teams";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_team_players_player_id_nullable_fkey";
+            columns: ["player_id_nullable"];
+            isOneToOne: false;
+            referencedRelation: "players";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      match_teams: {
+        Row: {
+          avatar: string | null;
+          faction: number | null;
+          final_score: number | null;
+          first_half_score: number | null;
+          id: string;
+          match_id: string;
+          name: string;
+          overtime_score: number | null;
+          second_half_score: number | null;
+          team_headshots: number | null;
+          team_id: string;
+          team_win: boolean | null;
+        };
+        Insert: {
+          avatar?: string | null;
+          faction?: number | null;
+          final_score?: number | null;
+          first_half_score?: number | null;
+          id?: string;
+          match_id: string;
+          name: string;
+          overtime_score?: number | null;
+          second_half_score?: number | null;
+          team_headshots?: number | null;
+          team_id: string;
+          team_win?: boolean | null;
+        };
+        Update: {
+          avatar?: string | null;
+          faction?: number | null;
+          final_score?: number | null;
+          first_half_score?: number | null;
+          id?: string;
+          match_id?: string;
+          name?: string;
+          overtime_score?: number | null;
+          second_half_score?: number | null;
+          team_headshots?: number | null;
+          team_id?: string;
+          team_win?: boolean | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "match_teams_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "matches";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       matches: {
         Row: {
           competition_id: string;
-          created_at: string;
+          demo_url: string | null;
+          faceit_url: string | null;
+          finished_at: string | null;
           game: string;
           id: string;
+          location_pick: string | null;
+          map_pick: string | null;
           organizer_id: string;
           region: string;
-          updated_at: string;
-          version: number;
+          round_score: string | null;
+          started_at: string | null;
+          status: string | null;
         };
         Insert: {
           competition_id: string;
-          created_at: string;
+          demo_url?: string | null;
+          faceit_url?: string | null;
+          finished_at?: string | null;
           game: string;
           id: string;
+          location_pick?: string | null;
+          map_pick?: string | null;
           organizer_id: string;
           region: string;
-          updated_at: string;
-          version: number;
+          round_score?: string | null;
+          started_at?: string | null;
+          status?: string | null;
         };
         Update: {
           competition_id?: string;
-          created_at?: string;
+          demo_url?: string | null;
+          faceit_url?: string | null;
+          finished_at?: string | null;
           game?: string;
           id?: string;
+          location_pick?: string | null;
+          map_pick?: string | null;
           organizer_id?: string;
           region?: string;
-          updated_at?: string;
-          version?: number;
+          round_score?: string | null;
+          started_at?: string | null;
+          status?: string | null;
         };
         Relationships: [];
       };
@@ -129,7 +264,7 @@ export type Database = {
           id: string;
           nickname: string;
           skill_level: number;
-          steam_id_64: number;
+          steam_id_64: string;
           twitch_username: string | null;
         };
         Insert: {
@@ -140,7 +275,7 @@ export type Database = {
           id: string;
           nickname: string;
           skill_level: number;
-          steam_id_64: number;
+          steam_id_64: string;
           twitch_username?: string | null;
         };
         Update: {
@@ -151,7 +286,7 @@ export type Database = {
           id?: string;
           nickname?: string;
           skill_level?: number;
-          steam_id_64?: number;
+          steam_id_64?: string;
           twitch_username?: string | null;
         };
         Relationships: [];
@@ -161,7 +296,28 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      get_map_picks_count: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          map_pick: string;
+          count: number;
+        }[];
+      };
+      get_player_stats: {
+        Args: {
+          player_id: string;
+        };
+        Returns: {
+          id: string;
+          kills: string;
+          deaths: string;
+          headshots: string;
+          kpr: string;
+          adr: string;
+          assists: string;
+          rounds: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;

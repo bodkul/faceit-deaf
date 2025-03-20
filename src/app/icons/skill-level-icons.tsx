@@ -9,10 +9,7 @@ import LevelIcon8 from "@/app/icons/faceit/levels/8.svg";
 import LevelIcon9 from "@/app/icons/faceit/levels/9.svg";
 import LevelIcon10 from "@/app/icons/faceit/levels/10.svg";
 
-const skillLevelIcons: Record<
-  number,
-  React.FC<React.SVGProps<SVGSVGElement>>
-> = {
+const skillLevelIcons: Record<number, React.FC<React.SVGProps<SVGElement>>> = {
   1: LevelIcon1,
   2: LevelIcon2,
   3: LevelIcon3,

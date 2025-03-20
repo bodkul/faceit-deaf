@@ -29,7 +29,7 @@ export interface Player {
   settings: {
     language: string;
   };
-  steam_id_64: number;
+  steam_id_64: string;
   steam_nickname: string;
   verified: boolean;
 }

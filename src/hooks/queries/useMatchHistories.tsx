@@ -39,8 +39,8 @@ export default function useMatchHistories(
 
   return {
     count,
-    pageIndex,
-    totalPages,
+    pageIndex: pageIndex + 1,
+    totalPages: totalPages + 1,
     isValidating,
     firstPage: !isValidating && pageIndex > 0 ? firstPagefn : null,
     lastPage: !isValidating && pageIndex < totalPages ? lastPagefn : null,

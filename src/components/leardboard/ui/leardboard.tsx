@@ -23,25 +23,24 @@ import {
 import useEloHistorySubscription from "@/hooks/subscriptions/useEloHistorySubscription";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
 
-import { usePlayers } from "../queries";
+import usePlayersWithPagination from "../queries";
 import { PlayerRow, renderLoadingRows } from ".";
 
 const PAGE_SIZE = 20;
 
 export function Leardboard() {
   const {
-    players,
+    data,
     totalPages,
     canPreviousPage,
     canNextPage,
-    isLoading,
-    indexPage,
+    pageIndex,
     nextPage,
     previousPage,
     firstPage,
     lastPage,
     mutate,
-  } = usePlayers();
+  } = usePlayersWithPagination();
 
   usePlayersSubscription(async () => {
     await mutate();
@@ -51,7 +50,7 @@ export function Leardboard() {
     await mutate();
   });
 
-  const offset = (indexPage - 1) * PAGE_SIZE;
+  const offset = (pageIndex - 1) * PAGE_SIZE;
 
   return (
     <div className="space-y-4">
@@ -66,15 +65,13 @@ export function Leardboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading
-              ? renderLoadingRows(PAGE_SIZE, offset)
-              : players.map((player, index) => (
-                  <PlayerRow
-                    key={player.id}
-                    player={player}
-                    index={offset + index}
-                  />
-                ))}
+            {data?.map((player, index) => (
+              <PlayerRow
+                key={player.id}
+                player={player}
+                index={offset + index}
+              />
+            )) ?? renderLoadingRows(PAGE_SIZE, offset)}
           </TableBody>
         </Table>
       </div>
@@ -82,14 +79,14 @@ export function Leardboard() {
       <Pagination>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {indexPage} of {totalPages}
+            Page {pageIndex} of {totalPages}
           </div>
           <PaginationContent className="gap-2">
             <PaginationItem>
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => firstPage()}
+                onClick={() => firstPage?.()}
                 disabled={!canPreviousPage}
               >
                 <span className="sr-only">Go to first page</span>
@@ -100,7 +97,7 @@ export function Leardboard() {
               <Button
                 variant="outline"
                 className="h-8 w-8 p-0"
-                onClick={() => previousPage()}
+                onClick={() => previousPage?.()}
                 disabled={!canPreviousPage}
               >
                 <span className="sr-only">Go to previous page</span>
@@ -111,7 +108,7 @@ export function Leardboard() {
               <Button
                 variant="outline"
                 className="h-8 w-8 p-0"
-                onClick={() => nextPage()}
+                onClick={() => nextPage?.()}
                 disabled={!canNextPage}
               >
                 <span className="sr-only">Go to next page</span>
@@ -122,7 +119,7 @@ export function Leardboard() {
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => lastPage()}
+                onClick={() => lastPage?.()}
                 disabled={!canNextPage}
               >
                 <span className="sr-only">Go to last page</span>

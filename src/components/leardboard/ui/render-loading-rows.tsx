@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
 
 export function renderLoadingRows(count: number, offset: number) {
-  return Array.from({ length: count }).map((_, index) => (
+  return Array.from({ length: count }, (_, index) => (
     <TableRow key={index} className="h-[49px]">
       <TableCell>{offset + index + 1}</TableCell>
       <TableCell>

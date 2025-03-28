@@ -9,10 +9,6 @@ export default function useTwitchUsernames() {
       .select("twitch_username")
       .neq("twitch_username", null)
       .returns<{ twitch_username: string }[]>(),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
   );
 
   return data?.map((player) => player.twitch_username) || [];

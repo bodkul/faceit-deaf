@@ -11,6 +11,5 @@ export default function usePlayer(nickname: string) {
       )
       .match({ nickname })
       .single(),
-    { revalidateOnFocus: false, revalidateOnReconnect: false },
   );
 }

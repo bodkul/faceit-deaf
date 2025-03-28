@@ -27,7 +27,6 @@ export default function useMatchHistories(playerId: string) {
         currentPageIndex * PAGE_SIZE,
         (currentPageIndex + 1) * PAGE_SIZE - 1,
       ),
-    { revalidateOnFocus: false, revalidateOnReconnect: false },
   );
 
   useEffect(() => {

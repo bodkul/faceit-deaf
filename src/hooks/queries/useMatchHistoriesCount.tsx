@@ -18,6 +18,5 @@ export default function useMatchHistoriesCount(
             player_id_mandatory,
           )
       : null,
-    { revalidateOnFocus: false, revalidateOnReconnect: false },
   );
 }

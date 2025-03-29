@@ -4,16 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { FaceitIcon } from "@/app/icons";
+import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-export default function MainNav({ title }: { title: string | undefined }) {
+export default function MainNav() {
   const pathname = usePathname();
 
   return (
     <div className="flex mr-4">
       <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6">
         <FaceitIcon className="size-6 text-[#ff5500] fill-[#ff5500]" />
-        <span className="inline-block font-bold">{title}</span>
+        <span className="inline-block font-bold">{siteConfig.name}</span>
       </Link>
       <nav className="flex items-center gap-4 text-sm xl:gap-6">
         <Link

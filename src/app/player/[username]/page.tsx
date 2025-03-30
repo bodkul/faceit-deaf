@@ -6,7 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { type JSX, use } from "react";
 
-import { FaceitIcon, SteamIcon, TwitchIcon } from "@/app/icons";
+import { FaceitIcon, SkillLevelIcon, SteamIcon, TwitchIcon } from "@/app/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import usePlayer from "@/hooks/queries/usePlayer";
@@ -39,10 +39,16 @@ export default function Page(props: { params: Promise<{ username: string }> }) {
       <Card>
         <CardHeader>
           <div className="flex items-center space-x-4">
-            <Avatar className="size-20">
-              <AvatarImage src={player.avatar} alt={player.nickname} />
-              <AvatarFallback />
-            </Avatar>
+            <div className="flex relative size-20">
+              <Avatar className="size-20">
+                <AvatarImage src={player.avatar} alt={player.nickname} />
+                <AvatarFallback />
+              </Avatar>
+              <SkillLevelIcon
+                level={player.skill_level}
+                className="size-8 absolute -right-1 -bottom-1"
+              />
+            </div>
             <div className="flex flex-col space-y-3">
               <p className="text-2xl font-medium leading-none">
                 {player.nickname}

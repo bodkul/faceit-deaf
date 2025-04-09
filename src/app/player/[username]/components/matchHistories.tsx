@@ -46,7 +46,6 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
     previousPage,
     nextPage,
     isLoading,
-    isValidating,
     mutate,
     count,
   } = useMatchHistories(playerId);
@@ -76,7 +75,7 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {!isLoading && !isValidating
+                {!isLoading
                   ? data?.map((match) => {
                       const team = match.team[0];
                       const player_stats = team.team_players[0].player_stats;

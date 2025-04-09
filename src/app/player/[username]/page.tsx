@@ -20,13 +20,13 @@ import Loading from "./loading";
 export default function Page(props: { params: Promise<{ username: string }> }) {
   const { username } = use(props.params);
 
-  const { data: player, mutate, isLoading, isValidating } = usePlayer(username);
+  const { data: player, mutate, isLoading } = usePlayer(username);
 
   usePlayersSubscription(async () => {
     await mutate();
   });
 
-  if (isLoading || isValidating) {
+  if (isLoading) {
     return Loading();
   }
 

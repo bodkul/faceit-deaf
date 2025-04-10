@@ -91,10 +91,13 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
                           legacyBehavior
                         >
                           <TableRow
-                            className={cn("cursor-pointer !border-r-4", {
-                              "border-r-red-500": team.team_win === false,
-                              "border-r-green-500": team.team_win === true,
-                            })}
+                            className={cn(
+                              "cursor-pointer !border-r-4 whitespace-nowrap",
+                              {
+                                "border-r-red-500": team.team_win === false,
+                                "border-r-green-500": team.team_win === true,
+                              }
+                            )}
                           >
                             <TableCell>
                               {match.finished_at ? (

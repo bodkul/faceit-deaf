@@ -9,6 +9,7 @@ export default function usePlayer(nickname: string) {
       .select(
         "id, avatar, nickname, faceit_url, steam_id_64, twitch_username, faceit_elo, skill_level",
       )
+      .eq("verified", true)
       .match({ nickname })
       .single(),
   );

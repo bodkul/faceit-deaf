@@ -17,6 +17,7 @@ function usePlayers(currentPageIndex: number) {
         "id, nickname, avatar, skill_level, faceit_elo, eloHistory (player_elo)",
         { count: "exact" },
       )
+      .eq("verified", true)
       .gt("eloHistory.created_at", dayAgo.toISOString())
       .limit(1, { referencedTable: "eloHistory" })
       .order("faceit_elo", { ascending: false })

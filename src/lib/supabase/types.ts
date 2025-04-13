@@ -266,6 +266,7 @@ export type Database = {
           skill_level: number;
           steam_id_64: string;
           twitch_username: string | null;
+          verified: boolean;
         };
         Insert: {
           avatar: string;
@@ -277,6 +278,7 @@ export type Database = {
           skill_level: number;
           steam_id_64: string;
           twitch_username?: string | null;
+          verified?: boolean;
         };
         Update: {
           avatar?: string;
@@ -288,6 +290,7 @@ export type Database = {
           skill_level?: number;
           steam_id_64?: string;
           twitch_username?: string | null;
+          verified?: boolean;
         };
         Relationships: [];
       };

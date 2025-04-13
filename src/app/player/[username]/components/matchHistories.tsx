@@ -96,7 +96,7 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
                               {
                                 "border-r-red-500": team.team_win === false,
                                 "border-r-green-500": team.team_win === true,
-                              }
+                              },
                             )}
                           >
                             <TableCell>

@@ -1,3 +1,5 @@
+"use client";
+
 import { formatRelative } from "date-fns";
 import {
   ChevronLeft,
@@ -52,9 +54,7 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
     count,
   } = useMatchHistories(playerId);
 
-  useMatchesSubscription(async () => {
-    await mutate();
-  });
+  useMatchesSubscription(() => mutate().then());
 
   return (
     <Card>

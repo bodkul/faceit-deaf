@@ -1,5 +1,6 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   webpack(config) {
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg"),
@@ -33,16 +34,6 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "assets.faceit-cdn.net",
-        pathname: "/avatars/**",
-      },
-      {
-        protocol: "https",
-        hostname: "hltv.org",
-        pathname: "/img/static/maps/**",
-      },
-      {
-        protocol: "https",
-        hostname: "flagcdn.com",
       },
     ],
   },

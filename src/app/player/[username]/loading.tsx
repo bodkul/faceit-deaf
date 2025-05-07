@@ -5,6 +5,7 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
+import { PlayerCardSceleton } from "@/components/player-card";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +19,6 @@ import {
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -32,48 +32,7 @@ import renderLoadingRows from "./components/renderLoadingRows";
 export default function Loading() {
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-4">
-            <Skeleton className="size-20 rounded-full" />
-            <div className="flex flex-col space-y-3">
-              <Skeleton className="h-6 w-40" />
-              <div className="flex space-x-1">
-                <Skeleton className="size-6" />
-                <Skeleton className="size-6" />
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader>Elo</CardHeader>
-              <CardContent className="text-2xl font-bold">
-                <Skeleton className="h-8 w-16" />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>Rating 2.0</CardHeader>
-              <CardContent className="text-2xl font-bold">
-                <Skeleton className="h-8 w-12" />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>K/D</CardHeader>
-              <CardContent className="text-2xl font-bold">
-                <Skeleton className="h-8 w-12" />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>HS %</CardHeader>
-              <CardContent className="text-2xl font-bold">
-                <Skeleton className="h-8 w-12" />
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
+      <PlayerCardSceleton />
 
       <Card>
         <CardHeader>

@@ -1,5 +1,47 @@
 import { supabase, type TablesInsert } from "@/lib/supabase";
 
+export async function getPlayer(nickname: string) {
+  return supabase
+    .from("players")
+    .select(
+      "id, avatar, nickname, faceit_url, steam_id_64, twitch_username, faceit_elo, skill_level, cover_image, country",
+    )
+    .match({ nickname })
+    .single();
+}
+
+export async function getAllMatchesForPlayer(playerId: string) {
+  let allMatches: {
+    match_teams: {
+      matches: {
+        id: string;
+      } | null;
+    } | null;
+  }[] = [];
+  let offset = 0;
+  const limit = 1000;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("match_team_players")
+      .select("match_teams (matches (id))")
+      .eq("player_id_mandatory", playerId)
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      console.error(`Error fetching matches: ${error}`);
+      throw error;
+    }
+
+    if (!data || data.length === 0) break;
+
+    allMatches = [...allMatches, ...data];
+    offset += limit;
+  }
+
+  return allMatches;
+}
+
 export async function getExistingPlayers(playerIds: string[]) {
   const { data, error } = await supabase
     .from("players")

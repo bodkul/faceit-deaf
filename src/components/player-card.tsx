@@ -12,11 +12,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import useCountMatchesByPlayerId from "@/hooks/queries/useCountMatchesByPlayerId";
 import usePlayerStats from "@/hooks/queries/usePlayerStats";
 import calculateAverageStats from "@/lib/calculateAverageStats";
-import { supabase, Tables } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 type PlayerCardProps = {
-  player: Tables<"players">;
+  player: {
+    avatar: string;
+    country: string | null;
+    cover_image: string | null;
+    faceit_elo: number;
+    faceit_url: string;
+    id: string;
+    nickname: string;
+    skill_level: number;
+    steam_id_64: string;
+    twitch_username: string | null;
+  };
 };
 
 const cardBaseClass =

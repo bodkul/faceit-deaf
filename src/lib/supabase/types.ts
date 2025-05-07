@@ -233,6 +233,8 @@ export type Database = {
       players: {
         Row: {
           avatar: string;
+          country: string | null;
+          cover_image: string | null;
           created_at: string;
           faceit_elo: number;
           faceit_url: string;
@@ -244,6 +246,8 @@ export type Database = {
         };
         Insert: {
           avatar: string;
+          country?: string | null;
+          cover_image?: string | null;
           created_at?: string;
           faceit_elo: number;
           faceit_url: string;
@@ -255,6 +259,8 @@ export type Database = {
         };
         Update: {
           avatar?: string;
+          country?: string | null;
+          cover_image?: string | null;
           created_at?: string;
           faceit_elo?: number;
           faceit_url?: string;

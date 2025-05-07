@@ -38,6 +38,8 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
       faceit_elo: player.games.cs2.faceit_elo,
       faceit_url: player.faceit_url,
       steam_id_64: player.steam_id_64,
+      country: player.country,
+      cover_image: player.cover_image,
     })),
   );
 

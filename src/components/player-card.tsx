@@ -162,14 +162,17 @@ export function PlayerCard({ player }: PlayerCardProps) {
   }, [rawMatchData]);
 
   const mostPlayedMap = useMemo(() => {
-    const mapPicks =
-      matchTeamPlayers
-        ?.map((p) => p.match_teams?.matches?.map_pick)
-        .filter(Boolean) ?? [];
+    const mapPicks = matchTeamPlayers
+      ?.map((p) => p.match_teams?.matches?.map_pick)
+      .filter((map) => map != null);
+
+    if (!mapPicks || mapPicks.length === 0) return [];
+
     const mapCounts = mapPicks.reduce<Record<string, number>>((acc, map) => {
       acc[map] = (acc[map] || 0) + 1;
       return acc;
     }, {});
+
     return Object.entries(mapCounts).sort((a, b) => b[1] - a[1])[0] ?? [];
   }, [matchTeamPlayers]);
 

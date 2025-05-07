@@ -10,7 +10,10 @@ import ModeToggle from "@/components/mode-toogle";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: siteConfig.name,
+  title: {
+    template: `%s | ${siteConfig.name}`,
+    default: siteConfig.name,
+  },
   description: siteConfig.description,
 };
 

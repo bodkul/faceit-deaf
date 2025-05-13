@@ -1,6 +1,5 @@
 import "./globals.css";
 
-import { Analytics } from "@vercel/analytics/react";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
@@ -38,7 +37,6 @@ export default function RootLayout({
             <main className="flex-1 space-y-4 p-8 pt-6">{children}</main>
           </div>
         </ThemeProvider>
-        <Analytics />
       </body>
     </html>
   );

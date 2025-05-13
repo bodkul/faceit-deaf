@@ -87,6 +87,11 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
     await upsertMatchTeamPlayers(
       team.roster.map((player) => {
         const qwe = roundTeam?.players.find((p) => p.player_id === player.id);
+        const elo_before = existingPlayers.find(
+          (p) => p.id === player.id,
+        )?.faceit_elo;
+        const elo_after = players.find((p) => p.player_id === player.id)?.games
+          .cs2.faceit_elo;
 
         return {
           match_team_id: resTeam.id,
@@ -100,6 +105,8 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
           game_player_name: player.game_name,
           game_skill_level: player.game_skill_level,
           player_stats: qwe?.player_stats,
+          elo_before,
+          elo_after,
         };
       }),
     );

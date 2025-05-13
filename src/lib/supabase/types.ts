@@ -78,6 +78,8 @@ export type Database = {
       match_team_players: {
         Row: {
           avatar: string | null;
+          elo_after: number | null;
+          elo_before: number | null;
           game_player_id: string | null;
           game_player_name: string | null;
           game_skill_level: number | null;
@@ -90,6 +92,8 @@ export type Database = {
         };
         Insert: {
           avatar?: string | null;
+          elo_after?: number | null;
+          elo_before?: number | null;
           game_player_id?: string | null;
           game_player_name?: string | null;
           game_skill_level?: number | null;
@@ -102,6 +106,8 @@ export type Database = {
         };
         Update: {
           avatar?: string | null;
+          elo_after?: number | null;
+          elo_before?: number | null;
           game_player_id?: string | null;
           game_player_name?: string | null;
           game_skill_level?: number | null;

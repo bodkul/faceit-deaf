@@ -140,7 +140,6 @@ export interface Match {
           player_id: string;
         },
       ];
-      roster_v1: null;
       stats: {
         rating: number;
         skillLevel: {
@@ -172,7 +171,6 @@ export interface Match {
           player_id: string;
         },
       ];
-      roster_v1: null;
       stats: {
         rating: number;
         skillLevel: {

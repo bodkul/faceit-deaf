@@ -36,7 +36,6 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
       nickname: player.nickname,
       skill_level: player.games.cs2.skill_level,
       faceit_elo: player.games.cs2.faceit_elo,
-      faceit_url: player.faceit_url,
       steam_id_64: player.steam_id_64,
       country: player.country,
       cover_image: player.cover_image,
@@ -53,17 +52,13 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
 
   await upsertMatch({
     id: matchId,
-    game: match.game,
-    region: match.region,
     competition_id: match.competition_id,
     organizer_id: match.organizer_id,
     location_pick: match.voting.location?.pick[0],
     map_pick: match.voting.map?.pick[0],
     started_at: fromUnixTime(Number(match.started_at)).toISOString(),
     finished_at: fromUnixTime(Number(match.finished_at)).toISOString(),
-    demo_url: match.demo_url[0],
     status: match.status,
-    faceit_url: match.faceit_url,
     round_score: round.round_stats.Score,
   });
 
@@ -81,7 +76,6 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
       overtime_score: Number(stats["Overtime score"]),
       final_score: Number(stats["Final Score"]),
       team_win: stats["Team Win"] === "1",
-      team_headshots: Number(stats["Team Headshots"]),
     });
 
     await upsertMatchTeamPlayers(
@@ -101,8 +95,6 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
           player_id_mandatory: player.id,
           nickname: player.nickname,
           avatar: player.avatar,
-          game_player_id: player.game_id,
-          game_player_name: player.game_name,
           game_skill_level: player.game_skill_level,
           player_stats: qwe?.player_stats,
           elo_before,
@@ -117,6 +109,8 @@ export async function handleMatchStatusEvent(body: MatchStatusEvent) {
   console.info(`Handling match status event: ${body.event}`, body.payload);
 
   if (
+    body.payload.game !== "cs2" ||
+    body.payload.region !== "EU" ||
     body.payload.organizer_id !== "faceit" ||
     body.payload.entity.id !== "f4148ddd-bce8-41b8-9131-ee83afcdd6dd"
   ) {

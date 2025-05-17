@@ -4,7 +4,7 @@ export async function getPlayer(nickname: string) {
   return supabase
     .from("players")
     .select(
-      "id, avatar, nickname, faceit_url, steam_id_64, twitch_username, faceit_elo, skill_level, cover_image, country",
+      "id, avatar, nickname, steam_id_64, twitch_username, faceit_elo, skill_level, cover_image, country",
     )
     .match({ nickname })
     .single();

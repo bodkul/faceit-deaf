@@ -80,8 +80,6 @@ export type Database = {
           avatar: string | null;
           elo_after: number | null;
           elo_before: number | null;
-          game_player_id: string | null;
-          game_player_name: string | null;
           game_skill_level: number | null;
           id: string;
           match_team_id: string;
@@ -94,8 +92,6 @@ export type Database = {
           avatar?: string | null;
           elo_after?: number | null;
           elo_before?: number | null;
-          game_player_id?: string | null;
-          game_player_name?: string | null;
           game_skill_level?: number | null;
           id?: string;
           match_team_id: string;
@@ -108,8 +104,6 @@ export type Database = {
           avatar?: string | null;
           elo_after?: number | null;
           elo_before?: number | null;
-          game_player_id?: string | null;
-          game_player_name?: string | null;
           game_skill_level?: number | null;
           id?: string;
           match_team_id?: string;
@@ -146,7 +140,6 @@ export type Database = {
           name: string;
           overtime_score: number | null;
           second_half_score: number | null;
-          team_headshots: number | null;
           team_id: string;
           team_win: boolean | null;
         };
@@ -160,7 +153,6 @@ export type Database = {
           name: string;
           overtime_score?: number | null;
           second_half_score?: number | null;
-          team_headshots?: number | null;
           team_id: string;
           team_win?: boolean | null;
         };
@@ -174,7 +166,6 @@ export type Database = {
           name?: string;
           overtime_score?: number | null;
           second_half_score?: number | null;
-          team_headshots?: number | null;
           team_id?: string;
           team_win?: boolean | null;
         };
@@ -191,45 +182,33 @@ export type Database = {
       matches: {
         Row: {
           competition_id: string;
-          demo_url: string | null;
-          faceit_url: string | null;
           finished_at: string | null;
-          game: string;
           id: string;
           location_pick: string | null;
           map_pick: string | null;
           organizer_id: string;
-          region: string;
           round_score: string | null;
           started_at: string | null;
           status: string | null;
         };
         Insert: {
           competition_id: string;
-          demo_url?: string | null;
-          faceit_url?: string | null;
           finished_at?: string | null;
-          game: string;
           id: string;
           location_pick?: string | null;
           map_pick?: string | null;
           organizer_id: string;
-          region: string;
           round_score?: string | null;
           started_at?: string | null;
           status?: string | null;
         };
         Update: {
           competition_id?: string;
-          demo_url?: string | null;
-          faceit_url?: string | null;
           finished_at?: string | null;
-          game?: string;
           id?: string;
           location_pick?: string | null;
           map_pick?: string | null;
           organizer_id?: string;
-          region?: string;
           round_score?: string | null;
           started_at?: string | null;
           status?: string | null;
@@ -243,7 +222,6 @@ export type Database = {
           cover_image: string | null;
           created_at: string;
           faceit_elo: number;
-          faceit_url: string;
           id: string;
           nickname: string;
           skill_level: number;
@@ -256,7 +234,6 @@ export type Database = {
           cover_image?: string | null;
           created_at?: string;
           faceit_elo: number;
-          faceit_url: string;
           id: string;
           nickname: string;
           skill_level: number;
@@ -269,7 +246,6 @@ export type Database = {
           cover_image?: string | null;
           created_at?: string;
           faceit_elo?: number;
-          faceit_url?: string;
           id?: string;
           nickname?: string;
           skill_level?: number;

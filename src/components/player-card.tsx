@@ -21,7 +21,6 @@ type PlayerCardProps = {
     country: string | null;
     cover_image: string | null;
     faceit_elo: number;
-    faceit_url: string;
     id: string;
     nickname: string;
     skill_level: number;
@@ -211,7 +210,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
     const list = [
       {
         key: "faceit",
-        href: player.faceit_url.replace("{lang}", "en"),
+        href: `https://www.faceit.com/en/players/${player.nickname}`,
         icon: <FaceitIcon className="size-6" />,
       },
       {

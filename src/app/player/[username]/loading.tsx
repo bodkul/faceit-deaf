@@ -37,7 +37,6 @@ export default function Loading() {
       <Card>
         <CardHeader>
           <CardTitle>Match Histories</CardTitle>
-          <CardDescription>0 matches played</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

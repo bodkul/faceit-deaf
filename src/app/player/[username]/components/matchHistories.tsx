@@ -51,7 +51,6 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
     nextPage,
     isLoading,
     mutate,
-    count,
   } = useMatchHistories(playerId);
 
   useMatchesSubscription(() => mutate().then());
@@ -60,7 +59,6 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
     <Card>
       <CardHeader>
         <CardTitle>Match Histories</CardTitle>
-        <CardDescription>{count ?? 0} matches played</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

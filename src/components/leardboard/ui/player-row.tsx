@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { SkillLevelIcon } from "@/app/icons";
+import { SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TableCell, TableRow } from "@/components/ui/table";
 

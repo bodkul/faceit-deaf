@@ -5,7 +5,12 @@ import Image from "next/image";
 import { useMemo } from "react";
 import Flag from "react-world-flags";
 
-import { FaceitIcon, SkillLevelIcon, SteamIcon, TwitchIcon } from "@/app/icons";
+import {
+  FaceitIcon,
+  SkillLevelIcon,
+  SteamIcon,
+  TwitchIcon,
+} from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

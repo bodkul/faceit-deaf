@@ -35,6 +35,7 @@ export interface Player {
 }
 
 export interface PlayerStats {
+  [key: string]: string | null;
   Assists: string;
   "Best Of": string;
   "Competition Id": string;
@@ -69,7 +70,7 @@ export interface PlayerStats {
   "Updated At": string;
   Winner: string;
   ADR: string;
-  "Match Finished At": number;
+  "Match Finished At": string;
 }
 
 export interface PlayerCS2Stats {

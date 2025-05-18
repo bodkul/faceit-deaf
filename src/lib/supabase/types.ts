@@ -6,43 +6,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-type PlayerStats = {
-  Assists: string;
-  "Best Of": string;
-  "Competition Id": string;
-  "Created At": string;
-  Deaths: string;
-  "Final Score": string;
-  "First Half Score": string;
-  Game: string;
-  "Game Mode": string;
-  Headshots: string;
-  "Headshots %": string;
-  "K/D Ratio": string;
-  "K/R Ratio": string;
-  Kills: string;
-  MVPs: string;
-  Map: string;
-  "Match Id": string;
-  "Match Round": string;
-  Nickname: string;
-  "Overtime score": string;
-  "Penta Kills": string;
-  "Player Id": string;
-  "Quadro Kills": string;
-  Region: string;
-  Result: string;
-  Rounds: string;
-  Score: string;
-  "Second Half Score": string;
-  Team: string;
-  "Triple Kills": string;
-  "Updated At": string;
-  Winner: string;
-  ADR: string;
-  "Match Finished At": number;
-};
-
 export type Database = {
   public: {
     Tables: {
@@ -86,7 +49,6 @@ export type Database = {
           nickname: string;
           player_id_mandatory: string;
           player_id_nullable: string | null;
-          player_stats: PlayerStats | null;
         };
         Insert: {
           avatar?: string | null;
@@ -98,7 +60,6 @@ export type Database = {
           nickname: string;
           player_id_mandatory: string;
           player_id_nullable?: string | null;
-          player_stats?: PlayerStats | null;
         };
         Update: {
           avatar?: string | null;
@@ -110,7 +71,6 @@ export type Database = {
           nickname?: string;
           player_id_mandatory?: string;
           player_id_nullable?: string | null;
-          player_stats?: PlayerStats | null;
         };
         Relationships: [
           {
@@ -214,6 +174,164 @@ export type Database = {
           status?: string | null;
         };
         Relationships: [];
+      };
+      player_stats_normalized: {
+        Row: {
+          "1v1count": string | null;
+          "1v1wins": string | null;
+          "1v2count": string | null;
+          "1v2wins": string | null;
+          adr: string | null;
+          assists: string | null;
+          clutch_kills: string | null;
+          damage: string | null;
+          deaths: string | null;
+          double_kills: string | null;
+          enemies_flashed: string | null;
+          enemies_flashed_per_round_in_a_match: string | null;
+          entry_count: string | null;
+          entry_wins: string | null;
+          first_kills: string | null;
+          flash_count: string | null;
+          flash_success_rate_per_match: string | null;
+          flash_successes: string | null;
+          flashes_per_round_in_a_match: string | null;
+          headshots: string | null;
+          headshots_percent: string | null;
+          kd_ratio: string | null;
+          kr_ratio: string | null;
+          kills: string | null;
+          knife_kills: string | null;
+          match_1v1_win_rate: string | null;
+          match_1v2_win_rate: string | null;
+          match_entry_rate: string | null;
+          match_entry_success_rate: string | null;
+          match_team_player_id: string;
+          mvps: string | null;
+          penta_kills: string | null;
+          pistol_kills: string | null;
+          quadro_kills: string | null;
+          sniper_kill_rate_per_match: string | null;
+          sniper_kill_rate_per_round: string | null;
+          sniper_kills: string | null;
+          triple_kills: string | null;
+          utility_count: string | null;
+          utility_damage: string | null;
+          utility_damage_per_round_in_a_match: string | null;
+          utility_damage_success_rate_per_match: string | null;
+          utility_enemies: string | null;
+          utility_success_rate_per_match: string | null;
+          utility_successes: string | null;
+          utility_usage_per_round: string | null;
+          zeus_kills: string | null;
+        };
+        Insert: {
+          "1v1count"?: string | null;
+          "1v1wins"?: string | null;
+          "1v2count"?: string | null;
+          "1v2wins"?: string | null;
+          adr?: string | null;
+          assists?: string | null;
+          clutch_kills?: string | null;
+          damage?: string | null;
+          deaths?: string | null;
+          double_kills?: string | null;
+          enemies_flashed?: string | null;
+          enemies_flashed_per_round_in_a_match?: string | null;
+          entry_count?: string | null;
+          entry_wins?: string | null;
+          first_kills?: string | null;
+          flash_count?: string | null;
+          flash_success_rate_per_match?: string | null;
+          flash_successes?: string | null;
+          flashes_per_round_in_a_match?: string | null;
+          headshots?: string | null;
+          headshots_percent?: string | null;
+          kd_ratio?: string | null;
+          kr_ratio?: string | null;
+          kills?: string | null;
+          knife_kills?: string | null;
+          match_1v1_win_rate?: string | null;
+          match_1v2_win_rate?: string | null;
+          match_entry_rate?: string | null;
+          match_entry_success_rate?: string | null;
+          match_team_player_id: string;
+          mvps?: string | null;
+          penta_kills?: string | null;
+          pistol_kills?: string | null;
+          quadro_kills?: string | null;
+          sniper_kill_rate_per_match?: string | null;
+          sniper_kill_rate_per_round?: string | null;
+          sniper_kills?: string | null;
+          triple_kills?: string | null;
+          utility_count?: string | null;
+          utility_damage?: string | null;
+          utility_damage_per_round_in_a_match?: string | null;
+          utility_damage_success_rate_per_match?: string | null;
+          utility_enemies?: string | null;
+          utility_success_rate_per_match?: string | null;
+          utility_successes?: string | null;
+          utility_usage_per_round?: string | null;
+          zeus_kills?: string | null;
+        };
+        Update: {
+          "1v1count"?: string | null;
+          "1v1wins"?: string | null;
+          "1v2count"?: string | null;
+          "1v2wins"?: string | null;
+          adr?: string | null;
+          assists?: string | null;
+          clutch_kills?: string | null;
+          damage?: string | null;
+          deaths?: string | null;
+          double_kills?: string | null;
+          enemies_flashed?: string | null;
+          enemies_flashed_per_round_in_a_match?: string | null;
+          entry_count?: string | null;
+          entry_wins?: string | null;
+          first_kills?: string | null;
+          flash_count?: string | null;
+          flash_success_rate_per_match?: string | null;
+          flash_successes?: string | null;
+          flashes_per_round_in_a_match?: string | null;
+          headshots?: string | null;
+          headshots_percent?: string | null;
+          kd_ratio?: string | null;
+          kr_ratio?: string | null;
+          kills?: string | null;
+          knife_kills?: string | null;
+          match_1v1_win_rate?: string | null;
+          match_1v2_win_rate?: string | null;
+          match_entry_rate?: string | null;
+          match_entry_success_rate?: string | null;
+          match_team_player_id?: string;
+          mvps?: string | null;
+          penta_kills?: string | null;
+          pistol_kills?: string | null;
+          quadro_kills?: string | null;
+          sniper_kill_rate_per_match?: string | null;
+          sniper_kill_rate_per_round?: string | null;
+          sniper_kills?: string | null;
+          triple_kills?: string | null;
+          utility_count?: string | null;
+          utility_damage?: string | null;
+          utility_damage_per_round_in_a_match?: string | null;
+          utility_damage_success_rate_per_match?: string | null;
+          utility_enemies?: string | null;
+          utility_success_rate_per_match?: string | null;
+          utility_successes?: string | null;
+          utility_usage_per_round?: string | null;
+          zeus_kills?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "player_stats_normalized_match_team_player_id_fkey";
+            columns: ["match_team_player_id"];
+            isOneToOne: true;
+            referencedRelation: "match_team_players";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       players: {
         Row: {

@@ -95,6 +95,23 @@ export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
   return data;
 }
 
+export async function upsertMatchTeamPlayer(
+  player: TablesInsert<"match_team_players">,
+) {
+  const { data, error } = await supabase
+    .from("match_team_players")
+    .upsert(player, { onConflict: "match_team_id, player_id_mandatory" })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("Failed to upsert match team players", error);
+    throw error;
+  }
+
+  return data;
+}
+
 export async function upsertMatchTeamPlayers(
   players: TablesInsert<"match_team_players">[],
 ) {
@@ -103,6 +120,18 @@ export async function upsertMatchTeamPlayers(
     .upsert(players, { onConflict: "match_team_id, player_id_mandatory" });
   if (error) {
     console.error("Failed to upsert match team players", error);
+    throw error;
+  }
+}
+
+export async function upsertPlayerStatsNormalized(
+  player: TablesInsert<"player_stats_normalized">,
+) {
+  const { error } = await supabase
+    .from("player_stats_normalized")
+    .upsert(player, { onConflict: "match_team_player_id" });
+  if (error) {
+    console.error("Failed to upsert player stats normalized", error);
     throw error;
   }
 }

@@ -7,8 +7,9 @@ import {
   getExistingPlayers,
   upsertMatch,
   upsertMatchTeam,
-  upsertMatchTeamPlayers,
+  upsertMatchTeamPlayer,
   upsertPlayers,
+  upsertPlayerStatsNormalized,
 } from "@/lib/supabase/mutations";
 
 async function handleMatchStatusFinished(payload: MatchPayload) {
@@ -78,30 +79,83 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
       team_win: stats["Team Win"] === "1",
     });
 
-    await upsertMatchTeamPlayers(
-      team.roster.map((player) => {
-        const qwe = roundTeam?.players.find((p) => p.player_id === player.id);
-        const elo_before = existingPlayers.find(
-          (p) => p.id === player.id,
-        )?.faceit_elo;
-        const elo_after = players.find((p) => p.player_id === player.id)?.games
-          .cs2.faceit_elo;
+    for (const player of team.roster) {
+      const qwe = roundTeam?.players.find((p) => p.player_id === player.id);
 
-        return {
-          match_team_id: resTeam.id,
-          player_id_nullable: existingPlayerIds.includes(player.id)
-            ? player.id
-            : null,
-          player_id_mandatory: player.id,
-          nickname: player.nickname,
-          avatar: player.avatar,
-          game_skill_level: player.game_skill_level,
-          player_stats: qwe?.player_stats,
-          elo_before,
-          elo_after,
-        };
-      }),
-    );
+      const resPlayer = await upsertMatchTeamPlayer({
+        match_team_id: resTeam.id,
+        player_id_nullable: existingPlayerIds.includes(player.id)
+          ? player.id
+          : null,
+        player_id_mandatory: player.id,
+        nickname: player.nickname,
+        avatar: player.avatar,
+        game_skill_level: player.game_skill_level,
+        elo_before: existingPlayers.find((p) => p.id === player.id)?.faceit_elo,
+        elo_after: players.find((p) => p.player_id === player.id)?.games.cs2
+          .faceit_elo,
+      });
+
+      await upsertPlayerStatsNormalized({
+        match_team_player_id: resPlayer.id,
+        adr: qwe?.player_stats?.ADR ?? null,
+        mvps: qwe?.player_stats?.MVPs ?? null,
+        kills: qwe?.player_stats?.Kills ?? null,
+        damage: qwe?.player_stats?.Damage ?? null,
+        deaths: qwe?.player_stats?.Deaths ?? null,
+        "1v1wins": qwe?.player_stats?.["1v1Wins"] ?? null,
+        "1v2wins": qwe?.player_stats?.["1v2Wins"] ?? null,
+        assists: qwe?.player_stats?.Assists ?? null,
+        "1v1count": qwe?.player_stats?.["1v1Count"] ?? null,
+        "1v2count": qwe?.player_stats?.["1v2Count"] ?? null,
+        headshots: qwe?.player_stats?.Headshots ?? null,
+        kd_ratio: qwe?.player_stats?.["K/D Ratio"] ?? null,
+        kr_ratio: qwe?.player_stats?.["K/R Ratio"] ?? null,
+        entry_wins: qwe?.player_stats?.["Entry Wins"] ?? null,
+        entry_count: qwe?.player_stats?.["Entry Count"] ?? null,
+        first_kills: qwe?.player_stats?.["First Kills"] ?? null,
+        flash_count: qwe?.player_stats?.["Flash Count"] ?? null,
+        headshots_percent: qwe?.player_stats?.["Headshots %"] ?? null,
+        clutch_kills: qwe?.player_stats?.["Clutch Kills"] ?? null,
+        double_kills: qwe?.player_stats?.["Double Kills"] ?? null,
+        pistol_kills: qwe?.player_stats?.["Pistol Kills"] ?? null,
+        quadro_kills: qwe?.player_stats?.["Quadro Kills"] ?? null,
+        triple_kills: qwe?.player_stats?.["Triple Kills"] ?? null,
+        utility_count: qwe?.player_stats?.["Utility Count"] ?? null,
+        utility_damage: qwe?.player_stats?.["Utility Damage"] ?? null,
+        enemies_flashed: qwe?.player_stats?.["Enemies Flashed"] ?? null,
+        flash_successes: qwe?.player_stats?.["Flash Successes"] ?? null,
+        utility_enemies: qwe?.player_stats?.["Utility Enemies"] ?? null,
+        match_entry_rate: qwe?.player_stats?.["Match Entry Rate"] ?? null,
+        utility_successes: qwe?.player_stats?.["Utility Successes"] ?? null,
+        match_1v1_win_rate: qwe?.player_stats?.["Match 1v1 Win Rate"] ?? null,
+        match_1v2_win_rate: qwe?.player_stats?.["Match 1v2 Win Rate"] ?? null,
+        utility_usage_per_round:
+          qwe?.player_stats?.["Utility Usage per Round"] ?? null,
+        match_entry_success_rate:
+          qwe?.player_stats?.["Match Entry Success Rate"] ?? null,
+        flash_success_rate_per_match:
+          qwe?.player_stats?.["Flash Success Rate per Match"] ?? null,
+        flashes_per_round_in_a_match:
+          qwe?.player_stats?.["Flashes per Round in a Match"] ?? null,
+        utility_success_rate_per_match:
+          qwe?.player_stats?.["Utility Success Rate per Match"] ?? null,
+        utility_damage_per_round_in_a_match:
+          qwe?.player_stats?.["Utility Damage per Round in a Match"] ?? null,
+        enemies_flashed_per_round_in_a_match:
+          qwe?.player_stats?.["Enemies Flashed per Round in a Match"] ?? null,
+        utility_damage_success_rate_per_match:
+          qwe?.player_stats?.["Utility Damage Success Rate per Match"] ?? null,
+        zeus_kills: qwe?.player_stats?.["Zeus Kills"] ?? null,
+        knife_kills: qwe?.player_stats?.["Knife Kills"] ?? null,
+        penta_kills: qwe?.player_stats?.["Penta Kills"] ?? null,
+        sniper_kills: qwe?.player_stats?.["Sniper Kills"] ?? null,
+        sniper_kill_rate_per_match:
+          qwe?.player_stats?.["Sniper Kill Rate per Match"] ?? null,
+        sniper_kill_rate_per_round:
+          qwe?.player_stats?.["Sniper Kill Rate per Round"] ?? null,
+      });
+    }
   }
 }
 

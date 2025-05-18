@@ -17,7 +17,7 @@ export default function useMatchHistories(playerId: string) {
     supabase
       .from("matches")
       .select(
-        "id, started_at, finished_at, map_pick, round_score, team:match_teams!inner(team_win, team_players:match_team_players!inner(id, player_id_mandatory, player_stats))",
+        "id, started_at, finished_at, map_pick, round_score, team:match_teams!inner(team_win, team_players:match_team_players!inner(id, player_id_mandatory, player_stats:player_stats_normalized(kills, deaths, assists, headshots, adr, kr_ratio)))",
       )
       .eq("team.team_players.player_id_mandatory", playerId)
       .order("started_at", {

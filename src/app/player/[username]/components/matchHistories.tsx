@@ -73,8 +73,8 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
                   ? data?.map((match) => {
                       const team = match.team[0];
                       const player_stats = team.team_players[0].player_stats;
-                      const kills = Number(player_stats?.Kills ?? 0);
-                      const deaths = Number(player_stats?.Deaths ?? 0);
+                      const kills = Number(player_stats?.kills ?? 0);
+                      const deaths = Number(player_stats?.deaths ?? 0);
 
                       const kd = player_stats ? kills / deaths : undefined;
 
@@ -108,8 +108,8 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
                             )}
                           </TableCell>
                           <TableCell>
-                            {player_stats?.Kills && player_stats?.Deaths ? (
-                              `${player_stats.Kills} - ${player_stats.Deaths}`
+                            {player_stats?.kills && player_stats?.deaths ? (
+                              `${player_stats.kills} - ${player_stats.deaths}`
                             ) : (
                               <Skeleton className="h-5 w-12" />
                             )}
@@ -133,12 +133,12 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
                                       .map(Number)
                                       .reduce((a, b) => a + b, 0)
                                       .toString() ?? "0",
-                                  Assists: player_stats.Assists,
-                                  Kills: player_stats.Kills,
-                                  Deaths: player_stats.Deaths,
-                                  Headshots: player_stats.Headshots,
-                                  ADR: player_stats.ADR,
-                                  "K/R Ratio": player_stats["K/R Ratio"],
+                                  Assists: player_stats.assists ?? "0",
+                                  Kills: player_stats.kills ?? "0",
+                                  Deaths: player_stats.deaths ?? "0",
+                                  Headshots: player_stats.headshots ?? "0",
+                                  ADR: player_stats.adr ?? "0",
+                                  "K/R Ratio": player_stats.kr_ratio ?? "0",
                                 },
                               ]).rating.toFixed(2)
                             ) : (

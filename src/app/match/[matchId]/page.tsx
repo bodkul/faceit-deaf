@@ -165,12 +165,10 @@ export default function Page(props: { params: Promise<{ matchId: string }> }) {
           {match.teams.flatMap((team) => {
             team.team_players.sort((a, b) => {
               const kdA = a.player_stats
-                ? Number(a.player_stats["Kills"]) -
-                  Number(a.player_stats["Deaths"])
+                ? Number(a.player_stats.kills) - Number(a.player_stats.deaths)
                 : 0;
               const kdB = b.player_stats
-                ? Number(b.player_stats["Kills"]) -
-                  Number(b.player_stats["Deaths"])
+                ? Number(b.player_stats.kills) - Number(b.player_stats.deaths)
                 : 0;
 
               return kdB - kdA;
@@ -205,12 +203,12 @@ export default function Page(props: { params: Promise<{ matchId: string }> }) {
                         ? calculateAverageStats([
                             {
                               Rounds: totalScore.toString(),
-                              Assists: player.player_stats.Assists,
-                              Kills: player.player_stats.Kills,
-                              Deaths: player.player_stats.Deaths,
-                              Headshots: player.player_stats.Headshots,
-                              ADR: player.player_stats.ADR,
-                              "K/R Ratio": player.player_stats["K/R Ratio"],
+                              Assists: player.player_stats.assists ?? "0",
+                              Kills: player.player_stats.kills ?? "0",
+                              Deaths: player.player_stats.deaths ?? "0",
+                              Headshots: player.player_stats.headshots ?? "0",
+                              ADR: player.player_stats.adr ?? "0",
+                              "K/R Ratio": player.player_stats.kr_ratio ?? "0",
                             },
                           ])
                         : null;
@@ -233,7 +231,7 @@ export default function Page(props: { params: Promise<{ matchId: string }> }) {
 
                           <TableCell className="w-[10%]">
                             {player.player_stats ? (
-                              `${Number(player.player_stats["Kills"])} - ${Number(player.player_stats["Deaths"])}`
+                              `${Number(player.player_stats.kills)} - ${Number(player.player_stats.deaths)}`
                             ) : (
                               <Skeleton className="h-5 w-10" />
                             )}
@@ -243,18 +241,18 @@ export default function Page(props: { params: Promise<{ matchId: string }> }) {
                             className={cn("w-[7.5%]", {
                               "text-green-500":
                                 player.player_stats &&
-                                Number(player.player_stats["Kills"]) >
-                                  Number(player.player_stats["Deaths"]),
+                                Number(player.player_stats.kills) >
+                                  Number(player.player_stats.deaths),
                               "text-red-500":
                                 player.player_stats &&
-                                Number(player.player_stats["Kills"]) <
-                                  Number(player.player_stats["Deaths"]),
+                                Number(player.player_stats.kills) <
+                                  Number(player.player_stats.deaths),
                             })}
                           >
                             {player.player_stats ? (
                               insertNumberSign(
-                                Number(player.player_stats["Kills"]) -
-                                  Number(player.player_stats["Deaths"]),
+                                Number(player.player_stats.kills) -
+                                  Number(player.player_stats.deaths),
                               )
                             ) : (
                               <Skeleton className="h-5 w-6" />
@@ -263,7 +261,7 @@ export default function Page(props: { params: Promise<{ matchId: string }> }) {
 
                           <TableCell className="w-[10%]">
                             {player.player_stats ? (
-                              Number(player.player_stats["ADR"]).toFixed(1)
+                              Number(player.player_stats.adr).toFixed(1)
                             ) : (
                               <Skeleton className="h-5 w-8" />
                             )}

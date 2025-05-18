@@ -40,6 +40,7 @@ export interface PlayerStats {
   "Competition Id": string;
   "Created At": string;
   Deaths: string;
+  Damage: string;
   "Final Score": string;
   "First Half Score": string;
   Game: string;

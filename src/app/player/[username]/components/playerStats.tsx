@@ -7,15 +7,15 @@ export default function PlayerStats({ playerId }: { playerId: string }) {
   const { data, isLoading } = usePlayerStats(playerId);
 
   const stats = calculateAverageStats(
-    data?.flatMap((item) => {
+    data?.flatMap(({ player_stats_normalized }) => {
       return {
-        Rounds: String(item.rounds),
-        Assists: item.assists,
-        Deaths: item.deaths,
-        Kills: item.kills,
-        Headshots: item.headshots,
-        ADR: item.adr,
-        "K/R Ratio": item.kpr,
+        Rounds: "0",
+        Assists: player_stats_normalized?.assists ?? "0",
+        Deaths: player_stats_normalized?.deaths ?? "0",
+        Kills: player_stats_normalized?.kills ?? "0",
+        Headshots: player_stats_normalized?.headshots ?? "0",
+        ADR: player_stats_normalized?.adr ?? "0",
+        "K/R Ratio": player_stats_normalized?.kr_ratio ?? "0",
       };
     }) ?? [],
   );

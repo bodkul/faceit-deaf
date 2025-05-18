@@ -17,8 +17,6 @@ export async function generateMetadata({ params }: { params: Params }) {
   };
 }
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export default async function Page(props: { params: Params }) {
   const { username } = await props.params;
 
@@ -27,8 +25,6 @@ export default async function Page(props: { params: Params }) {
   if (!player) {
     return notFound();
   }
-
-  await sleep(500);
 
   return (
     <>

@@ -89,7 +89,6 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
           : null,
         player_id_mandatory: player.id,
         nickname: player.nickname,
-        avatar: player.avatar,
         game_skill_level: player.game_skill_level,
         elo_before: existingPlayers.find((p) => p.id === player.id)?.faceit_elo,
         elo_after: players.find((p) => p.player_id === player.id)?.games.cs2

@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import {
   Bar,
   BarChart,
@@ -22,22 +23,18 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import usePlayedMaps from "@/hooks/queries/usePlayedMaps";
+import { formatMapPicks } from "@/lib/maps/formatMapPicks";
+import { supabase } from "@/lib/supabase";
 
 const chartConfig = {
-  map: {
-    color: "var(--chart-1)",
-  },
-  label: {
-    color: "var(--background)",
-  },
-  count: {
-    label: "Count",
-  },
+  map: { color: "var(--chart-1)" },
+  label: { color: "var(--background)" },
+  count: { label: "Count" },
 } satisfies ChartConfig;
 
 export default function Page() {
-  const { maps } = usePlayedMaps();
+  const { data } = useQuery(supabase.rpc("get_map_picks_count"));
+  const maps = formatMapPicks(data ?? undefined);
 
   return (
     <Card>
@@ -49,11 +46,9 @@ export default function Page() {
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={maps ?? undefined}
+            data={maps}
             layout="vertical"
-            margin={{
-              right: 16,
-            }}
+            margin={{ right: 16 }}
           >
             <CartesianGrid horizontal={false} />
             <YAxis

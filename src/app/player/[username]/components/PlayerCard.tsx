@@ -14,7 +14,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import useCountMatchesByPlayerId from "@/hooks/queries/useCountMatchesByPlayerId";
 import usePlayerStats from "@/hooks/queries/usePlayerStats";
 import calculateAverageStats from "@/lib/calculateAverageStats";
 import { supabase } from "@/lib/supabase";
@@ -146,13 +145,14 @@ export function PlayerCardSceleton() {
 
 export function PlayerCard({ player }: PlayerCardProps) {
   const { data: statsData } = usePlayerStats(player.id);
-  const { count: matchCount } = useCountMatchesByPlayerId(player.id);
 
-  const { data: rawMatchData } = useQuery(
+  const { data: rawMatchData, count: matchCount } = useQuery(
     supabase
       .from("match_team_players")
-      .select("match_teams(team_win, matches(id, map_pick, started_at))")
-      .eq("player_id_mandatory", player.id),
+      .select("match_teams(team_win, matches(id, map_pick, started_at))", {
+        count: "exact",
+      })
+      .match({ player_id_mandatory: player.id }),
   );
 
   const matchTeamPlayers = useMemo(() => {

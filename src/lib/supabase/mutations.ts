@@ -1,15 +1,5 @@
 import { supabase, type TablesInsert } from "@/lib/supabase";
 
-export async function getPlayer(nickname: string) {
-  return supabase
-    .from("players")
-    .select(
-      "id, avatar, nickname, steam_id_64, twitch_username, faceit_elo, skill_level, cover_image, country",
-    )
-    .match({ nickname })
-    .single();
-}
-
 export async function getAllMatchesForPlayer(playerId: string) {
   let allMatches: {
     match_teams: {

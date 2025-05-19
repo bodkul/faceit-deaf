@@ -1,13 +1,12 @@
 "use client";
 
-import { formatRelative } from "date-fns";
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,38 +15,41 @@ import {
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import useMatchHistories from "@/hooks/queries/useMatchHistories";
 import useMatchesSubscription from "@/hooks/subscriptions/useMatchesSubscription";
-import calculateAverageStats from "@/lib/calculateAverageStats";
-import { cn } from "@/lib/utils";
 
+import { MatchHistoriesTableHead } from "./MatchHistoriesTableHead";
+import { MatchHistoriesTableRow } from "./MatchHistoriesTableRow";
 import renderLoadingRows from "./renderLoadingRows";
 
 export default function MatchHistories({ playerId }: { playerId: string }) {
-  const router = useRouter();
-
   const {
     matches,
+    isLoading,
     pageIndex,
     totalPages,
+    nextPage,
+    previousPage,
     firstPage,
     lastPage,
-    previousPage,
-    nextPage,
-    isLoading,
     mutate,
   } = useMatchHistories(playerId);
 
   useMatchesSubscription(() => mutate().then());
+
+  const rows = useMemo(() => {
+    if (isLoading) return renderLoadingRows(20);
+    if (!matches?.length) return null;
+
+    return matches.map((match) => (
+      <MatchHistoriesTableRow
+        key={match.id}
+        match={match}
+        playerId={playerId}
+      />
+    ));
+  }, [isLoading, matches, playerId]);
 
   return (
     <Card>
@@ -59,97 +61,9 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
           <div className="flex rounded-md border">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[20%]">Date</TableHead>
-                  <TableHead className="w-[16%]">Map</TableHead>
-                  <TableHead className="w-[16%]">Score</TableHead>
-                  <TableHead className="w-[16%]">K - D</TableHead>
-                  <TableHead className="w-[16%]">K/D</TableHead>
-                  <TableHead className="w-[16%]">Rating 2.0</TableHead>
-                </TableRow>
+                <MatchHistoriesTableHead />
               </TableHeader>
-              <TableBody>
-                {!isLoading
-                  ? data?.map((match) => {
-                      const team = match.team[0];
-                      const player_stats = team.team_players[0].player_stats;
-                      const kills = Number(player_stats?.kills ?? 0);
-                      const deaths = Number(player_stats?.deaths ?? 0);
-
-                      const kd = player_stats ? kills / deaths : undefined;
-
-                      return (
-                        <TableRow
-                          key={match.id}
-                          className={cn(
-                            "cursor-pointer !border-r-4 whitespace-nowrap",
-                            {
-                              "border-r-red-500": team.team_win === false,
-                              "border-r-green-500": team.team_win === true,
-                            },
-                          )}
-                          onClick={() => router.push(`/match/${match.id}`)}
-                        >
-                          <TableCell>
-                            {match.finished_at ? (
-                              formatRelative(match.finished_at, new Date())
-                            ) : (
-                              <Skeleton className="h-5 w-24" />
-                            )}
-                          </TableCell>
-                          <TableCell className="text-[#87a3bf] capitalize">
-                            {match.map_pick?.replace("de_", "") ?? (
-                              <Skeleton className="h-5 w-12" />
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {match.round_score ?? (
-                              <Skeleton className="h-5 w-10" />
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {player_stats?.kills && player_stats?.deaths ? (
-                              `${player_stats.kills} - ${player_stats.deaths}`
-                            ) : (
-                              <Skeleton className="h-5 w-12" />
-                            )}
-                          </TableCell>
-                          <TableCell
-                            className={cn("font-semibold", {
-                              "text-red-500": kd && kd < 0.95,
-                              "text-green-500": kd && kd > 1.05,
-                              "text-[#929a9e]": kd && kd >= 0.95 && kd <= 1.05,
-                            })}
-                          >
-                            {kd?.toFixed(2) ?? <Skeleton className="h-5 w-8" />}
-                          </TableCell>
-                          <TableCell>
-                            {player_stats ? (
-                              calculateAverageStats([
-                                {
-                                  Rounds:
-                                    match.round_score
-                                      ?.split(" / ")
-                                      .map(Number)
-                                      .reduce((a, b) => a + b, 0)
-                                      .toString() ?? "0",
-                                  Assists: player_stats.assists ?? "0",
-                                  Kills: player_stats.kills ?? "0",
-                                  Deaths: player_stats.deaths ?? "0",
-                                  Headshots: player_stats.headshots ?? "0",
-                                  ADR: player_stats.adr ?? "0",
-                                  "K/R Ratio": player_stats.kr_ratio ?? "0",
-                                },
-                              ]).rating.toFixed(2)
-                            ) : (
-                              <Skeleton className="h-5 w-8" />
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  : renderLoadingRows(20)}
-              </TableBody>
+              <TableBody>{rows}</TableBody>
             </Table>
           </div>
 

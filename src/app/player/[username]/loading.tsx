@@ -5,7 +5,6 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
-import { PlayerCardSceleton } from "@/components/player-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,14 +12,10 @@ import {
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableHeader } from "@/components/ui/table";
 
+import { MatchHistoriesTableHead } from "./components/MatchHistoriesTableHead";
+import { PlayerCardSceleton } from "./components/PlayerCard";
 import renderLoadingRows from "./components/renderLoadingRows";
 
 export default function Loading() {
@@ -37,14 +32,7 @@ export default function Loading() {
             <div className="flex rounded-md border">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[20%]">Date</TableHead>
-                    <TableHead className="w-[16%]">Map</TableHead>
-                    <TableHead className="w-[16%]">Score</TableHead>
-                    <TableHead className="w-[16%]">K - D</TableHead>
-                    <TableHead className="w-[16%]">K/D</TableHead>
-                    <TableHead className="w-[16%]">Rating 2.0</TableHead>
-                  </TableRow>
+                  <MatchHistoriesTableHead />
                 </TableHeader>
                 <TableBody>{renderLoadingRows(20)}</TableBody>
               </Table>

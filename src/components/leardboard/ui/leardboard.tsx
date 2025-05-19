@@ -20,10 +20,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import usePlayersWithPagination from "@/hooks/queries/usePlayers";
 import useEloHistorySubscription from "@/hooks/subscriptions/useEloHistorySubscription";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
 
-import usePlayersWithPagination from "../queries";
 import { PlayerRow, renderLoadingRows } from ".";
 
 const PAGE_SIZE = 20;

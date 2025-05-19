@@ -36,7 +36,7 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
   const router = useRouter();
 
   const {
-    data,
+    matches,
     pageIndex,
     totalPages,
     firstPage,

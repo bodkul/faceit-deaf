@@ -25,7 +25,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
-          <div className="flex-col md:flex max-w-screen-xl mx-auto border-x border-b">
+          <div className="flex-col md:flex max-w-(--breakpoint-xl) mx-auto border-x border-b">
             <div className="border-b sticky top-0 z-10 border-border/40 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60 dark:border-border">
               <div className="flex h-14 items-center px-4">
                 <MainNav />

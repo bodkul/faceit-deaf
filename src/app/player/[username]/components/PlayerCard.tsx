@@ -99,7 +99,7 @@ export function PlayerCardSceleton() {
       </div>
 
       <div className="flex flex-col justify-center grow">
-        <div className="!flex-row justify-between h-auto flex items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px] p-4">
+        <div className="flex-row! justify-between h-auto flex items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px] p-4">
           <span className="text-[#cfcfcf] uppercase text-sm">
             Social Networks
           </span>
@@ -241,7 +241,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
       {player.cover_image && (
         <Image
           src={player.cover_image}
-          className="top-0 rounded-3xl absolute -z-[1] size-full left-0"
+          className="top-0 rounded-3xl absolute -z-1 size-full left-0"
           width={2560}
           height={640}
           alt="cover image"
@@ -315,7 +315,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
             <div className="relative flex flex-col items-center justify-center size-full mt-3 rounded-[8px] py-3.5 px-1 bg-[rgba(0,0,0,0.48)] text-white">
               <Image
                 src={`/img/maps/${mostPlayedMap[0].slice(3).toLowerCase()}.webp`}
-                className="absolute -z-[1] size-full left-0 bottom-0 rounded-[8px] object-cover"
+                className="absolute -z-1 size-full left-0 bottom-0 rounded-[8px] object-cover"
                 width={400}
                 height={250}
                 alt={mostPlayedMap[0]}

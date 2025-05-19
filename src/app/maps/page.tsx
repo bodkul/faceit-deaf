@@ -72,7 +72,7 @@ export default function Page() {
                 dataKey="map"
                 position="insideLeft"
                 offset={8}
-                className="fill-[var(--color-label)]"
+                className="fill-(--color-label)"
                 fontSize={12}
               />
               <LabelList

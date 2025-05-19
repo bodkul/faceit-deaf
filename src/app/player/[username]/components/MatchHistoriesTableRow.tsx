@@ -23,7 +23,7 @@ export function MatchHistoriesTableRow({
   return (
     <TableRow
       key={match.id}
-      className={cn("cursor-pointer !border-r-4 whitespace-nowrap", {
+      className={cn("cursor-pointer border-r-4! whitespace-nowrap", {
         "border-r-red-500": team.team_win === false,
         "border-r-green-500": team.team_win === true,
       })}

@@ -7,7 +7,7 @@ import calculateAverageStats from "@/lib/calculateAverageStats";
 import { cn } from "@/lib/utils";
 import { MatchHistoryType } from "@/types/match";
 
-export function MatchHistoriesTableRow({
+export function MatchHistoryTableRow({
   match,
 }: {
   match: MatchHistoryType;

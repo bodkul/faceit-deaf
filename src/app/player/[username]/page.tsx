@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getPlayerByUsername } from "@/lib/supabase/players";
 
-import MatchHistories from "./components/MatchHistories";
+import MatchHistory from "./components/MatchHistory";
 import { PlayerCard } from "./components/PlayerCard";
 
 type Params = Promise<{ username: string }>;
@@ -25,7 +25,7 @@ export default async function Page(props: { params: Params }) {
   return (
     <>
       <PlayerCard player={player} />
-      <MatchHistories playerId={player.id} />
+      <MatchHistory playerId={player.id} />
     </>
   );
 }

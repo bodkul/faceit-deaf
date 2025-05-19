@@ -16,14 +16,14 @@ import {
   PaginationItem,
 } from "@/components/ui/pagination";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
-import useMatchHistories from "@/hooks/queries/useMatchHistories";
+import useMatchHistory from "@/hooks/queries/useMatchHistory";
 import useMatchesSubscription from "@/hooks/subscriptions/useMatchesSubscription";
 
-import { MatchHistoriesTableHead } from "./MatchHistoriesTableHead";
-import { MatchHistoriesTableRow } from "./MatchHistoriesTableRow";
+import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
+import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
 import renderLoadingRows from "./renderLoadingRows";
 
-export default function MatchHistories({ playerId }: { playerId: string }) {
+export default function MatchHistory({ playerId }: { playerId: string }) {
   const {
     matches,
     isLoading,
@@ -34,7 +34,7 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
     firstPage,
     lastPage,
     mutate,
-  } = useMatchHistories(playerId);
+  } = useMatchHistory(playerId);
 
   useMatchesSubscription(() => mutate().then());
 
@@ -43,25 +43,21 @@ export default function MatchHistories({ playerId }: { playerId: string }) {
     if (!matches?.length) return null;
 
     return matches.map((match) => (
-      <MatchHistoriesTableRow
-        key={match.id}
-        match={match}
-        playerId={playerId}
-      />
+      <MatchHistoryTableRow key={match.id} match={match} playerId={playerId} />
     ));
   }, [isLoading, matches, playerId]);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Match Histories</CardTitle>
+        <CardTitle>Match History</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex rounded-md border">
             <Table>
               <TableHeader>
-                <MatchHistoriesTableHead />
+                <MatchHistoryTableHead />
               </TableHeader>
               <TableBody>{rows}</TableBody>
             </Table>

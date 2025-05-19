@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/pagination";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 
-import { MatchHistoriesTableHead } from "./components/MatchHistoriesTableHead";
+import { MatchHistoryTableHead } from "./components/MatchHistoryTableHead";
 import { PlayerCardSceleton } from "./components/PlayerCard";
 import renderLoadingRows from "./components/renderLoadingRows";
 
@@ -25,14 +25,14 @@ export default function Loading() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Match Histories</CardTitle>
+          <CardTitle>Match History</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex rounded-md border">
               <Table>
                 <TableHeader>
-                  <MatchHistoriesTableHead />
+                  <MatchHistoryTableHead />
                 </TableHeader>
                 <TableBody>{renderLoadingRows(20)}</TableBody>
               </Table>

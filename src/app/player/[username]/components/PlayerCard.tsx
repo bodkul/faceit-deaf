@@ -50,7 +50,7 @@ function RecentSkeleton() {
 
 function MostPlayedMapSkeleton() {
   return (
-    <Skeleton className="relative flex flex-col items-center justify-center size-full mt-3 rounded-[8px] py-3.5 px-1 bg-[rgba(0,0,0,0.48)] text-white mb-0" />
+    <Skeleton className="relative mt-3 mb-0 flex size-full flex-col items-center justify-center rounded-[8px] bg-[rgba(0,0,0,0.48)] px-1 py-3.5 text-white" />
   );
 }
 
@@ -60,79 +60,79 @@ function WinrateSkeleton() {
 
 export function PlayerCardSceleton() {
   return (
-    <section className="flex relative items-stretch justify-between py-6 px-4 gap-2 rounded-3xl">
-      <div className="flex flex-col justify-center w-[200px]">
-        <div className="relative p-8 outline-0 flex flex-col h-full justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]">
-          <Skeleton className="size-[118px] rounded-full mb-4" />
+    <section className="relative flex items-stretch justify-between gap-2 rounded-3xl px-4 py-6">
+      <div className="flex w-[200px] flex-col justify-center">
+        <div className="relative mb-2 flex h-full flex-col items-center justify-center rounded-2xl bg-[#2123298f] p-8 outline-0 backdrop-blur-[32px]">
+          <Skeleton className="mb-4 size-[118px] rounded-full" />
           <Skeleton className="h-6 w-20" />
-          <div className="w-3.5 h-2.5 mt-2">
+          <div className="mt-2 h-2.5 w-3.5">
             <FlagSkeleton />
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col justify-center w-[190px]">
-        <div className="flex-row flex h-full justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]">
-          <Skeleton className="block size-10 mr-2 rounded-full" />
+      <div className="flex w-[190px] flex-col justify-center">
+        <div className="mb-2 flex h-full flex-row items-center justify-center rounded-2xl bg-[#2123298f] backdrop-blur-[32px]">
+          <Skeleton className="mr-2 block size-10 rounded-full" />
           <Skeleton className="h-6 w-20" />
         </div>
 
-        <div className="flex flex-col h-full p-3 justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]">
-          <span className="text-[#cfcfcf] mb-1 uppercase text-sm">Matches</span>
+        <div className="mb-2 flex h-full flex-col items-center justify-center rounded-2xl bg-[#2123298f] p-3 backdrop-blur-[32px]">
+          <span className="mb-1 text-sm text-[#cfcfcf] uppercase">Matches</span>
           <MatchCountSkeleton />
         </div>
-        <div className="flex flex-col h-full p-3 justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]">
-          <span className="text-[#cfcfcf] mb-1 uppercase text-sm">Recent</span>
-          <ul className="flex items-center justify-between text-white mb-0">
+        <div className="mb-2 flex h-full flex-col items-center justify-center rounded-2xl bg-[#2123298f] p-3 backdrop-blur-[32px]">
+          <span className="mb-1 text-sm text-[#cfcfcf] uppercase">Recent</span>
+          <ul className="mb-0 flex items-center justify-between text-white">
             <RecentSkeleton />
           </ul>
         </div>
       </div>
 
-      <div className="flex flex-col justify-center w-[160px]">
-        <div className="most_played_map flex flex-col h-full p-3 justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]">
-          <span className="text-[#cfcfcf] mb-1 uppercase text-sm">
+      <div className="flex w-[160px] flex-col justify-center">
+        <div className="most_played_map mb-2 flex h-full flex-col items-center justify-center rounded-2xl bg-[#2123298f] p-3 backdrop-blur-[32px]">
+          <span className="mb-1 text-sm text-[#cfcfcf] uppercase">
             Most Played Map
           </span>
           <MostPlayedMapSkeleton />
         </div>
       </div>
 
-      <div className="flex flex-col justify-center grow">
-        <div className="flex-row! justify-between h-auto flex items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px] p-4">
-          <span className="text-[#cfcfcf] uppercase text-sm">
+      <div className="flex grow flex-col justify-center">
+        <div className="mb-2 flex h-auto flex-row! items-center justify-between rounded-2xl bg-[#2123298f] p-4 backdrop-blur-[32px]">
+          <span className="text-sm text-[#cfcfcf] uppercase">
             Social Networks
           </span>
-          <ul className="flex items-center justify-between text-white mb-0">
+          <ul className="mb-0 flex items-center justify-between text-white">
             {[1, 2].flatMap((social) => (
               <li
                 key={social}
-                className="size-8 ml-2 text-center align-top rounded-[8px]"
+                className="ml-2 size-8 rounded-[8px] text-center align-top"
               >
-                <Skeleton className="flex size-8 items-center justify-center border-none rounded" />
+                <Skeleton className="flex size-8 items-center justify-center rounded border-none" />
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="flex flex-col h-full p-3 justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]">
-          <span className="text-[#cfcfcf] mb-2 uppercase text-sm">
+        <div className="mb-2 flex h-full flex-col items-center justify-center rounded-2xl bg-[#2123298f] p-3 backdrop-blur-[32px]">
+          <span className="mb-2 text-sm text-[#cfcfcf] uppercase">
             Average stats (overall)
           </span>
-          <ul className="flex items-center justify-between w-full grow text-white mb-0">
-            <li className="w-full mx-1 backdrop-blur-[32px] rounded-2xl mb-2 flex items-center justify-center flex-col p-3 h-full bg-[rgba(33,35,41,0.56)]">
+          <ul className="mb-0 flex w-full grow items-center justify-between text-white">
+            <li className="mx-1 mb-2 flex h-full w-full flex-col items-center justify-center rounded-2xl bg-[rgba(33,35,41,0.56)] p-3 backdrop-blur-[32px]">
               <span>Winrate</span>
               <WinrateSkeleton />
             </li>
-            <li className="w-full mx-1 backdrop-blur-[32px] rounded-2xl mb-2 flex items-center justify-center flex-col p-3 h-full bg-[rgba(33,35,41,0.56)]">
+            <li className="mx-1 mb-2 flex h-full w-full flex-col items-center justify-center rounded-2xl bg-[rgba(33,35,41,0.56)] p-3 backdrop-blur-[32px]">
               <span>HS Rate</span>
               <Skeleton className="h-6 w-18" />
             </li>
-            <li className="w-full mx-1 backdrop-blur-[32px] rounded-2xl mb-2 flex items-center justify-center flex-col p-3 h-full bg-[rgba(33,35,41,0.56)]">
+            <li className="mx-1 mb-2 flex h-full w-full flex-col items-center justify-center rounded-2xl bg-[rgba(33,35,41,0.56)] p-3 backdrop-blur-[32px]">
               <span>K/D</span>
               <Skeleton className="h-6 w-14" />
             </li>
-            <li className="w-full mx-1 backdrop-blur-[32px] rounded-2xl mb-2 flex items-center justify-center flex-col p-3 h-full bg-[rgba(33,35,41,0.56)]">
+            <li className="mx-1 mb-2 flex h-full w-full flex-col items-center justify-center rounded-2xl bg-[rgba(33,35,41,0.56)] p-3 backdrop-blur-[32px]">
               <span>ADR</span>
               <Skeleton className="h-6 w-14" />
             </li>
@@ -237,25 +237,25 @@ export function PlayerCard({ player }: PlayerCardProps) {
   }, [player]);
 
   return (
-    <section className="flex relative items-stretch justify-between py-6 px-4 gap-2 rounded-3xl">
+    <section className="relative flex items-stretch justify-between gap-2 rounded-3xl px-4 py-6">
       {player.cover_image && (
         <Image
           src={player.cover_image}
-          className="top-0 rounded-3xl absolute -z-1 size-full left-0"
+          className="absolute top-0 left-0 -z-1 size-full rounded-3xl"
           width={2560}
           height={640}
           alt="cover image"
         />
       )}
 
-      <div className="flex flex-col justify-center w-[200px]">
-        <div className="relative p-8 flex flex-col h-full items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]">
-          <Avatar className="size-[118px] mb-4">
+      <div className="flex w-[200px] flex-col justify-center">
+        <div className="relative mb-2 flex h-full flex-col items-center rounded-2xl bg-[#2123298f] p-8 backdrop-blur-[32px]">
+          <Avatar className="mb-4 size-[118px]">
             <AvatarImage src={player.avatar} alt="Avatar" />
             <AvatarFallback></AvatarFallback>
           </Avatar>
           <strong>{player.nickname}</strong>
-          <div className="w-3.5 h-2.5 mt-2 text-white">
+          <div className="mt-2 h-2.5 w-3.5 text-white">
             {player.country ? (
               <Flag code={player.country} width={14} height={9} />
             ) : (
@@ -265,11 +265,11 @@ export function PlayerCard({ player }: PlayerCardProps) {
         </div>
       </div>
 
-      <div className="flex flex-col justify-center w-[190px]">
-        <div className="flex-row flex h-full justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]">
+      <div className="flex w-[190px] flex-col justify-center">
+        <div className="mb-2 flex h-full flex-row items-center justify-center rounded-2xl bg-[#2123298f] backdrop-blur-[32px]">
           <SkillLevelIcon
             level={player.skill_level}
-            className="block size-10 mr-2"
+            className="mr-2 block size-10"
           />
           <strong className="elo-number text-white">
             {player.faceit_elo} ELO
@@ -277,7 +277,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
         </div>
 
         <div className={cardBaseClass}>
-          <span className="text-[#cfcfcf] mb-1 uppercase text-sm">Matches</span>
+          <span className="mb-1 text-sm text-[#cfcfcf] uppercase">Matches</span>
           {matchCount ? (
             <strong className="text-white">{matchCount}</strong>
           ) : (
@@ -286,7 +286,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
         </div>
 
         <div className={cardBaseClass}>
-          <span className="text-[#cfcfcf] mb-1 uppercase text-sm">Recent</span>
+          <span className="mb-1 text-sm text-[#cfcfcf] uppercase">Recent</span>
           <ul className="flex items-center justify-between text-white">
             {matchTeamPlayers
               ?.slice(0, 5)
@@ -306,16 +306,16 @@ export function PlayerCard({ player }: PlayerCardProps) {
         </div>
       </div>
 
-      <div className="flex flex-col justify-center w-[160px]">
+      <div className="flex w-[160px] flex-col justify-center">
         <div className={cardBaseClass}>
-          <span className="text-[#cfcfcf] mb-1 uppercase text-sm">
+          <span className="mb-1 text-sm text-[#cfcfcf] uppercase">
             Most Played Map
           </span>
           {mostPlayedMap.length > 0 ? (
-            <div className="relative flex flex-col items-center justify-center size-full mt-3 rounded-[8px] py-3.5 px-1 bg-[rgba(0,0,0,0.48)] text-white">
+            <div className="relative mt-3 flex size-full flex-col items-center justify-center rounded-[8px] bg-[rgba(0,0,0,0.48)] px-1 py-3.5 text-white">
               <Image
                 src={`/img/maps/${mostPlayedMap[0].slice(3).toLowerCase()}.webp`}
-                className="absolute -z-1 size-full left-0 bottom-0 rounded-[8px] object-cover"
+                className="absolute bottom-0 left-0 -z-1 size-full rounded-[8px] object-cover"
                 width={400}
                 height={250}
                 alt={mostPlayedMap[0]}
@@ -329,16 +329,16 @@ export function PlayerCard({ player }: PlayerCardProps) {
         </div>
       </div>
 
-      <div className="flex flex-col justify-center grow">
-        <div className="flex-row justify-between h-auto flex items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px] p-4">
-          <span className="text-[#cfcfcf] uppercase text-sm">
+      <div className="flex grow flex-col justify-center">
+        <div className="mb-2 flex h-auto flex-row items-center justify-between rounded-2xl bg-[#2123298f] p-4 backdrop-blur-[32px]">
+          <span className="text-sm text-[#cfcfcf] uppercase">
             Social Networks
           </span>
           <ul className="flex items-center text-white">
             {socials.map((s) => (
-              <li key={s.key} className="size-8 ml-2 text-center rounded-[8px]">
+              <li key={s.key} className="ml-2 size-8 rounded-[8px] text-center">
                 <a href={s.href} target="_blank" rel="noopener noreferrer">
-                  <Card className="flex size-8 items-center justify-center border-none rounded">
+                  <Card className="flex size-8 items-center justify-center rounded border-none">
                     {s.icon}
                   </Card>
                 </a>
@@ -348,14 +348,14 @@ export function PlayerCard({ player }: PlayerCardProps) {
         </div>
 
         <div className={cardBaseClass}>
-          <span className="text-[#cfcfcf] mb-2 uppercase text-sm">
+          <span className="mb-2 text-sm text-[#cfcfcf] uppercase">
             Average stats (overall)
           </span>
-          <ul className="flex items-center justify-between w-full grow text-white">
+          <ul className="flex w-full grow items-center justify-between text-white">
             {avgStats.map((s) => (
               <li
                 key={s.name}
-                className="w-full mx-1 backdrop-blur-[32px] rounded-2xl flex items-center justify-center flex-col p-3 h-full bg-[rgba(33,35,41,0.56)]"
+                className="mx-1 flex h-full w-full flex-col items-center justify-center rounded-2xl bg-[rgba(33,35,41,0.56)] p-3 backdrop-blur-[32px]"
               >
                 <span>{s.name}</span>
                 <strong>{s.value}</strong>

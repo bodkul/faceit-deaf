@@ -11,9 +11,9 @@ export default function MainNav() {
   const pathname = usePathname();
 
   return (
-    <div className="flex mr-4">
+    <div className="mr-4 flex">
       <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6">
-        <FaceitIcon className="size-6 text-[#ff5500] fill-[#ff5500]" />
+        <FaceitIcon className="size-6 fill-[#ff5500] text-[#ff5500]" />
         <span className="inline-block font-bold">{siteConfig.name}</span>
       </Link>
       <nav className="flex items-center gap-4 text-sm xl:gap-6">

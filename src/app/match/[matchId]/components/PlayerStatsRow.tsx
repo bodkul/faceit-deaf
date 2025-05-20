@@ -39,7 +39,7 @@ export function PlayerStatsRow({
 
   return (
     <TableRow>
-      <TableCell className="space-x-4 flex items-center">
+      <TableCell className="flex items-center space-x-4">
         <SkillLevelIcon
           level={player.game_skill_level ?? 0}
           className="size-8"

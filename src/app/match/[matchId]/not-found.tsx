@@ -1,6 +1,6 @@
 export default function notFound() {
   return (
-    <div className="h-96 flex flex-col text-center items-center justify-center">
+    <div className="flex h-96 flex-col items-center justify-center text-center">
       Sorry, the match was not found 😔
     </div>
   );

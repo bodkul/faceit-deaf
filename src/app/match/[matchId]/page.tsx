@@ -30,7 +30,7 @@ export default function Page(props: { params: Promise<{ matchId: string }> }) {
     <>
       <MatchHeader match={match} />
       <div className="flex space-x-12">
-        <div className="flex flex-col space-y-6 w-full">
+        <div className="flex w-full flex-col space-y-6">
           <h5 className="text-3xl font-bold">Stats</h5>
           {match.teams.map((team) => (
             <TeamStatsTable key={team.id} team={team} totalScore={totalScore} />

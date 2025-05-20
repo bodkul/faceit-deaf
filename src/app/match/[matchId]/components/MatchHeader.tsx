@@ -15,14 +15,14 @@ export function MatchHeader({ match }: { match: MatchType }) {
         <Image
           src={`/img/maps/${match.map_pick.slice(3).toLowerCase()}.webp`}
           alt="Map"
-          className="w-[1212px] h-[120px] rounded-t-xl object-cover"
+          className="h-[120px] w-[1212px] rounded-t-xl object-cover"
           width={1212}
           height={120}
         />
       )}
 
       <div className="flex justify-between p-6">
-        <div className="w-1/3 flex items-center justify-center space-x-5 overflow-hidden">
+        <div className="flex w-1/3 items-center justify-center space-x-5 overflow-hidden">
           <Avatar className="size-16">
             <AvatarImage
               src={match.teams[0].avatar ?? undefined}
@@ -31,11 +31,11 @@ export function MatchHeader({ match }: { match: MatchType }) {
             <AvatarFallback></AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start overflow-hidden">
-            <span className="w-full overflow-hidden text-ellipsis font-bold text-3xl">
+            <span className="w-full overflow-hidden text-3xl font-bold text-ellipsis">
               {match.teams[0].name}
             </span>
             <span
-              className={cn("font-bold text-3xl", {
+              className={cn("text-3xl font-bold", {
                 "text-green-500": match.teams[0].team_win === true,
                 "text-red-500": match.teams[0].team_win === false,
               })}
@@ -44,12 +44,12 @@ export function MatchHeader({ match }: { match: MatchType }) {
             </span>
           </div>
         </div>
-        <div className="w-1/3 flex flex-col items-center text-center justify-center space-y-4">
+        <div className="flex w-1/3 flex-col items-center justify-center space-y-4 text-center">
           <span className="text-2xl">
             {format(match.started_at!, "HH:mm dd/hh/yyyy")}
           </span>
           {match.location_pick && (
-            <div className="flex space-x-2 items-center rounded-4 overflow-hidden">
+            <div className="rounded-4 flex items-center space-x-2 overflow-hidden">
               <Image
                 src={getFlagUrl(getCountryCode(match.location_pick), "sm")}
                 alt="Server location country"
@@ -66,13 +66,13 @@ export function MatchHeader({ match }: { match: MatchType }) {
               : null}
           </span>
         </div>
-        <div className="w-1/3 flex items-center justify-center space-x-5 overflow-hidden">
+        <div className="flex w-1/3 items-center justify-center space-x-5 overflow-hidden">
           <div className="flex flex-col items-end overflow-hidden">
-            <span className="w-full overflow-hidden text-ellipsis font-bold text-3xl">
+            <span className="w-full overflow-hidden text-3xl font-bold text-ellipsis">
               {match.teams[1].name}
             </span>
             <span
-              className={cn("font-bold text-3xl", {
+              className={cn("text-3xl font-bold", {
                 "text-green-500": match.teams[1].team_win === true,
                 "text-red-500": match.teams[1].team_win === false,
               })}

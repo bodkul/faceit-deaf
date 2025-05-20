@@ -37,7 +37,7 @@ export function TeamStatsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-5/10 flex items-center space-x-4">
+            <TableHead className="flex w-5/10 items-center space-x-4">
               <Avatar className="size-8">
                 <AvatarImage src={team.avatar ?? undefined} alt="Team avatar" />
                 <AvatarFallback></AvatarFallback>

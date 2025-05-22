@@ -178,7 +178,6 @@ async function handleMatchStatusReady(payload: MatchPayload) {
     organizer_id: match.organizer_id,
     location_pick: match.voting.location?.pick[0],
     map_pick: match.voting.map?.pick[0],
-    started_at: fromUnixTime(Number(match.started_at)).toISOString(),
     status: match.status,
   });
 

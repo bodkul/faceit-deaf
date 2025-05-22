@@ -25,17 +25,17 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
-          <div className="mx-auto max-w-(--breakpoint-xl) flex-col border-x border-b md:flex">
-            <div className="sticky top-0 z-10 border-b border-border/40 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60 dark:border-border">
-              <div className="flex h-14 items-center px-4">
-                <MainNav />
-                {/* <div className="ml-auto flex items-center gap-2">
+          <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+            <div className="mx-auto flex h-14 max-w-6xl items-center">
+              <MainNav />
+              {/* <div className="ml-auto flex items-center gap-2">
                   <ModeToggle />
                 </div> */}
-              </div>
             </div>
-            <main className="flex-1 space-y-4 p-8 pt-6">{children}</main>
-          </div>
+          </header>
+          <main className="mx-auto max-w-6xl flex-1 space-y-4 py-4">
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>

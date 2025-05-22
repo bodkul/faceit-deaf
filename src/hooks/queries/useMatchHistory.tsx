@@ -20,7 +20,7 @@ export default function useMatchHistory(playerId: string) {
           team:match_teams!inner(
             team_win,
             team_players:match_team_players!inner(
-              id, player_id_mandatory,
+              id, player_id_mandatory, elo_before, elo_after,
               player_stats:player_stats_normalized(
                 kills, deaths, assists, headshots, adr, kr_ratio
               )

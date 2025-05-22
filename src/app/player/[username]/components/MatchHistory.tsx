@@ -72,7 +72,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                 <PaginationItem>
                   <Button
                     variant="outline"
-                    className="hidden h-8 w-8 p-0 lg:flex"
+                    className="flex h-8 w-8 p-0"
                     onClick={() => firstPage?.()}
                     disabled={firstPage === null}
                   >
@@ -105,7 +105,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                 <PaginationItem>
                   <Button
                     variant="outline"
-                    className="hidden h-8 w-8 p-0 lg:flex"
+                    className="flex h-8 w-8 p-0"
                     onClick={() => lastPage?.()}
                     disabled={lastPage === null}
                   >

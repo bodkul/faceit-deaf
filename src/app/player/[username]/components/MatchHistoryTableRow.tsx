@@ -1,9 +1,9 @@
-import { formatRelative } from "date-fns";
+import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
-import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
 import calculateAverageStats from "@/lib/calculateAverageStats";
+import { insertNumberSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import { MatchHistoryType } from "@/types/match";
 
@@ -15,72 +15,78 @@ export function MatchHistoryTableRow({
 }) {
   const router = useRouter();
   const team = match.team[0];
-  const player_stats = team.team_players[0].player_stats;
-  const kills = Number(player_stats?.kills ?? 0);
-  const deaths = Number(player_stats?.deaths ?? 0);
-  const kd = player_stats ? kills / deaths : undefined;
+  const player = team.team_players[0];
+  const player_stats = player.player_stats;
+
+  const stats =
+    player_stats &&
+    calculateAverageStats([
+      {
+        Rounds:
+          match.round_score
+            ?.split(" / ")
+            .map(Number)
+            .reduce((a, b) => a + b, 0)
+            .toString() ?? "0",
+        Assists: player_stats.assists ?? "0",
+        Kills: player_stats.kills ?? "0",
+        Deaths: player_stats.deaths ?? "0",
+        Headshots: player_stats.headshots ?? "0",
+        ADR: player_stats.adr ?? "0",
+        "K/R Ratio": player_stats.kr_ratio ?? "0",
+      },
+    ]);
 
   return (
     <TableRow
       key={match.id}
-      className={cn("cursor-pointer border-r-4! whitespace-nowrap", {
-        "border-r-red-500": team.team_win === false,
-        "border-r-green-500": team.team_win === true,
-      })}
+      className="cursor-pointer text-center whitespace-nowrap"
       onClick={() => router.push(`/match/${match.id}`)}
     >
       <TableCell>
-        {match.finished_at ? (
-          formatRelative(match.finished_at, new Date())
-        ) : (
-          <Skeleton className="h-5 w-24" />
-        )}
-      </TableCell>
-      <TableCell className="text-[#87a3bf] capitalize">
-        {match.map_pick?.replace("de_", "") ?? (
-          <Skeleton className="h-5 w-12" />
-        )}
-      </TableCell>
-      <TableCell>
-        {match.round_score ?? <Skeleton className="h-5 w-10" />}
-      </TableCell>
-      <TableCell>
-        {player_stats?.kills && player_stats?.deaths ? (
-          `${player_stats.kills} - ${player_stats.deaths}`
-        ) : (
-          <Skeleton className="h-5 w-12" />
-        )}
+        {match.finished_at && format(match.finished_at, "dd MMM - HH:mm")}
       </TableCell>
       <TableCell
-        className={cn("font-semibold", {
-          "text-red-500": kd && kd < 0.95,
-          "text-green-500": kd && kd > 1.05,
-          "text-[#929a9e]": kd && kd >= 0.95 && kd <= 1.05,
+        className={cn({
+          "text-red-500": team.team_win === false,
+          "text-green-500": team.team_win === true,
         })}
       >
-        {kd?.toFixed(2) ?? <Skeleton className="h-5 w-8" />}
+        {typeof team.team_win === "boolean" && team.team_win ? "W" : "L"}
+      </TableCell>
+      <TableCell>{match.round_score}</TableCell>
+      <TableCell>
+        {player_stats?.kills &&
+          player_stats?.deaths &&
+          `${player_stats.kills} - ${player_stats.deaths}`}
+      </TableCell>
+      <TableCell
+        className={cn({
+          "text-red-500": stats?.kd && stats.kd < 0.95,
+          "text-green-500": stats?.kd && stats.kd > 1.05,
+          "text-[#929a9e]": stats?.kd && stats.kd >= 0.95 && stats.kd <= 1.05,
+        })}
+      >
+        {stats?.kd?.toFixed(2)}
+      </TableCell>
+      <TableCell>{stats?.adr.toFixed(1)}</TableCell>
+      <TableCell>{stats && `${stats?.hsp.toFixed(0)} %`}</TableCell>
+      <TableCell className="text-[#87a3bf] capitalize">
+        {match.map_pick?.replace("de_", "")}
       </TableCell>
       <TableCell>
-        {player_stats ? (
-          calculateAverageStats([
-            {
-              Rounds:
-                match.round_score
-                  ?.split(" / ")
-                  .map(Number)
-                  .reduce((a, b) => a + b, 0)
-                  .toString() ?? "0",
-              Assists: player_stats.assists ?? "0",
-              Kills: player_stats.kills ?? "0",
-              Deaths: player_stats.deaths ?? "0",
-              Headshots: player_stats.headshots ?? "0",
-              ADR: player_stats.adr ?? "0",
-              "K/R Ratio": player_stats.kr_ratio ?? "0",
-            },
-          ]).rating.toFixed(2)
-        ) : (
-          <Skeleton className="h-5 w-8" />
-        )}
+        {player.elo_after &&
+          player.elo_before &&
+          player.elo_after !== player.elo_before && (
+            <span
+              className={cn({
+                "text-red-500": team.team_win === false,
+                "text-green-500": team.team_win === true,
+              })}
+            >
+              {insertNumberSign(player.elo_after - player.elo_before)}
+            </span>
+          )}
       </TableCell>
     </TableRow>
   );

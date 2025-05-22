@@ -7,6 +7,9 @@ const REGION = "EU";
 const ORGANIZER_ID = "faceit";
 const COMPETITION_ID = "f4148ddd-bce8-41b8-9131-ee83afcdd6dd";
 
+const DELAY_MS = 1000;
+const RETRIES = 5;
+
 export async function fetchPlayer(playerId: string) {
   const response = await faceitClient.get<Player>(`/players/${playerId}`);
   return response.data;
@@ -116,10 +119,18 @@ export async function fetchMatch(matchId: string) {
 }
 
 export async function fetchMatchStats(matchId: string) {
-  const response = await faceitClient.get<MatchStats>(
-    `/matches/${matchId}/stats`,
-  );
-  return response.data;
+  for (let i = 0; i < RETRIES; i++) {
+    try {
+      const response = await faceitClient.get<MatchStats>(
+        `/matches/${matchId}/stats`,
+      );
+      return response.data;
+    } catch (err) {
+      if (i === RETRIES - 1) throw err;
+      await new Promise((res) => setTimeout(res, DELAY_MS));
+    }
+  }
+  throw new Error("Failed to fetch matchStats after several attempts");
 }
 
 export async function fetchHubStats(hubId: string) {

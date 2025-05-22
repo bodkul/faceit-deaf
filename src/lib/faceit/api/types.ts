@@ -123,7 +123,7 @@ export interface Match {
   round: number;
   scheduled_at: number;
   started_at: number;
-  status: "FINISHED" | "ONGOING";
+  status: string;
   teams: {
     faction1: {
       avatar: string;

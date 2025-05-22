@@ -1,6 +1,6 @@
 export interface MatchStatusEvent {
   transaction_id: string;
-  event: "match_object_created" | "match_status_finished";
+  event: string;
   event_id: string;
   third_party_id: string;
   app_id: string;

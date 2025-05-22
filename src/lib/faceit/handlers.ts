@@ -160,6 +160,51 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
     );
   }
 }
+
+async function handleMatchStatusReady(payload: MatchPayload) {
+  const matchId = payload.id.replace(/^1-/, "");
+  const playerIds = payload.teams.flatMap((team) =>
+    team.roster.map((player) => player.id),
+  );
+  const existingPlayers = await getExistingPlayers(playerIds);
+  const existingPlayerIds = existingPlayers.map((player) => player.id);
+
+  const match = await fetchMatch(payload.id);
+  console.log(match);
+
+  await upsertMatch({
+    id: matchId,
+    competition_id: match.competition_id,
+    organizer_id: match.organizer_id,
+    location_pick: match.voting.location?.pick[0],
+    map_pick: match.voting.map?.pick[0],
+    started_at: fromUnixTime(Number(match.started_at)).toISOString(),
+    status: match.status,
+  });
+
+  for (const team of payload.teams) {
+    const resTeam = await upsertMatchTeam({
+      match_id: matchId,
+      team_id: team.id,
+      name: team.name,
+      avatar: team.avatar,
+    });
+
+    for (const player of team.roster) {
+      await upsertMatchTeamPlayer({
+        match_team_id: resTeam.id,
+        player_id_nullable: existingPlayerIds.includes(player.id)
+          ? player.id
+          : null,
+        player_id_mandatory: player.id,
+        nickname: player.nickname,
+        game_skill_level: player.game_skill_level,
+        elo_before: existingPlayers.find((p) => p.id === player.id)?.faceit_elo,
+      });
+    }
+  }
+}
+
 export async function handleMatchStatusEvent(body: MatchStatusEvent) {
   console.info(`Handling match status event: ${body.event}`, body.payload);
 
@@ -173,6 +218,9 @@ export async function handleMatchStatusEvent(body: MatchStatusEvent) {
   }
 
   switch (body.event) {
+    case "match_status_ready":
+      await handleMatchStatusReady(body.payload);
+      break;
     case "match_status_finished":
       await handleMatchStatusFinished(body.payload);
       break;

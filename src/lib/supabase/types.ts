@@ -9,42 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      eloHistory: {
-        Row: {
-          created_at: string;
-          id: string;
-          player_elo: number;
-          player_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          id?: string;
-          player_elo: number;
-          player_id: string;
-        };
-        Update: {
-          created_at?: string;
-          id?: string;
-          player_elo?: number;
-          player_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "eloHistory_player_id_fkey";
-            columns: ["player_id"];
-            isOneToOne: false;
-            referencedRelation: "leaderboard_players";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "eloHistory_player_id_fkey";
-            columns: ["player_id"];
-            isOneToOne: false;
-            referencedRelation: "players";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       match_team_players: {
         Row: {
           elo_after: number | null;
@@ -484,17 +448,6 @@ export type Database = {
       hypopg_unhide_index: {
         Args: { indexid: unknown };
         Returns: boolean;
-      };
-      index_advisor: {
-        Args: { query: string };
-        Returns: {
-          startup_cost_before: Json;
-          startup_cost_after: Json;
-          total_cost_before: Json;
-          total_cost_after: Json;
-          index_statements: string[];
-          errors: string[];
-        }[];
       };
     };
     Enums: {

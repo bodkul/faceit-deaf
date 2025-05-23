@@ -23,6 +23,7 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
     fetchMatch(payload.id),
     fetchMatchStats(payload.id),
   ]);
+  console.log(existingPlayers);
 
   const existingPlayerIds = existingPlayers.map((player) => player.id);
 
@@ -34,6 +35,7 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
   );
 
   const players = await fetchPlayers(existingPlayerIds);
+  console.log(players);
 
   await upsertPlayers(
     players.map((player) => ({

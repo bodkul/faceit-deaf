@@ -17,6 +17,7 @@ export default function useMatchHistoryCount(
             "match_teams.match_team_players.player_id_mandatory",
             player_id_mandatory,
           )
+          .eq("status", "FINISHED")
       : null,
   );
 }

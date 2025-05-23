@@ -3,7 +3,6 @@ import { fromUnixTime } from "date-fns";
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload, MatchStatusEvent } from "@/lib/faceit/match-events";
 import {
-  addEloHistory,
   getExistingPlayers,
   upsertMatch,
   upsertMatchTeam,
@@ -27,13 +26,6 @@ async function handleMatchStatusFinished(payload: MatchPayload) {
   console.log(existingPlayers);
 
   const existingPlayerIds = existingPlayers.map((player) => player.id);
-
-  await addEloHistory(
-    existingPlayers.map((player) => ({
-      player_id: player.id,
-      player_elo: player.faceit_elo,
-    })),
-  );
 
   const players = await fetchPlayers(existingPlayerIds);
   console.log(players);

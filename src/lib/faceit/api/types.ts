@@ -35,7 +35,6 @@ export interface Player {
 }
 
 export interface PlayerStats {
-  [key: string]: string | null;
   Assists: string;
   "Best Of": string;
   "Competition Id": string;
@@ -48,8 +47,8 @@ export interface PlayerStats {
   "Game Mode": string;
   Headshots: string;
   "Headshots %": string;
-  "K/D Ratio": string;
-  "K/R Ratio": string;
+  "K/D Ratio": number;
+  "K/R Ratio": number;
   Kills: string;
   MVPs: string;
   Map: string;
@@ -66,11 +65,44 @@ export interface PlayerStats {
   Score: string;
   "Second Half Score": string;
   Team: string;
-  "Triple Kills": string;
+  "Triple Kills": number;
   "Updated At": string;
   Winner: string;
   ADR: string;
   "Match Finished At": string;
+  "1v1Wins": number;
+  "1v2Wins": number;
+  "1v1Count": string;
+  "1v2Count": string;
+  "Entry Wins": number;
+  "Entry Count": string;
+  "First Kills": number;
+  "Flash Count": string;
+  "Clutch Kills": string;
+  "Double Kills": number;
+  "Pistol Kills": number;
+  "Utility Count": string;
+  "Utility Damage": string;
+  "Enemies Flashed": string;
+  "Flash Successes": string;
+  "Utility Enemies": string;
+  "Match Entry Rate": string;
+  "Utility Successes": string;
+  "Match 1v1 Win Rate": string;
+  "Match 1v2 Win Rate": string;
+  "Utility Usage per Round": string;
+  "Match Entry Success Rate": number;
+  "Flash Success Rate per Match": string;
+  "Flashes per Round in a Match": string;
+  "Utility Success Rate per Match": string;
+  "Utility Damage per Round in a Match": string;
+  "Enemies Flashed per Round in a Match": string;
+  "Utility Damage Success Rate per Match": string;
+  "Zeus Kills": number;
+  "Knife Kills": number;
+  "Sniper Kills": number;
+  "Sniper Kill Rate per Match": number;
+  "Sniper Kill Rate per Round": number;
 }
 
 export interface PlayerCS2Stats {

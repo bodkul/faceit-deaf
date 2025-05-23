@@ -33,6 +33,13 @@ export type Database = {
             foreignKeyName: "eloHistory_player_id_fkey";
             columns: ["player_id"];
             isOneToOne: false;
+            referencedRelation: "leaderboard_players";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "eloHistory_player_id_fkey";
+            columns: ["player_id"];
+            isOneToOne: false;
             referencedRelation: "players";
             referencedColumns: ["id"];
           },
@@ -75,6 +82,13 @@ export type Database = {
             columns: ["match_team_id"];
             isOneToOne: false;
             referencedRelation: "match_teams";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_team_players_player_id_nullable_fkey";
+            columns: ["player_id_nullable"];
+            isOneToOne: false;
+            referencedRelation: "leaderboard_players";
             referencedColumns: ["id"];
           },
           {
@@ -175,43 +189,43 @@ export type Database = {
       player_stats_normalized: {
         Row: {
           "1v1count": string | null;
-          "1v1wins": string | null;
+          "1v1wins": number | null;
           "1v2count": string | null;
-          "1v2wins": string | null;
+          "1v2wins": number | null;
           adr: string | null;
           assists: string | null;
           clutch_kills: string | null;
           damage: string | null;
           deaths: string | null;
-          double_kills: string | null;
+          double_kills: number | null;
           enemies_flashed: string | null;
           enemies_flashed_per_round_in_a_match: string | null;
           entry_count: string | null;
-          entry_wins: string | null;
-          first_kills: string | null;
+          entry_wins: number | null;
+          first_kills: number | null;
           flash_count: string | null;
           flash_success_rate_per_match: string | null;
           flash_successes: string | null;
           flashes_per_round_in_a_match: string | null;
           headshots: string | null;
           headshots_percent: string | null;
-          kd_ratio: string | null;
-          kr_ratio: string | null;
+          kd_ratio: number | null;
           kills: string | null;
-          knife_kills: string | null;
+          knife_kills: number | null;
+          kr_ratio: number | null;
           match_1v1_win_rate: string | null;
           match_1v2_win_rate: string | null;
           match_entry_rate: string | null;
-          match_entry_success_rate: string | null;
+          match_entry_success_rate: number | null;
           match_team_player_id: string;
           mvps: string | null;
           penta_kills: string | null;
-          pistol_kills: string | null;
+          pistol_kills: number | null;
           quadro_kills: string | null;
-          sniper_kill_rate_per_match: string | null;
-          sniper_kill_rate_per_round: string | null;
-          sniper_kills: string | null;
-          triple_kills: string | null;
+          sniper_kill_rate_per_match: number | null;
+          sniper_kill_rate_per_round: number | null;
+          sniper_kills: number | null;
+          triple_kills: number | null;
           utility_count: string | null;
           utility_damage: string | null;
           utility_damage_per_round_in_a_match: string | null;
@@ -220,47 +234,47 @@ export type Database = {
           utility_success_rate_per_match: string | null;
           utility_successes: string | null;
           utility_usage_per_round: string | null;
-          zeus_kills: string | null;
+          zeus_kills: number | null;
         };
         Insert: {
           "1v1count"?: string | null;
-          "1v1wins"?: string | null;
+          "1v1wins"?: number | null;
           "1v2count"?: string | null;
-          "1v2wins"?: string | null;
+          "1v2wins"?: number | null;
           adr?: string | null;
           assists?: string | null;
           clutch_kills?: string | null;
           damage?: string | null;
           deaths?: string | null;
-          double_kills?: string | null;
+          double_kills?: number | null;
           enemies_flashed?: string | null;
           enemies_flashed_per_round_in_a_match?: string | null;
           entry_count?: string | null;
-          entry_wins?: string | null;
-          first_kills?: string | null;
+          entry_wins?: number | null;
+          first_kills?: number | null;
           flash_count?: string | null;
           flash_success_rate_per_match?: string | null;
           flash_successes?: string | null;
           flashes_per_round_in_a_match?: string | null;
           headshots?: string | null;
           headshots_percent?: string | null;
-          kd_ratio?: string | null;
-          kr_ratio?: string | null;
+          kd_ratio?: number | null;
           kills?: string | null;
-          knife_kills?: string | null;
+          knife_kills?: number | null;
+          kr_ratio?: number | null;
           match_1v1_win_rate?: string | null;
           match_1v2_win_rate?: string | null;
           match_entry_rate?: string | null;
-          match_entry_success_rate?: string | null;
+          match_entry_success_rate?: number | null;
           match_team_player_id: string;
           mvps?: string | null;
           penta_kills?: string | null;
-          pistol_kills?: string | null;
+          pistol_kills?: number | null;
           quadro_kills?: string | null;
-          sniper_kill_rate_per_match?: string | null;
-          sniper_kill_rate_per_round?: string | null;
-          sniper_kills?: string | null;
-          triple_kills?: string | null;
+          sniper_kill_rate_per_match?: number | null;
+          sniper_kill_rate_per_round?: number | null;
+          sniper_kills?: number | null;
+          triple_kills?: number | null;
           utility_count?: string | null;
           utility_damage?: string | null;
           utility_damage_per_round_in_a_match?: string | null;
@@ -269,47 +283,47 @@ export type Database = {
           utility_success_rate_per_match?: string | null;
           utility_successes?: string | null;
           utility_usage_per_round?: string | null;
-          zeus_kills?: string | null;
+          zeus_kills?: number | null;
         };
         Update: {
           "1v1count"?: string | null;
-          "1v1wins"?: string | null;
+          "1v1wins"?: number | null;
           "1v2count"?: string | null;
-          "1v2wins"?: string | null;
+          "1v2wins"?: number | null;
           adr?: string | null;
           assists?: string | null;
           clutch_kills?: string | null;
           damage?: string | null;
           deaths?: string | null;
-          double_kills?: string | null;
+          double_kills?: number | null;
           enemies_flashed?: string | null;
           enemies_flashed_per_round_in_a_match?: string | null;
           entry_count?: string | null;
-          entry_wins?: string | null;
-          first_kills?: string | null;
+          entry_wins?: number | null;
+          first_kills?: number | null;
           flash_count?: string | null;
           flash_success_rate_per_match?: string | null;
           flash_successes?: string | null;
           flashes_per_round_in_a_match?: string | null;
           headshots?: string | null;
           headshots_percent?: string | null;
-          kd_ratio?: string | null;
-          kr_ratio?: string | null;
+          kd_ratio?: number | null;
           kills?: string | null;
-          knife_kills?: string | null;
+          knife_kills?: number | null;
+          kr_ratio?: number | null;
           match_1v1_win_rate?: string | null;
           match_1v2_win_rate?: string | null;
           match_entry_rate?: string | null;
-          match_entry_success_rate?: string | null;
+          match_entry_success_rate?: number | null;
           match_team_player_id?: string;
           mvps?: string | null;
           penta_kills?: string | null;
-          pistol_kills?: string | null;
+          pistol_kills?: number | null;
           quadro_kills?: string | null;
-          sniper_kill_rate_per_match?: string | null;
-          sniper_kill_rate_per_round?: string | null;
-          sniper_kills?: string | null;
-          triple_kills?: string | null;
+          sniper_kill_rate_per_match?: number | null;
+          sniper_kill_rate_per_round?: number | null;
+          sniper_kills?: number | null;
+          triple_kills?: number | null;
           utility_count?: string | null;
           utility_damage?: string | null;
           utility_damage_per_round_in_a_match?: string | null;
@@ -318,7 +332,7 @@ export type Database = {
           utility_success_rate_per_match?: string | null;
           utility_successes?: string | null;
           utility_usage_per_round?: string | null;
-          zeus_kills?: string | null;
+          zeus_kills?: number | null;
         };
         Relationships: [
           {
@@ -371,7 +385,38 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      hypopg_hidden_indexes: {
+        Row: {
+          am_name: unknown | null;
+          index_name: unknown | null;
+          indexrelid: unknown | null;
+          is_hypo: boolean | null;
+          schema_name: unknown | null;
+          table_name: unknown | null;
+        };
+        Relationships: [];
+      };
+      hypopg_list_indexes: {
+        Row: {
+          am_name: unknown | null;
+          index_name: string | null;
+          indexrelid: unknown | null;
+          schema_name: unknown | null;
+          table_name: unknown | null;
+        };
+        Relationships: [];
+      };
+      leaderboard_players: {
+        Row: {
+          avatar: string | null;
+          elo_before: number | null;
+          faceit_elo: number | null;
+          id: string | null;
+          nickname: string | null;
+          skill_level: number | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       get_map_picks_count: {
@@ -392,6 +437,63 @@ export type Database = {
           adr: string;
           assists: string;
           rounds: number;
+        }[];
+      };
+      hypopg: {
+        Args: Record<PropertyKey, never>;
+        Returns: Record<string, unknown>[];
+      };
+      hypopg_create_index: {
+        Args: { sql_order: string };
+        Returns: Record<string, unknown>[];
+      };
+      hypopg_drop_index: {
+        Args: { indexid: unknown };
+        Returns: boolean;
+      };
+      hypopg_get_indexdef: {
+        Args: { indexid: unknown };
+        Returns: string;
+      };
+      hypopg_hidden_indexes: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          indexid: unknown;
+        }[];
+      };
+      hypopg_hide_index: {
+        Args: { indexid: unknown };
+        Returns: boolean;
+      };
+      hypopg_relation_size: {
+        Args: { indexid: unknown };
+        Returns: number;
+      };
+      hypopg_reset: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      hypopg_reset_index: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      hypopg_unhide_all_indexes: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      hypopg_unhide_index: {
+        Args: { indexid: unknown };
+        Returns: boolean;
+      };
+      index_advisor: {
+        Args: { query: string };
+        Returns: {
+          startup_cost_before: Json;
+          startup_cost_after: Json;
+          total_cost_before: Json;
+          total_cost_after: Json;
+          index_statements: string[];
+          errors: string[];
         }[];
       };
     };

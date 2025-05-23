@@ -46,14 +46,6 @@ export async function getExistingPlayers(playerIds: string[]) {
   return data;
 }
 
-export async function addEloHistory(items: TablesInsert<"eloHistory">[]) {
-  const { error } = await supabase.from("eloHistory").insert(items);
-  if (error) {
-    console.error(`Failed to insert elo history: ${error}`);
-    throw error;
-  }
-}
-
 export async function upsertPlayers(players: TablesInsert<"players">[]) {
   const { error } = await supabase.from("players").upsert(players);
   if (error) {

@@ -1,18 +1,18 @@
-import type { PlayerWithEloHistory } from "../types";
+import { insertNumberSign } from "@/lib/faceit/utils";
+import type { PlayerWithPagination } from "@/types/player";
 
-export function EloDelta({ player }: { player: PlayerWithEloHistory }) {
-  if (!player.eloHistory.length) return;
+export function EloDelta({ player }: { player: PlayerWithPagination }) {
+  if (!player.elo_before) return;
 
-  const difference = player.faceit_elo - player.eloHistory[0].player_elo;
+  const difference = player.faceit_elo! - player.elo_before;
   if (difference === 0) return;
 
   const color = difference > 0 ? "text-green-500" : "text-red-500";
-  const value = difference > 0 ? `+${difference}` : difference;
 
   return (
     <>
       {" "}
-      <sup className={color}>{value}</sup>
+      <sup className={color}>{insertNumberSign(difference)}</sup>
     </>
   );
 }

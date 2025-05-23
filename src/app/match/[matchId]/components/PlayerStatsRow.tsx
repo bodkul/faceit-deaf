@@ -23,7 +23,7 @@ export function PlayerStatsRow({
           Deaths: player.player_stats.deaths ?? "0",
           Headshots: player.player_stats.headshots ?? "0",
           ADR: player.player_stats.adr ?? "0",
-          "K/R Ratio": player.player_stats.kr_ratio ?? "0",
+          "K/R Ratio": player.player_stats.kr_ratio ?? 0,
         },
       ])
     : null;

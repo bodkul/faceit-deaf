@@ -33,7 +33,7 @@ export function MatchHistoryTableRow({
         Deaths: player_stats.deaths ?? "0",
         Headshots: player_stats.headshots ?? "0",
         ADR: player_stats.adr ?? "0",
-        "K/R Ratio": player_stats.kr_ratio ?? "0",
+        "K/R Ratio": player_stats.kr_ratio ?? 0,
       },
     ]);
 

@@ -21,7 +21,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import usePlayersWithPagination from "@/hooks/queries/usePlayers";
-import useEloHistorySubscription from "@/hooks/subscriptions/useEloHistorySubscription";
 import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
 
 import { PlayerRow, renderLoadingRows } from ".";
@@ -43,10 +42,6 @@ export function Leardboard() {
   } = usePlayersWithPagination();
 
   usePlayersSubscription(async () => {
-    await mutate();
-  });
-
-  useEloHistorySubscription(async () => {
     await mutate();
   });
 

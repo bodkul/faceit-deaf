@@ -29,6 +29,7 @@ export default function useMatchHistory(playerId: string) {
         `,
       )
       .eq("team.team_players.player_id_mandatory", playerId)
+      .eq("status", "FINISHED")
       .order("started_at", { ascending: false })
       .range(
         pagination.pageOffset * PAGE_SIZE,

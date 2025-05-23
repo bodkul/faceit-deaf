@@ -18,20 +18,7 @@ import usePlayerStats from "@/hooks/queries/usePlayerStats";
 import calculateAverageStats from "@/lib/calculateAverageStats";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
-
-type PlayerCardProps = {
-  player: {
-    avatar: string;
-    country: string | null;
-    cover_image: string | null;
-    faceit_elo: number;
-    id: string;
-    nickname: string;
-    skill_level: number;
-    steam_id_64: string;
-    twitch_username: string | null;
-  };
-};
+import type { PlayerByUsername } from "@/types/player";
 
 const cardBaseClass =
   "flex flex-col h-full p-3 justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]";
@@ -143,7 +130,7 @@ export function PlayerCardSceleton() {
   );
 }
 
-export function PlayerCard({ player }: PlayerCardProps) {
+export function PlayerCard({ player }: { player: PlayerByUsername }) {
   const { data: statsData } = usePlayerStats(player.id);
 
   const { data: rawMatchData, count: matchCount } = useQuery(
@@ -196,7 +183,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
         Kills: player_stats_normalized?.kills ?? "0",
         Headshots: player_stats_normalized?.headshots ?? "0",
         ADR: player_stats_normalized?.adr ?? "0",
-        "K/R Ratio": player_stats_normalized?.kr_ratio ?? "0",
+        "K/R Ratio": player_stats_normalized?.kr_ratio ?? 0,
       })) ?? [],
     );
 

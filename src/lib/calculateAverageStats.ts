@@ -6,7 +6,7 @@ const calculateAverageStats = (
     Kills: string;
     Headshots: string;
     ADR: string;
-    "K/R Ratio": string;
+    "K/R Ratio": number;
   }[],
 ) => {
   const DMG_PER_KILL = 105;

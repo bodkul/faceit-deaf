@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "npx eslint --fix",
     "format": "npx prettier . --write",
-    "prepare": "husky"
+    "prepare": "husky",
+    "update-types": "npx supabase gen types --lang=typescript --project-id %PROJECT_REF% > src/types/database.ts"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

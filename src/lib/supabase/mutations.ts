@@ -1,4 +1,5 @@
-import { supabase, type TablesInsert } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import type { TablesInsert } from "@/types/database";
 
 export async function getAllMatchesForPlayer(playerId: string) {
   let allMatches: {

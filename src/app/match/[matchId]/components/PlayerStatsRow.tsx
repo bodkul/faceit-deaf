@@ -5,7 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import calculateAverageStats from "@/lib/calculateAverageStats";
 import { insertNumberSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
-import { PlayerType } from "@/types/match";
+import type { PlayerType } from "@/types/match";
 
 export function PlayerStatsRow({
   player,

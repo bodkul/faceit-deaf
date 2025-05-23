@@ -6,7 +6,7 @@ import { SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TableCell, TableRow } from "@/components/ui/table";
 
-import { PlayerWithEloHistory } from "../types";
+import type { PlayerWithEloHistory } from "../types";
 import { EloDelta } from "./elo-delta";
 
 export function PlayerRow({

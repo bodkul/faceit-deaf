@@ -8,6 +8,7 @@ import {
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
+  upsertMatchTeamPlayers,
   upsertPlayers,
   upsertPlayerStatsNormalized,
 } from "@/lib/supabase/mutations";
@@ -168,10 +169,14 @@ async function handleMatchStatusReady(payload: MatchPayload) {
   const playerIds = payload.teams.flatMap((team) =>
     team.roster.map((player) => player.id),
   );
-  const existingPlayers = await getExistingPlayers(playerIds);
+
+  const [existingPlayers, match] = await Promise.all([
+    getExistingPlayers(playerIds),
+    fetchMatch(payload.id),
+  ]);
+
   const existingPlayerIds = existingPlayers.map((player) => player.id);
 
-  const match = await fetchMatch(payload.id);
   console.log(match);
 
   await upsertMatch({
@@ -191,8 +196,8 @@ async function handleMatchStatusReady(payload: MatchPayload) {
       avatar: team.avatar,
     });
 
-    for (const player of team.roster) {
-      await upsertMatchTeamPlayer({
+    await upsertMatchTeamPlayers(
+      team.roster.map((player) => ({
         match_team_id: resTeam.id,
         player_id_nullable: existingPlayerIds.includes(player.id)
           ? player.id
@@ -201,8 +206,8 @@ async function handleMatchStatusReady(payload: MatchPayload) {
         nickname: player.nickname,
         game_skill_level: player.game_skill_level,
         elo_before: existingPlayers.find((p) => p.id === player.id)?.faceit_elo,
-      });
-    }
+      })),
+    );
   }
 }
 

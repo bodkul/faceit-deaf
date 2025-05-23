@@ -1,5 +1,5 @@
-import useMatch from "@/hooks/queries/useMatch";
-import useMatchHistory from "@/hooks/queries/useMatchHistory";
+import type useMatch from "@/hooks/queries/useMatch";
+import type useMatchHistory from "@/hooks/queries/useMatchHistory";
 
 export type MatchType = NonNullable<ReturnType<typeof useMatch>["match"]>;
 

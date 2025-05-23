@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { MatchType } from "@/types/match";
+import type { MatchType } from "@/types/match";
 
 import { getCountryCode, getFlagUrl } from "./country";
 

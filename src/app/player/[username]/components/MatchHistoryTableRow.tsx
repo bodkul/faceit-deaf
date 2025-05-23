@@ -5,7 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import calculateAverageStats from "@/lib/calculateAverageStats";
 import { insertNumberSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
-import { MatchHistoryType } from "@/types/match";
+import type { MatchHistoryType } from "@/types/match";
 
 export function MatchHistoryTableRow({
   match,

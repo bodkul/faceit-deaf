@@ -1,6 +1,12 @@
 import faceitClient from "@/lib/faceit/client";
 
-import { HubStats, Match, MatchStats, Player, PlayerCS2Stats } from "./types";
+import type {
+  HubStats,
+  Match,
+  MatchStats,
+  Player,
+  PlayerCS2Stats,
+} from "./types";
 
 const GAME = "cs2";
 const REGION = "EU";

@@ -1,4 +1,4 @@
-import { PlayerWithEloHistory } from "../types";
+import type { PlayerWithEloHistory } from "../types";
 
 export function EloDelta({ player }: { player: PlayerWithEloHistory }) {
   if (!player.eloHistory.length) return;

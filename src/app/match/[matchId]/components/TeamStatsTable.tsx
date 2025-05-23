@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TeamType } from "@/types/match";
+import type { TeamType } from "@/types/match";
 
 import { PlayerStatsRow } from "./PlayerStatsRow";
 

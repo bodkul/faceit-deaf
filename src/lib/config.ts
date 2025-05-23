@@ -1,6 +1,0 @@
-export const twitchConfig = {
-  CLIENT_ID: process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID!,
-  CLIENT_SECRET: process.env.NEXT_PUBLIC_TWITCH_CLIENT_SECRET!,
-  CS2_GAME_ID: 32399,
-  PARENT_DOMAIN: process.env.NEXT_PUBLIC_PARENT_DOMAIN,
-};

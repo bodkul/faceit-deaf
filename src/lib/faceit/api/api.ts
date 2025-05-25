@@ -124,6 +124,10 @@ export async function fetchMatch(matchId: string) {
   return response.data;
 }
 
+export async function fetchMatches(matchId: string[]) {
+  return await Promise.all(matchId.map(fetchMatch));
+}
+
 export async function fetchMatchStats(matchId: string) {
   for (let i = 0; i < RETRIES; i++) {
     try {

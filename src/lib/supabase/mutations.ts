@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import type { TablesInsert } from "@/types/database";
+import type { TablesInsert, TablesUpdate } from "@/types/database";
 
 export async function getAllMatchesForPlayer(playerId: string) {
   let allMatches: {
@@ -51,6 +51,21 @@ export async function upsertPlayers(players: TablesInsert<"players">[]) {
   const { error } = await supabase.from("players").upsert(players);
   if (error) {
     console.error("Failed to upsert players", error);
+    throw error;
+  }
+}
+
+export async function updateMatch(
+  id: string,
+  updates: TablesUpdate<"matches">,
+) {
+  const { error } = await supabase
+    .from("matches")
+    .update(updates)
+    .match({ id });
+
+  if (error) {
+    console.error(`Failed to update match ${id}`, error);
     throw error;
   }
 }

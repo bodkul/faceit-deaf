@@ -18,6 +18,17 @@ export default function MainNav() {
       </Link>
       <nav className="flex items-center gap-4 text-sm xl:gap-6">
         <Link
+          href="/leardboard"
+          className={cn(
+            "transition-colors hover:text-foreground/80",
+            pathname === "/leardboard"
+              ? "text-foreground"
+              : "text-foreground/80",
+          )}
+        >
+          Leardboard
+        </Link>
+        <Link
           href="/maps"
           className={cn(
             "transition-colors hover:text-foreground/80",

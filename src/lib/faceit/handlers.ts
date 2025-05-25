@@ -3,6 +3,7 @@ import { fromUnixTime } from "date-fns";
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload, MatchStatusEvent } from "@/lib/faceit/match-events";
 import {
+  deleteMatch,
   getExistingPlayers,
   upsertMatch,
   upsertMatchTeam,
@@ -203,6 +204,12 @@ async function handleMatchStatusReady(payload: MatchPayload) {
   }
 }
 
+async function handleMatchStatusCancelled(payload: MatchPayload) {
+  const matchId = payload.id.replace(/^1-/, "");
+
+  await deleteMatch(matchId);
+}
+
 export async function handleMatchStatusEvent(body: MatchStatusEvent) {
   console.info(`Handling match status event: ${body.event}`, body.payload);
 
@@ -218,6 +225,9 @@ export async function handleMatchStatusEvent(body: MatchStatusEvent) {
   switch (body.event) {
     case "match_status_ready":
       await handleMatchStatusReady(body.payload);
+      break;
+    case "match_status_cancelled":
+      await handleMatchStatusCancelled(body.payload);
       break;
     case "match_status_finished":
       await handleMatchStatusFinished(body.payload);

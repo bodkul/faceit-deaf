@@ -63,6 +63,14 @@ export async function upsertMatch(match: TablesInsert<"matches">) {
   }
 }
 
+export async function deleteMatch(id: string) {
+  const { error } = await supabase.from("matches").delete().match({ id });
+  if (error) {
+    console.error("Failed to delete match", error);
+    throw error;
+  }
+}
+
 export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
   const { data, error } = await supabase
     .from("match_teams")

@@ -25,7 +25,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
-          <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+          <header className="sticky top-0 z-10 border-b bg-background/95 px-4 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
             <div className="mx-auto flex h-14 max-w-6xl items-center">
               <MainNav />
               {/* <div className="ml-auto flex items-center gap-2">
@@ -33,7 +33,7 @@ export default function RootLayout({
                 </div> */}
             </div>
           </header>
-          <main className="mx-auto max-w-6xl flex-1 space-y-4 py-4">
+          <main className="mx-auto max-w-6xl flex-1 space-y-4 p-4">
             {children}
           </main>
         </ThemeProvider>

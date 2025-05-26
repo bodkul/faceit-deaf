@@ -1,5 +1,3 @@
-import "@/config/dateConfig";
-
 import { notFound } from "next/navigation";
 
 import { getPlayerByUsername } from "@/lib/supabase/players";

@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
 import { TableCell, TableRow } from "@/components/ui/table";
-import calculateAverageStats from "@/lib/calculateAverageStats";
+import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { insertNumberSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import type { MatchHistoryType } from "@/types/match";

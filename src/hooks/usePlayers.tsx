@@ -20,7 +20,7 @@ function usePlayers(pageOffset: number) {
   );
 }
 
-export default function usePlayersWithPagination() {
+export function usePlayersWithPagination() {
   const [totalCount, setTotalCount] = useState(0);
   const pagination = usePagination(totalCount, PAGE_SIZE);
 

@@ -3,10 +3,10 @@
 import { notFound } from "next/navigation";
 import { use } from "react";
 
-import useMatch from "@/hooks/queries/useMatch";
+import { useMatch } from "@/hooks/useMatch";
 
-import { MatchHeader } from "./components/MatchHeader";
-import { TeamStatsTable } from "./components/TeamStatsTable";
+import { MatchHeader } from "./_components/MatchHeader";
+import { TeamStatsTable } from "./_components/TeamStatsTable";
 import Loading from "./loading";
 
 export default function Page(props: { params: Promise<{ matchId: string }> }) {

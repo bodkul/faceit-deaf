@@ -21,8 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import usePlayersWithPagination from "@/hooks/queries/usePlayers";
-import usePlayersSubscription from "@/hooks/subscriptions/usePlayersSubscription";
+import { usePlayersWithPagination } from "@/hooks/usePlayers";
+import { usePlayersSubscription } from "@/hooks/usePlayersSubscription";
 
 import { PlayerRow, renderLoadingRows } from ".";
 

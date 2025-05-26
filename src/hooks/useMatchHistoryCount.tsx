@@ -2,7 +2,7 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 
 import { supabase } from "@/lib/supabase";
 
-export default function useMatchHistoryCount(
+export function useMatchHistoryCount(
   player_id_mandatory: string | null | undefined,
 ) {
   return useQuery(

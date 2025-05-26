@@ -1,4 +1,4 @@
-import type usePlayersWithPagination from "@/hooks/queries/usePlayers";
+import type { usePlayersWithPagination } from "@/hooks/usePlayers";
 import type { getPlayerByUsername } from "@/lib/supabase/players";
 
 export type PlayerWithPagination = NonNullable<

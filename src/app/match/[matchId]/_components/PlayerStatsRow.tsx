@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { SkillLevelIcon } from "@/components/icons";
 import { TableCell, TableRow } from "@/components/ui/table";
-import calculateAverageStats from "@/lib/calculateAverageStats";
+import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { insertNumberSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import type { PlayerType } from "@/types/match";

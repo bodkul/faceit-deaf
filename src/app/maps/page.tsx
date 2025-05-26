@@ -23,7 +23,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatMapPicks } from "@/lib/maps/formatMapPicks";
+import { formatMapPicks } from "@/lib/formatMapPicks";
 import { supabase } from "@/lib/supabase";
 
 const chartConfig = {

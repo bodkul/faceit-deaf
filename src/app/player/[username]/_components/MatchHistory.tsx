@@ -16,8 +16,8 @@ import {
   PaginationItem,
 } from "@/components/ui/pagination";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
-import useMatchHistory from "@/hooks/queries/useMatchHistory";
-import useMatchesSubscription from "@/hooks/subscriptions/useMatchesSubscription";
+import { useMatchesSubscription } from "@/hooks/useMatchesSubscription";
+import { useMatchHistory } from "@/hooks/useMatchHistory";
 
 import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
 import { MatchHistoryTableRow } from "./MatchHistoryTableRow";

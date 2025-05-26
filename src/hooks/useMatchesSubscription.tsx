@@ -2,13 +2,13 @@ import { useSubscription } from "@supabase-cache-helpers/postgrest-swr";
 
 import { supabase } from "@/lib/supabase";
 
-export default function usePlayersSubscription(callback: () => Promise<void>) {
+export function useMatchesSubscription(callback: () => Promise<void>) {
   return useSubscription(
     supabase,
-    "players_subscription",
+    "matches_subscription",
     {
       event: "*",
-      table: "players",
+      table: "matches",
       schema: "public",
     },
     ["id"],

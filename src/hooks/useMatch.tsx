@@ -2,7 +2,7 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 
 import { supabase } from "@/lib/supabase";
 
-export default function useMatch(id: string) {
+export function useMatch(id: string) {
   const { data: match, ...query } = useQuery(
     supabase
       .from("matches")

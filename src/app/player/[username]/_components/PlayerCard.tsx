@@ -14,8 +14,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import usePlayerStats from "@/hooks/queries/usePlayerStats";
-import calculateAverageStats from "@/lib/calculateAverageStats";
+import { usePlayerStats } from "@/hooks/usePlayerStats";
+import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import type { PlayerByUsername } from "@/types/player";

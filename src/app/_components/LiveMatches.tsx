@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useLiveMatches } from "@/hooks/queries/useLiveMatches";
+import { useLiveMatches } from "@/hooks/useLiveMatches";
 
 export function LiveMatches() {
   const { data } = useLiveMatches();

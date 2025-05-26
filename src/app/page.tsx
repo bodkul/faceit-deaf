@@ -1,5 +1,5 @@
-import { EloRankings } from "@/components/EloRankings";
-import { LiveMatches } from "@/components/LiveMatches";
+import { EloRankings } from "./_components/EloRankings";
+import { LiveMatches } from "./_components/LiveMatches";
 
 export default function Page() {
   return (

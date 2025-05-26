@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/pagination";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 
-import { MatchHistoryTableHead } from "./components/MatchHistoryTableHead";
-import { PlayerCardSceleton } from "./components/PlayerCard";
-import renderLoadingRows from "./components/renderLoadingRows";
+import { MatchHistoryTableHead } from "./_components/MatchHistoryTableHead";
+import { PlayerCardSceleton } from "./_components/PlayerCard";
+import renderLoadingRows from "./_components/renderLoadingRows";
 
 export default function Loading() {
   return (

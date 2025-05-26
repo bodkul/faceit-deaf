@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 
 import { getPlayerByUsername } from "@/lib/supabase/players";
 
-import MatchHistory from "./components/MatchHistory";
-import { PlayerCard } from "./components/PlayerCard";
+import MatchHistory from "./_components/MatchHistory";
+import { PlayerCard } from "./_components/PlayerCard";
 
 type Params = Promise<{ username: string }>;
 

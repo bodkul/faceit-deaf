@@ -67,10 +67,14 @@ export function MatchHistoryTableRow({
           "text-[#929a9e]": stats?.kd && stats.kd >= 0.95 && stats.kd <= 1.05,
         })}
       >
-        {stats?.kd?.toFixed(2)}
+        {stats && stats.kd > 0 ? stats?.kd?.toFixed(2) : null}
       </TableCell>
-      <TableCell>{stats?.adr.toFixed(1)}</TableCell>
-      <TableCell>{stats && `${stats?.hsp.toFixed(0)} %`}</TableCell>
+      <TableCell>
+        {stats && stats.adr > 0 ? stats?.adr.toFixed(1) : null}
+      </TableCell>
+      <TableCell>
+        {stats && stats?.hsp > 0 ? `${stats?.hsp.toFixed(0)} %` : null}
+      </TableCell>
       <TableCell className="text-[#87a3bf] capitalize">
         {match.map_pick?.replace("de_", "")}
       </TableCell>

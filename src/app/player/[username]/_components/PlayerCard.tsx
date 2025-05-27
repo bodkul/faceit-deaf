@@ -139,6 +139,7 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
       .select("match_teams(team_win, matches(id, map_pick, started_at))", {
         count: "exact",
       })
+      .eq("match_teams.matches.status", "FINISHED")
       .match({ player_id_mandatory: player.id }),
   );
 

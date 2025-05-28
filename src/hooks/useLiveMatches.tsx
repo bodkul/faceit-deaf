@@ -1,6 +1,9 @@
 "use client";
 
-import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
+import {
+  useQuery,
+  useSubscription,
+} from "@supabase-cache-helpers/postgrest-swr";
 import { subMinutes } from "date-fns";
 
 import { supabase } from "@/lib/supabase";
@@ -8,7 +11,7 @@ import { supabase } from "@/lib/supabase";
 const fifteenMinutesAgo = subMinutes(new Date(), 15).toISOString();
 
 export function useLiveMatches() {
-  return useQuery(
+  const { mutate, ...query } = useQuery(
     supabase
       .from("matches")
       .select(
@@ -20,4 +23,20 @@ export function useLiveMatches() {
       .not("teams.players.player_id_nullable", "is", null)
       .order("started_at", { ascending: false }),
   );
+
+  useSubscription(
+    supabase,
+    "live_matches_subscription",
+    {
+      event: "*",
+      table: "matches",
+      schema: "public",
+    },
+    ["id"],
+    {
+      callback: () => mutate().then(),
+    },
+  );
+
+  return query;
 }

@@ -55,15 +55,14 @@ export function LiveMatches() {
                       {match.map_pick?.replace("de_", "")}
                     </TableCell>
                     <TableCell className="flex flex-wrap justify-center gap-1">
-                      {match.teams
-                        ?.filter((team) => team.players.length > 0)
-                        .map((team) =>
-                          team.players?.map((p) => (
-                            <Badge key={p.nickname} variant="outline">
-                              {p.nickname}
-                            </Badge>
-                          )),
-                        )}
+                      {match.players?.map((nickname) => (
+                        <Badge
+                          key={`${match.id}_${nickname}`}
+                          variant="outline"
+                        >
+                          {nickname}
+                        </Badge>
+                      ))}
                     </TableCell>
                   </TableRow>
                 );

@@ -109,6 +109,13 @@ export type Database = {
             foreignKeyName: "match_teams_match_id_fkey";
             columns: ["match_id"];
             isOneToOne: false;
+            referencedRelation: "live_matches";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_teams_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
             referencedRelation: "matches";
             referencedColumns: ["id"];
           },
@@ -381,6 +388,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      live_matches: {
+        Row: {
+          finished_at: string | null;
+          id: string | null;
+          map_pick: string | null;
+          players: string[] | null;
+          round_score: string | null;
+          started_at: string | null;
+          status: string | null;
+        };
+        Insert: {
+          finished_at?: string | null;
+          id?: string | null;
+          map_pick?: string | null;
+          players?: never;
+          round_score?: string | null;
+          started_at?: string | null;
+          status?: string | null;
+        };
+        Update: {
+          finished_at?: string | null;
+          id?: string | null;
+          map_pick?: string | null;
+          players?: never;
+          round_score?: string | null;
+          started_at?: string | null;
+          status?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       get_map_picks_count: {
@@ -448,6 +485,17 @@ export type Database = {
       hypopg_unhide_index: {
         Args: { indexid: unknown };
         Returns: boolean;
+      };
+      index_advisor: {
+        Args: { query: string };
+        Returns: {
+          startup_cost_before: Json;
+          startup_cost_after: Json;
+          total_cost_before: Json;
+          total_cost_after: Json;
+          index_statements: string[];
+          errors: string[];
+        }[];
       };
     };
     Enums: {

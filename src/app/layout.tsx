@@ -10,6 +10,8 @@ import MainNav from "@/components/main-nav";
 // import ModeToggle from "@/components/mode-toogle";
 import { siteConfig } from "@/config/site";
 
+import SignInButton from "./_components/SignInButton";
+
 export const metadata: Metadata = {
   title: {
     template: `%s | ${siteConfig.name}`,
@@ -30,6 +32,9 @@ export default function RootLayout({
           <header className="sticky top-0 z-10 border-b bg-background/95 px-4 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
             <div className="mx-auto flex h-14 max-w-6xl items-center">
               <MainNav />
+              <div className="ml-auto flex items-center gap-2">
+                <SignInButton />
+              </div>
               {/* <div className="ml-auto flex items-center gap-2">
                   <ModeToggle />
                 </div> */}

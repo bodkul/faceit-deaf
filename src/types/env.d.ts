@@ -3,5 +3,8 @@ declare namespace NodeJS {
     NEXT_PUBLIC_SUPABASE_URL: string;
     NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
     NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: string;
+
+    NEXT_PUBLIC_FACEIT_CLIENT_ID: string;
+    NEXT_PUBLIC_FACEIT_CLIENT_SECRET: string;
   }
 }

@@ -1,15 +1,9 @@
-"use server";
-
-import { auth } from "@/lib/auth";
+"use client";
 
 import { EloRankings } from "./_components/EloRankings";
 import { LiveMatches } from "./_components/LiveMatches";
 
-export default async function Page() {
-  const session = await auth();
-
-  console.log("Session:", session);
-
+export default function Page() {
   return (
     <>
       <div className="space-y-2">

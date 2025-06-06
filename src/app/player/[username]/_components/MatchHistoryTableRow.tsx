@@ -7,12 +7,7 @@ import { insertNumberSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import type { MatchHistoryType } from "@/types/match";
 
-export function MatchHistoryTableRow({
-  match,
-}: {
-  match: MatchHistoryType;
-  playerId: string;
-}) {
+export function MatchHistoryTableRow({ match }: { match: MatchHistoryType }) {
   const router = useRouter();
   const team = match.team[0];
   const player = team.team_players[0];

@@ -7,7 +7,7 @@ import { FaceitIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-export default function MainNav() {
+export function MainNav() {
   const pathname = usePathname();
 
   return (

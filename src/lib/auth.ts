@@ -7,6 +7,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     FaceIt({
       clientId: process.env.NEXT_PUBLIC_FACEIT_CLIENT_ID,
       clientSecret: process.env.NEXT_PUBLIC_FACEIT_CLIENT_SECRET,
+      issuer: "https://api.faceit.com/auth",
+      profile(profile) {
+        return {
+          id: profile.guid,
+          name: profile.nickname,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
     }),
   ],
   adapter: SupabaseAdapter({

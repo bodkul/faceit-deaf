@@ -42,13 +42,9 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
     if (isLoading) return renderLoadingRows(20);
     if (!matches?.length) return null;
 
-    return (
-      <>
-        {matches.map((match) => (
-          <MatchHistoryTableRow key={match.id} match={match} />
-        ))}
-      </>
-    );
+    return matches.map((match) => (
+      <MatchHistoryTableRow key={match.id} match={match} />
+    ));
   }, [isLoading, matches]);
 
   return (

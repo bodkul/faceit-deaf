@@ -45,9 +45,11 @@ export function MatchHeader({ match }: { match: MatchType }) {
           </div>
         </div>
         <div className="flex w-1/3 flex-col items-center justify-center space-y-4 text-center">
-          <span className="text-2xl">
-            {format(match.started_at!, "HH:mm dd/hh/yyyy")}
-          </span>
+          {match.started_at && (
+            <span className="text-2xl">
+              {format(match.started_at, "HH:mm dd/MM/yyyy")}
+            </span>
+          )}
           {match.location_pick && (
             <div className="rounded-4 flex items-center space-x-2 overflow-hidden">
               <Image

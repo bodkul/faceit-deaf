@@ -29,10 +29,10 @@ export function LiveMatches() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-1/4 text-center">Live</TableHead>
-                <TableHead className="w-1/4 text-center">Score</TableHead>
-                <TableHead className="w-1/4 text-center">Map</TableHead>
-                <TableHead className="w-1/4 text-center">Players</TableHead>
+                <TableHead className="w-1/5 text-center">Live</TableHead>
+                <TableHead className="w-1/5 text-center">Score</TableHead>
+                <TableHead className="w-1/5 text-center">Map</TableHead>
+                <TableHead className="w-2/5 text-center">Players</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

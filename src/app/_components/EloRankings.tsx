@@ -53,7 +53,7 @@ function EloRankingsRows() {
 
 export function EloRankings() {
   return (
-    <Card className="w-full">
+    <Card className="h-min w-full">
       <CardHeader>
         <CardTitle>Elo Rankings</CardTitle>
       </CardHeader>

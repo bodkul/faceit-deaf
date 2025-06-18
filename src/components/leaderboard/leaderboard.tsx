@@ -28,7 +28,7 @@ import { PlayerRow, renderLoadingRows } from ".";
 
 const PAGE_SIZE = 20;
 
-export function Leardboard() {
+export function Leaderboard() {
   const {
     data,
     totalPages,
@@ -51,7 +51,7 @@ export function Leardboard() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Leardboard</CardTitle>
+        <CardTitle>Leaderboard</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

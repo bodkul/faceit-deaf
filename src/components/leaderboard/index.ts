@@ -1,4 +1,4 @@
 export { EloDelta } from "./elo-delta";
-export { Leardboard } from "./leardboard";
+export { Leaderboard } from "./leaderboard";
 export { PlayerRow } from "./player-row";
 export { renderLoadingRows } from "./render-loading-rows";

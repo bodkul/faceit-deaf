@@ -1,6 +1,6 @@
 "use client";
 
-import { PlayerRow } from "@/components/leardboard";
+import { PlayerRow } from "@/components/leaderboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {

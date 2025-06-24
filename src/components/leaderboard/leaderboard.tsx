@@ -59,7 +59,7 @@ export function Leaderboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rating</TableHead>
+                  <TableHead>#</TableHead>
                   <TableHead>Player</TableHead>
                   <TableHead>Level</TableHead>
                   <TableHead>Elo</TableHead>

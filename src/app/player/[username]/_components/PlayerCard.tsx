@@ -24,7 +24,7 @@ const cardBaseClass =
   "flex flex-col h-full p-3 justify-center items-center mb-2 bg-[#2123298f] rounded-2xl backdrop-blur-[32px]";
 
 function FlagSkeleton() {
-  return <Skeleton className="h-[9px] w-[14px] rounded-none" />;
+  return <Skeleton className="h-2.5 w-3.75 rounded-xs" />;
 }
 
 function MatchCountSkeleton() {
@@ -245,9 +245,9 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
           <strong>{player.nickname}</strong>
           <div className="mt-2 h-2.5 w-3.5 text-white">
             {player.country ? (
-              <Flag code={player.country} width={14} height={9} />
+              <Flag code={player.country} className="h-2.5 w-3.75 rounded-xs" />
             ) : (
-              <FlagSkeleton />
+              <div className="h-2.5 w-3.75 rounded-xs bg-neutral-700" />
             )}
           </div>
         </div>

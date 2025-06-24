@@ -380,6 +380,7 @@ export type Database = {
       leaderboard_players: {
         Row: {
           avatar: string | null;
+          country: string | null;
           elo_before: number | null;
           faceit_elo: number | null;
           id: string | null;

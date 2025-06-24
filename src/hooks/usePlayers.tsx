@@ -12,9 +12,12 @@ function usePlayers(pageOffset: number) {
   return useQuery(
     supabase
       .from("leaderboard_players")
-      .select("id, nickname, avatar, skill_level, faceit_elo, elo_before", {
-        count: "exact",
-      })
+      .select(
+        "id, nickname, avatar, skill_level, faceit_elo, elo_before, country",
+        {
+          count: "exact",
+        },
+      )
       .order("faceit_elo", { ascending: false })
       .range(pageOffset * PAGE_SIZE, (pageOffset + 1) * PAGE_SIZE - 1),
   );

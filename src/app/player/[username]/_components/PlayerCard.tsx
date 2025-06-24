@@ -178,12 +178,12 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
   const avgStats = useMemo(() => {
     const stats = calculateAverageStats(
       statsData?.map(({ player_stats_normalized }) => ({
-        Rounds: String("0"),
-        Assists: player_stats_normalized?.assists ?? "0",
-        Deaths: player_stats_normalized?.deaths ?? "0",
-        Kills: player_stats_normalized?.kills ?? "0",
-        Headshots: player_stats_normalized?.headshots ?? "0",
-        ADR: player_stats_normalized?.adr ?? "0",
+        Rounds: 0,
+        Assists: player_stats_normalized?.assists ?? 0,
+        Deaths: player_stats_normalized?.deaths ?? 0,
+        Kills: player_stats_normalized?.kills ?? 0,
+        Headshots: player_stats_normalized?.headshots ?? 0,
+        ADR: player_stats_normalized?.adr ?? 0,
         "K/R Ratio": player_stats_normalized?.kr_ratio ?? 0,
       })) ?? [],
     );

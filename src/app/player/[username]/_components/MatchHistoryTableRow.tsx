@@ -21,13 +21,12 @@ export function MatchHistoryTableRow({ match }: { match: MatchHistoryType }) {
           match.round_score
             ?.split(" / ")
             .map(Number)
-            .reduce((a, b) => a + b, 0)
-            .toString() ?? "0",
-        Assists: player_stats.assists ?? "0",
-        Kills: player_stats.kills ?? "0",
-        Deaths: player_stats.deaths ?? "0",
-        Headshots: player_stats.headshots ?? "0",
-        ADR: player_stats.adr ?? "0",
+            .reduce((a, b) => a + b, 0) ?? 0,
+        Assists: player_stats.assists ?? 0,
+        Kills: player_stats.kills ?? 0,
+        Deaths: player_stats.deaths ?? 0,
+        Headshots: player_stats.headshots ?? 0,
+        ADR: player_stats.adr ?? 0,
         "K/R Ratio": player_stats.kr_ratio ?? 0,
       },
     ]);

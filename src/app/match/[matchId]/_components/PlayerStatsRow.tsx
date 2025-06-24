@@ -17,12 +17,12 @@ export function PlayerStatsRow({
   const stats = player.player_stats
     ? calculateAverageStats([
         {
-          Rounds: totalScore.toString(),
-          Assists: player.player_stats.assists ?? "0",
-          Kills: player.player_stats.kills ?? "0",
-          Deaths: player.player_stats.deaths ?? "0",
-          Headshots: player.player_stats.headshots ?? "0",
-          ADR: player.player_stats.adr ?? "0",
+          Rounds: totalScore,
+          Assists: player.player_stats.assists ?? 0,
+          Kills: player.player_stats.kills ?? 0,
+          Deaths: player.player_stats.deaths ?? 0,
+          Headshots: player.player_stats.headshots ?? 0,
+          ADR: player.player_stats.adr ?? 0,
           "K/R Ratio": player.player_stats.kr_ratio ?? 0,
         },
       ])

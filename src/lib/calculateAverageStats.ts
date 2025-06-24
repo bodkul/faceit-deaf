@@ -1,11 +1,11 @@
 export function calculateAverageStats(
   matches: {
-    Rounds: string;
-    Assists: string;
-    Deaths: string;
-    Kills: string;
-    Headshots: string;
-    ADR: string;
+    Rounds: number;
+    Assists: number;
+    Deaths: number;
+    Kills: number;
+    Headshots: number;
+    ADR: number;
     "K/R Ratio": number;
   }[],
 ) {

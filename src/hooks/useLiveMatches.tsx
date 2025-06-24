@@ -12,6 +12,7 @@ export function useLiveMatches() {
     supabase
       .from("live_matches")
       .select()
+      .order("status", { ascending: false })
       .order("started_at", { ascending: false }),
   );
 

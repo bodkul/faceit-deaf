@@ -179,12 +179,13 @@ async function handleMatchStatusReady(payload: MatchPayload) {
     status: match.status.toLocaleUpperCase(),
   });
 
-  for (const team of payload.teams) {
+  for (const [index, team] of payload.teams.entries()) {
     const resTeam = await upsertMatchTeam({
       match_id: matchId,
       team_id: team.id,
       name: team.name,
       avatar: team.avatar,
+      faction: index === 0 ? 1 : 2,
     });
 
     await upsertMatchTeamPlayers(

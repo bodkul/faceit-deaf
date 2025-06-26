@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { fetchMatches } from "@/lib/faceit/api";
 import { supabase } from "@/lib/supabase";
-import { updateMatch } from "@/lib/supabase/mutations";
+import { updateMatch, updateMatchTeam } from "@/lib/supabase/mutations";
 
 export async function GET() {
   const { data, error } = await supabase
@@ -26,24 +26,36 @@ export async function GET() {
   }
 
   const matches = await fetchMatches(matchIds);
+  const matchesFiltered = matches.filter(
+    (match) => match.status === "ONGOING" || match.status === "READY",
+  );
 
-  matches
-    .filter((match) => match.status === "ONGOING" || match.status === "READY")
-    .forEach(async (match) => {
-      const matchId = match.match_id.replace(/^1-/, "");
+  for (const match of matchesFiltered) {
+    const matchId = match.match_id.replace(/^1-/, "");
 
-      await updateMatch(matchId, {
-        location_pick: match.voting.location?.pick[0],
-        map_pick: match.voting.map?.pick[0],
-        started_at: match.started_at
-          ? fromUnixTime(match.started_at).toISOString()
-          : undefined,
-        status: match.status,
-        round_score: match.results
-          ? `${match.results.score.faction1} / ${match.results.score.faction2}`
-          : undefined,
-      });
+    await updateMatch(matchId, {
+      location_pick: match.voting.location?.pick[0],
+      map_pick: match.voting.map?.pick[0],
+      started_at: match.started_at
+        ? fromUnixTime(match.started_at).toISOString()
+        : undefined,
+      status: match.status,
+      round_score: match.results
+        ? `${match.results.score.faction1} / ${match.results.score.faction2}`
+        : undefined,
     });
+
+    const updateTeamScore = async (factionKey: "faction1" | "faction2") => {
+      await updateMatchTeam(
+        matchId,
+        match.teams[factionKey].faction_id,
+        { final_score: match.results.score[factionKey] }
+      );
+    };
+
+    await updateTeamScore("faction1");
+    await updateTeamScore("faction2");
+  }
 
   return NextResponse.json({ message: "OK" }, { status: 200 });
 }

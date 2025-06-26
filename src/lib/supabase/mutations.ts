@@ -101,6 +101,18 @@ export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
   return data;
 }
 
+export async function updateMatchTeam(match_id: string, team_id: string, team: TablesUpdate<"match_teams">) {
+  const { data, error } = await supabase
+    .from("match_teams")
+    .update(team)
+    .match({ match_id, team_id });
+
+  if (error) {
+    console.error("Failed to update match team", error);
+    throw error;
+  }
+}
+
 export async function upsertMatchTeamPlayer(
   player: TablesInsert<"match_team_players">,
 ) {

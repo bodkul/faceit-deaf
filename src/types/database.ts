@@ -354,6 +354,51 @@ export type Database = {
         };
         Relationships: [];
       };
+      teams: {
+        Row: {
+          avatar: string | null;
+          created_at: string;
+          id: string;
+          name: string;
+        };
+        Insert: {
+          avatar?: string | null;
+          created_at?: string;
+          id?: string;
+          name: string;
+        };
+        Update: {
+          avatar?: string | null;
+          created_at?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [];
+      };
+      users: {
+        Row: {
+          email: string | null;
+          id: string;
+          image: string | null;
+          name: string | null;
+          player_id: string | null;
+        };
+        Insert: {
+          email?: string | null;
+          id: string;
+          image?: string | null;
+          name?: string | null;
+          player_id?: string | null;
+        };
+        Update: {
+          email?: string | null;
+          id?: string;
+          image?: string | null;
+          name?: string | null;
+          player_id?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       hypopg_hidden_indexes: {

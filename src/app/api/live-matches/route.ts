@@ -6,24 +6,16 @@ import { supabase } from "@/lib/supabase";
 import { updateMatch } from "@/lib/supabase/mutations";
 
 export async function GET() {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("matches")
     .select("id")
     .in("status", ["READY", "ONGOING"]);
 
-  if (error) {
-    console.error("Error fetching matches:", error);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
-    );
-  }
-
-  const matchIds = data?.map((match) => `1-${match.id}`) || [];
-
-  if (matchIds.length === 0) {
+  if (!data || data.length === 0) {
     return NextResponse.json({ message: "No matches found" }, { status: 200 });
   }
+
+  const matchIds = data.map((match) => `1-${match.id}`) || [];
 
   const matches = await fetchMatches(matchIds);
 

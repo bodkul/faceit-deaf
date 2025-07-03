@@ -62,12 +62,7 @@ export default function Page() {
             />
             <XAxis dataKey="count" type="number" hide />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Bar
-              dataKey="count"
-              layout="vertical"
-              fill="var(--color-map)"
-              radius={4}
-            >
+            <Bar dataKey="count" fill="var(--color-map)" radius={4}>
               <LabelList
                 dataKey="map"
                 position="insideLeft"

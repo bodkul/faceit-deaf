@@ -1,37 +1,7 @@
-import { supabase } from "@/lib/supabase";
 import type { TablesInsert, TablesUpdate } from "@/types/database";
 
-export async function getAllMatchesForPlayer(playerId: string) {
-  let allMatches: {
-    match_teams: {
-      matches: {
-        id: string;
-      } | null;
-    } | null;
-  }[] = [];
-  let offset = 0;
-  const limit = 1000;
-
-  while (true) {
-    const { data, error } = await supabase
-      .from("match_team_players")
-      .select("match_teams (matches (id))")
-      .eq("player_id_mandatory", playerId)
-      .range(offset, offset + limit - 1);
-
-    if (error) {
-      console.error(`Error fetching matches: ${error}`);
-      throw error;
-    }
-
-    if (!data || data.length === 0) break;
-
-    allMatches = [...allMatches, ...data];
-    offset += limit;
-  }
-
-  return allMatches;
-}
+import { supabase } from "./client";
+import { handleSupabaseError, onConflictConfig } from "./utils";
 
 export async function getExistingPlayers(playerIds: string[]) {
   const { data, error } = await supabase
@@ -40,18 +10,17 @@ export async function getExistingPlayers(playerIds: string[]) {
     .in("id", playerIds);
 
   if (error) {
-    console.error(`Error fetching players by IDs: ${error}`);
-    throw error;
+    handleSupabaseError("fetch players by IDs", error);
   }
 
-  return data;
+  return data || [];
 }
 
 export async function upsertPlayers(players: TablesInsert<"players">[]) {
   const { error } = await supabase.from("players").upsert(players);
+
   if (error) {
-    console.error("Failed to upsert players", error);
-    throw error;
+    handleSupabaseError("upsert players", error);
   }
 }
 
@@ -65,37 +34,35 @@ export async function updateMatch(
     .match({ id });
 
   if (error) {
-    console.error(`Failed to update match ${id}`, error);
-    throw error;
+    handleSupabaseError(`update match with ID ${id}`, error);
   }
 }
 
 export async function upsertMatch(match: TablesInsert<"matches">) {
   const { error } = await supabase.from("matches").upsert(match);
+
   if (error) {
-    console.error("Failed to upsert match", error);
-    throw error;
+    handleSupabaseError("upsert match", error);
   }
 }
 
 export async function deleteMatch(id: string) {
   const { error } = await supabase.from("matches").delete().match({ id });
+
   if (error) {
-    console.error("Failed to delete match", error);
-    throw error;
+    handleSupabaseError(`delete match with ID ${id}`, error);
   }
 }
 
 export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
   const { data, error } = await supabase
     .from("match_teams")
-    .upsert(team, { onConflict: "match_id, team_id" })
+    .upsert(team, { onConflict: onConflictConfig.matchTeams })
     .select("id")
     .single();
 
   if (error) {
-    console.error("Failed to upsert match team", error);
-    throw error;
+    handleSupabaseError("upsert match team", error);
   }
 
   return data;
@@ -106,13 +73,12 @@ export async function upsertMatchTeamPlayer(
 ) {
   const { data, error } = await supabase
     .from("match_team_players")
-    .upsert(player, { onConflict: "match_team_id, player_id_mandatory" })
+    .upsert(player, { onConflict: onConflictConfig.matchTeamPlayers })
     .select("id")
     .single();
 
   if (error) {
-    console.error("Failed to upsert match team players", error);
-    throw error;
+    handleSupabaseError("upsert match team player", error);
   }
 
   return data;
@@ -123,10 +89,10 @@ export async function upsertMatchTeamPlayers(
 ) {
   const { error } = await supabase
     .from("match_team_players")
-    .upsert(players, { onConflict: "match_team_id, player_id_mandatory" });
+    .upsert(players, { onConflict: onConflictConfig.matchTeamPlayers });
+
   if (error) {
-    console.error("Failed to upsert match team players", error);
-    throw error;
+    handleSupabaseError("upsert match team players", error);
   }
 }
 
@@ -135,9 +101,9 @@ export async function upsertPlayerStatsNormalized(
 ) {
   const { error } = await supabase
     .from("player_stats_normalized")
-    .upsert(player, { onConflict: "match_team_player_id" });
+    .upsert(player, { onConflict: onConflictConfig.playerStatsNormalized });
+
   if (error) {
-    console.error("Failed to upsert player stats normalized", error);
-    throw error;
+    handleSupabaseError("upsert player stats normalized", error);
   }
 }

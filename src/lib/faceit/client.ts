@@ -1,28 +1,21 @@
-import axios from "axios";
+import ky from "ky";
 
-const faceitClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL!,
+const faceitClient = ky.create({
+  prefixUrl: process.env.NEXT_PUBLIC_API_URL!,
   headers: {
     Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN!}`,
   },
-});
-
-faceitClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      console.error(
-        `Error fetching data from ${error.config.url}: ${error.response.status} ${error.response.statusText}`,
-      );
-    } else if (error.request) {
-      console.error(
-        `Error in request to ${error.config.url}: ${error.message}`,
-      );
-    } else {
-      console.error(`Error: ${error.message}`);
-    }
-    return Promise.reject(error);
+  hooks: {
+    afterResponse: [
+      async (request, options, response) => {
+        if (!response.ok) {
+          console.error(
+            `Error fetching data from ${request.url}: ${response.status} ${response.statusText}`,
+          );
+        }
+      },
+    ],
   },
-);
+});
 
 export default faceitClient;

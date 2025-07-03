@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SkillLevelIcon } from "@/components/icons";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { calculateAverageStats } from "@/lib/calculateAverageStats";
-import { insertNumberSign } from "@/lib/faceit/utils";
+import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import type { PlayerType } from "@/types/match";
 
@@ -35,7 +35,7 @@ export function PlayerStatsRow({
   const kdString =
     kills !== null && deaths !== null ? `${kills} - ${deaths}` : "";
   const kdDiff = kills !== null && deaths !== null ? kills - deaths : null;
-  const kdDiffString = kdDiff !== null ? insertNumberSign(kdDiff) : "";
+  const kdDiffString = kdDiff !== null ? formatNumberWithSign(kdDiff) : "";
 
   return (
     <TableRow>

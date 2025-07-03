@@ -1,4 +1,4 @@
-import { insertNumberSign } from "@/lib/faceit/utils";
+import { formatNumberWithSign } from "@/lib/faceit/utils";
 import type { PlayerWithPagination } from "@/types/player";
 
 export function EloDelta({ player }: { player: PlayerWithPagination }) {
@@ -12,7 +12,7 @@ export function EloDelta({ player }: { player: PlayerWithPagination }) {
   return (
     <>
       {" "}
-      <sup className={color}>{insertNumberSign(difference)}</sup>
+      <sup className={color}>{formatNumberWithSign(difference)}</sup>
     </>
   );
 }

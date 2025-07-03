@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 
 import { TableCell, TableRow } from "@/components/ui/table";
 import { calculateAverageStats } from "@/lib/calculateAverageStats";
-import { insertNumberSign } from "@/lib/faceit/utils";
+import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import type { MatchHistoryType } from "@/types/match";
 
@@ -82,7 +82,7 @@ export function MatchHistoryTableRow({ match }: { match: MatchHistoryType }) {
                 "text-green-500": team.team_win === true,
               })}
             >
-              {insertNumberSign(player.elo_after - player.elo_before)}
+              {formatNumberWithSign(player.elo_after - player.elo_before)}
             </span>
           )}
       </TableCell>

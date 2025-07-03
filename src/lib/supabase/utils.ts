@@ -10,6 +10,6 @@ export const handleSupabaseError = (
   operation: string,
   error: PostgrestError,
 ) => {
-  console.error(`Error during ${operation}:`, error.message);
-  throw new Error(`Failed to ${operation}: ${error.message}`);
+  console.error(`Error during ${operation}:`, error);
+  throw new Error(`Failed to ${operation}: ${error.message}`, error);
 };

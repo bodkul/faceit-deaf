@@ -22,6 +22,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type CustomTooltipProps,
 } from "@/components/ui/chart";
 import { formatMapPicks } from "@/lib/formatMapPicks";
 import { supabase } from "@/lib/supabase";
@@ -61,7 +62,12 @@ export default function Page() {
               hide
             />
             <XAxis dataKey="count" type="number" hide />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartTooltip
+              cursor={false}
+              content={(props: CustomTooltipProps) => (
+                <ChartTooltipContent {...props} hideIndicator hideLabel />
+              )}
+            />
             <Bar dataKey="count" fill="var(--color-map)" radius={4}>
               <LabelList
                 dataKey="map"

@@ -1,5 +1,6 @@
 import { fromUnixTime } from "date-fns";
 import { NextResponse } from "next/server";
+import pMap from "p-map";
 
 import { fetchMatches } from "@/lib/faceit/api";
 import { supabase } from "@/lib/supabase";
@@ -27,9 +28,11 @@ export async function GET() {
 
   const matches = await fetchMatches(matchIds);
 
-  matches
-    .filter((match) => match.status === "ONGOING" || match.status === "READY")
-    .forEach(async (match) => {
+  await pMap(
+    matches.filter(
+      (match) => match.status === "ONGOING" || match.status === "READY",
+    ),
+    async (match) => {
       const matchId = match.match_id.replace(/^1-/, "");
 
       await updateMatch(matchId, {
@@ -43,7 +46,9 @@ export async function GET() {
           ? `${match.results.score.faction1} / ${match.results.score.faction2}`
           : undefined,
       });
-    });
+    },
+    { concurrency: 3 },
+  );
 
   return NextResponse.json({ message: "OK" }, { status: 200 });
 }

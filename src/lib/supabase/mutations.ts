@@ -54,6 +54,21 @@ export async function deleteMatch(id: string) {
   }
 }
 
+export async function updateMatchTeam(
+  match_id: string,
+  team_id: string,
+  rows: TablesUpdate<"match_teams">,
+) {
+  const { error } = await supabase
+    .from("match_teams")
+    .update(rows)
+    .match({ match_id, team_id });
+
+  if (error) {
+    handleSupabaseError("update match team", error);
+  }
+}
+
 export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
   const { data, error } = await supabase
     .from("match_teams")

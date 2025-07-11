@@ -4,7 +4,7 @@ import pMap from "p-map";
 
 import { fetchMatches } from "@/lib/faceit/api";
 import { supabase } from "@/lib/supabase";
-import { updateMatch } from "@/lib/supabase/mutations";
+import { updateMatch, updateMatchTeam } from "@/lib/supabase/mutations";
 
 export async function GET() {
   const { data, error } = await supabase
@@ -46,6 +46,16 @@ export async function GET() {
           ? `${match.results.score.faction1} / ${match.results.score.faction2}`
           : undefined,
       });
+
+      if (match.results) {
+        await updateMatchTeam(matchId, match.teams.faction1.faction_id, {
+          final_score: match.results.score.faction1,
+        });
+
+        await updateMatchTeam(matchId, match.teams.faction2.faction_id, {
+          final_score: match.results.score.faction2,
+        });
+      }
     },
     { concurrency: 3 },
   );

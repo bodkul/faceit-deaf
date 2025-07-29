@@ -1,5 +1,7 @@
 "use client";
 
+import { range } from "lodash";
+
 import { PlayerRow } from "@/components/leaderboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,7 +19,7 @@ function EloRankingsRows() {
   const { players, isLoading } = useEloRankings();
 
   if (isLoading) {
-    return Array.from({ length: 10 }, (_, index) => (
+    return range(10).map((index) => (
       <TableRow key={index}>
         <TableCell>{index + 1}</TableCell>
         <TableCell>

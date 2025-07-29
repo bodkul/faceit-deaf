@@ -1,5 +1,6 @@
 "use client";
 
+import { sumBy } from "lodash";
 import { notFound } from "next/navigation";
 import { use } from "react";
 
@@ -21,10 +22,7 @@ export default function Page(props: { params: Promise<{ matchId: string }> }) {
     return notFound();
   }
 
-  const totalScore = match.teams.reduce(
-    (sum, team) => sum + (team.final_score ?? 0),
-    0,
-  );
+  const totalScore = sumBy(match.teams, (team) => team.final_score ?? 0);
 
   return (
     <>

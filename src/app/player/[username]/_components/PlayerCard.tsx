@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
+import { countBy, orderBy, toPairs } from "lodash";
 import Image from "next/image";
 import { useMemo } from "react";
 import Flag from "react-world-flags";
@@ -160,12 +161,8 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
 
     if (!mapPicks || mapPicks.length === 0) return [];
 
-    const mapCounts = mapPicks.reduce<Record<string, number>>((acc, map) => {
-      acc[map] = (acc[map] || 0) + 1;
-      return acc;
-    }, {});
-
-    return Object.entries(mapCounts).sort((a, b) => b[1] - a[1])[0] ?? [];
+    const mapCounts = countBy(mapPicks);
+    return orderBy(toPairs(mapCounts), ([, count]) => count, "desc")[0] ?? [];
   }, [matchTeamPlayers]);
 
   const winrate = useMemo(() => {

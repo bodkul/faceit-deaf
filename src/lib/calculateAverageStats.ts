@@ -1,3 +1,5 @@
+import { meanBy, sumBy } from "lodash";
+
 export function calculateAverageStats(
   matches: {
     Rounds: number;
@@ -35,40 +37,36 @@ export function calculateAverageStats(
 
   const matchStats = matches.map((match) => {
     return {
-      kills: Number(match["Kills"]),
-      deaths: Number(match["Deaths"]),
-      rounds: Number(match["Rounds"]),
-      kpr: Number(match["K/R Ratio"]),
-      adr: Number(match["ADR"]) || Number(match["K/R Ratio"]) * DMG_PER_KILL,
-      headshots: Number(match["Headshots"]),
-      assists: Number(match["Assists"]),
+      kills: match["Kills"],
+      deaths: match["Deaths"],
+      rounds: match["Rounds"],
+      kpr: match["K/R Ratio"],
+      adr: match["ADR"] || match["K/R Ratio"] * DMG_PER_KILL,
+      headshots: match["Headshots"],
+      assists: match["Assists"],
     };
   });
 
-  const kills = matchStats.reduce((prev, stat) => prev + stat.kills, 0);
-  const deaths = matchStats.reduce((prev, stat) => prev + stat.deaths, 0);
+  const kills = sumBy(matchStats, "kills");
+  const deaths = sumBy(matchStats, "deaths");
   const kd = kills / deaths || 0;
 
-  const dpr =
-    matchStats.reduce((prev, stat) => prev + stat.deaths / stat.rounds, 0) /
-    weight;
-  const kpr = matchStats.reduce((prev, stat) => prev + stat.kpr, 0) / weight;
+  const dpr = sumBy(matchStats, (stat) => stat.deaths / stat.rounds) / weight;
+  const kpr = meanBy(matchStats, "kpr");
   const avgk = kills / weight;
-  const adr = matchStats.reduce((prev, stat) => prev + stat.adr, 0) / weight;
+  const adr = meanBy(matchStats, "adr");
 
-  const hs = matchStats.reduce((prev, stat) => prev + stat.headshots, 0);
+  const hs = sumBy(matchStats, "headshots");
   const hsp = (hs / kills) * 100;
-  const apr =
-    matchStats.reduce((prev, stat) => prev + stat.assists / stat.rounds, 0) /
-    weight;
+  const apr = sumBy(matchStats, (stat) => stat.assists / stat.rounds) / weight;
 
   const kast =
-    matchStats.reduce((prev, stat) => {
+    sumBy(matchStats, (stat) => {
       const survived = stat.rounds - stat.deaths;
       const traded = TRADE_PERCENT * stat.rounds;
       const sum = (stat.kills + stat.assists + survived + traded) * 0.45;
-      return prev + Math.min((sum / stat.rounds) * 100, 100);
-    }, 0) / weight;
+      return Math.min((sum / stat.rounds) * 100, 100);
+    }) / weight;
 
   const impact = Math.max(2.13 * kpr + 0.42 * apr - 0.41, 0);
   const rating = Math.max(

@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { sumBy } from "lodash";
 import { useRouter } from "next/navigation";
 
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -17,11 +18,7 @@ export function MatchHistoryTableRow({ match }: { match: MatchHistoryType }) {
     player_stats &&
     calculateAverageStats([
       {
-        Rounds:
-          match.round_score
-            ?.split(" / ")
-            .map(Number)
-            .reduce((a, b) => a + b, 0) ?? 0,
+        Rounds: sumBy(match.round_score?.split(" / ").map(Number) ?? []),
         Assists: player_stats.assists ?? 0,
         Kills: player_stats.kills ?? 0,
         Deaths: player_stats.deaths ?? 0,

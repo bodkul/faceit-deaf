@@ -1,8 +1,10 @@
+import { range } from "lodash";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
 
 export function renderLoadingRows(count: number, offset: number) {
-  return Array.from({ length: count }, (_, index) => (
+  return range(count).map((index) => (
     <TableRow key={index}>
       <TableCell>{offset + index + 1}</TableCell>
       <TableCell>

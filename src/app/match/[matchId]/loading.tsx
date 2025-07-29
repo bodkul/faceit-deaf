@@ -1,3 +1,5 @@
+import { range } from "lodash";
+
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -46,7 +48,7 @@ export default function Loading() {
       <div className="flex space-x-12">
         <div className="flex w-full flex-col space-y-6">
           <h5 className="text-3xl font-bold">Stats</h5>
-          {Array.from({ length: 2 }, (_, index) => (
+          {range(2).map((index) => (
             <Card key={index}>
               <Table>
                 <TableHeader>
@@ -63,7 +65,7 @@ export default function Loading() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {Array.from({ length: 5 }, (_, index) => (
+                  {range(5).map((index) => (
                     <TableRow key={index}>
                       <TableCell className="flex items-center space-x-4">
                         <Skeleton className="size-8 rounded-full" />

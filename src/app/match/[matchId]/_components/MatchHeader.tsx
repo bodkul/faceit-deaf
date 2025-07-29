@@ -13,7 +13,7 @@ export function MatchHeader({ match }: { match: MatchType }) {
     <Card>
       {match.map_pick && (
         <Image
-          src={`/img/maps/${match.map_pick.slice(3).toLowerCase()}.webp`}
+          src={`/img/maps/${match.map_pick}.webp`}
           alt="Map"
           className="h-[120px] w-[1212px] rounded-t-xl object-cover"
           width={1212}

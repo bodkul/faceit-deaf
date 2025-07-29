@@ -302,7 +302,7 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
           {mostPlayedMap.length > 0 ? (
             <div className="relative mt-3 flex size-full flex-col items-center justify-center rounded-[8px] bg-[rgba(0,0,0,0.48)] px-1 py-3.5 text-white">
               <Image
-                src={`/img/maps/${mostPlayedMap[0].slice(3).toLowerCase()}.webp`}
+                src={`/img/maps/${mostPlayedMap[0]}.webp`}
                 className="absolute bottom-0 left-0 -z-1 size-full rounded-[8px] object-cover"
                 width={400}
                 height={250}

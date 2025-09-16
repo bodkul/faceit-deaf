@@ -90,11 +90,15 @@ export async function handleMatchStatusEvent(body: MatchStatusEvent) {
       await handleMatchStatusCancelled(body.payload);
       break;
     case "match_status_finished":
-      await tasks.trigger<typeof syncFinishedMatchTask>(
-        "sync-finished-match",
-        body.payload,
-        { delay: "5s" },
-      );
+      try {
+        await tasks.trigger<typeof syncFinishedMatchTask>(
+          "sync-finished-match",
+          body.payload,
+        );
+        console.log("Task triggered successfully");
+      } catch (err) {
+        console.error("Error triggering task", err);
+      }
       break;
   }
 }

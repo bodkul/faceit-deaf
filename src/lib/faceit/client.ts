@@ -1,4 +1,7 @@
 import ky from "ky";
+import pThrottle from "p-throttle";
+
+const throttle = pThrottle({ limit: 10, interval: 1000 });
 
 const faceitClient = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_API_URL!,
@@ -14,6 +17,7 @@ const faceitClient = ky.create({
       },
     ],
   },
+  fetch: (...args) => throttle(() => fetch(...args))()
 });
 
 export default faceitClient;

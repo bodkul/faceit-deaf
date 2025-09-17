@@ -17,7 +17,7 @@ const faceitClient = ky.create({
       },
     ],
   },
-  fetch: (...args) => throttle(() => fetch(...args))()
+  fetch: (...args) => throttle(() => fetch(...args))(),
 });
 
 export default faceitClient;

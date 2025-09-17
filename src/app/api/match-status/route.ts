@@ -5,7 +5,7 @@ import {
   handleMatchStatusCancelled,
   handleMatchStatusReady,
 } from "@/lib/faceit/handlers";
-import { syncFinishedMatchTask } from "@/trigger/update-match";
+import { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();

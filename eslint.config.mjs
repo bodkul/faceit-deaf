@@ -18,6 +18,15 @@ const gitignorePath = path.resolve(import.meta.dirname, ".gitignore");
 
 const eslintConfig = [
   {
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+    ],
+  },
+  {
     plugins: {
       "simple-import-sort": simpleImportSort,
       "array-func": arrayFunc,

@@ -8,7 +8,7 @@ export function renderLoadingRows(count: number, offset: number) {
     <TableRow key={index}>
       <TableCell>{offset + index + 1}</TableCell>
       <TableCell>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
           <Skeleton className="h-2.5 w-3.75 rounded-xs" />
           <Skeleton className="h-4 w-24" />
         </div>

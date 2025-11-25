@@ -1,7 +1,20 @@
+import { chunk } from "lodash";
+import pMap from "p-map";
+
 import type { TablesInsert, TablesUpdate } from "@/types/database";
 
 import { supabase } from "./client";
 import { handleSupabaseError, onConflictConfig } from "./utils";
+
+export async function getPlayers() {
+  const { data, error } = await supabase.from("players").select("id, nickname");
+
+  if (error) {
+    handleSupabaseError("fetch all players", error);
+  }
+
+  return data || [];
+}
 
 export async function getExistingPlayers(playerIds: string[]) {
   const { data, error } = await supabase
@@ -121,4 +134,59 @@ export async function upsertPlayerStatsNormalized(
   if (error) {
     handleSupabaseError("upsert player stats normalized", error);
   }
+}
+
+export async function getMatchesCount(playerId: string) {
+  const { count, error } = await supabase
+    .from("match_team_players")
+    .select("", { count: "exact", head: true })
+    .eq("player_id_mandatory", playerId);
+
+  if (error) {
+    handleSupabaseError("fetch existing matches by IDs", error);
+  }
+
+  return count;
+}
+
+export async function getMatchesIds(matchesIds: string[]) {
+  if (matchesIds.length === 0) {
+    return [];
+  }
+
+  const chunks = chunk(matchesIds, 200);
+  console.log(`    📦 Разбито на ${chunks.length} чанков по 200 матчей`);
+
+  const results = await pMap(
+    chunks,
+    async (matchesChunk, index) => {
+      console.log(
+        `      🔍 Обработка чанка ${index + 1}/${chunks.length} (${matchesChunk.length} матчей)`,
+      );
+
+      const { data, error } = await supabase
+        .from("matches")
+        .select("id")
+        .in("id", matchesChunk);
+
+      if (error) {
+        handleSupabaseError(
+          `fetch existing matches by IDs (chunk ${index + 1})`,
+          error,
+        );
+        return [];
+      }
+
+      return data || [];
+    },
+    { concurrency: 5 },
+  );
+
+  const allResults = results.flat();
+
+  console.log(
+    `    ✅ Найдено существующих матчей: ${allResults.length}/${matchesIds.length}`,
+  );
+
+  return allResults;
 }

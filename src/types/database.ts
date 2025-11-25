@@ -7,8 +7,274 @@ export type Json =
   | Json[];
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5";
+  };
+  next_auth: {
+    Tables: {
+      accounts: {
+        Row: {
+          access_token: string | null;
+          expires_at: number | null;
+          id: string;
+          id_token: string | null;
+          oauth_token: string | null;
+          oauth_token_secret: string | null;
+          provider: string;
+          providerAccountId: string;
+          refresh_token: string | null;
+          scope: string | null;
+          session_state: string | null;
+          token_type: string | null;
+          type: string;
+          userId: string | null;
+        };
+        Insert: {
+          access_token?: string | null;
+          expires_at?: number | null;
+          id?: string;
+          id_token?: string | null;
+          oauth_token?: string | null;
+          oauth_token_secret?: string | null;
+          provider: string;
+          providerAccountId: string;
+          refresh_token?: string | null;
+          scope?: string | null;
+          session_state?: string | null;
+          token_type?: string | null;
+          type: string;
+          userId?: string | null;
+        };
+        Update: {
+          access_token?: string | null;
+          expires_at?: number | null;
+          id?: string;
+          id_token?: string | null;
+          oauth_token?: string | null;
+          oauth_token_secret?: string | null;
+          provider?: string;
+          providerAccountId?: string;
+          refresh_token?: string | null;
+          scope?: string | null;
+          session_state?: string | null;
+          token_type?: string | null;
+          type?: string;
+          userId?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "accounts_userId_fkey";
+            columns: ["userId"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      sessions: {
+        Row: {
+          expires: string;
+          id: string;
+          sessionToken: string;
+          userId: string | null;
+        };
+        Insert: {
+          expires: string;
+          id?: string;
+          sessionToken: string;
+          userId?: string | null;
+        };
+        Update: {
+          expires?: string;
+          id?: string;
+          sessionToken?: string;
+          userId?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "sessions_userId_fkey";
+            columns: ["userId"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      users: {
+        Row: {
+          email: string | null;
+          emailVerified: string | null;
+          id: string;
+          image: string | null;
+          name: string | null;
+        };
+        Insert: {
+          email?: string | null;
+          emailVerified?: string | null;
+          id?: string;
+          image?: string | null;
+          name?: string | null;
+        };
+        Update: {
+          email?: string | null;
+          emailVerified?: string | null;
+          id?: string;
+          image?: string | null;
+          name?: string | null;
+        };
+        Relationships: [];
+      };
+      verification_tokens: {
+        Row: {
+          expires: string;
+          identifier: string | null;
+          token: string;
+        };
+        Insert: {
+          expires: string;
+          identifier?: string | null;
+          token: string;
+        };
+        Update: {
+          expires?: string;
+          identifier?: string | null;
+          token?: string;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      uid: { Args: never; Returns: string };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+  pgmq_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      archive: {
+        Args: { message_id: number; queue_name: string };
+        Returns: boolean;
+      };
+      delete: {
+        Args: { message_id: number; queue_name: string };
+        Returns: boolean;
+      };
+      pop: {
+        Args: { queue_name: string };
+        Returns: unknown[];
+        SetofOptions: {
+          from: "*";
+          to: "message_record";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      read: {
+        Args: { n: number; queue_name: string; sleep_seconds: number };
+        Returns: unknown[];
+        SetofOptions: {
+          from: "*";
+          to: "message_record";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      send: {
+        Args: { message: Json; queue_name: string; sleep_seconds?: number };
+        Returns: number[];
+      };
+      send_batch: {
+        Args: { messages: Json[]; queue_name: string; sleep_seconds?: number };
+        Returns: number[];
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
+      event_teams: {
+        Row: {
+          event_id: string;
+          id: string;
+          team_id: string;
+        };
+        Insert: {
+          event_id: string;
+          id?: string;
+          team_id: string;
+        };
+        Update: {
+          event_id?: string;
+          id?: string;
+          team_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_teams_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_teams_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      events: {
+        Row: {
+          avatar: string;
+          created_at: string;
+          end_date: string;
+          id: string;
+          location: string;
+          name: string;
+          start_date: string;
+        };
+        Insert: {
+          avatar: string;
+          created_at?: string;
+          end_date: string;
+          id?: string;
+          location: string;
+          name: string;
+          start_date: string;
+        };
+        Update: {
+          avatar?: string;
+          created_at?: string;
+          end_date?: string;
+          id?: string;
+          location?: string;
+          name?: string;
+          start_date?: string;
+        };
+        Relationships: [];
+      };
       match_team_players: {
         Row: {
           elo_after: number | null;
@@ -53,6 +319,13 @@ export type Database = {
             columns: ["player_id_nullable"];
             isOneToOne: false;
             referencedRelation: "leaderboard_players";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_team_players_player_id_nullable_fkey";
+            columns: ["player_id_nullable"];
+            isOneToOne: false;
+            referencedRelation: "player_card_data";
             referencedColumns: ["id"];
           },
           {
@@ -117,6 +390,13 @@ export type Database = {
             columns: ["match_id"];
             isOneToOne: false;
             referencedRelation: "matches";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_teams_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "player_matches";
             referencedColumns: ["id"];
           },
         ];
@@ -354,26 +634,74 @@ export type Database = {
         };
         Relationships: [];
       };
+      teams: {
+        Row: {
+          avatar: string | null;
+          country: string | null;
+          created_at: string;
+          id: string;
+          name: string;
+        };
+        Insert: {
+          avatar?: string | null;
+          country?: string | null;
+          created_at?: string;
+          id?: string;
+          name: string;
+        };
+        Update: {
+          avatar?: string | null;
+          country?: string | null;
+          created_at?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [];
+      };
+      users: {
+        Row: {
+          email: string | null;
+          id: string;
+          image: string | null;
+          name: string | null;
+          player_id: string | null;
+        };
+        Insert: {
+          email?: string | null;
+          id: string;
+          image?: string | null;
+          name?: string | null;
+          player_id?: string | null;
+        };
+        Update: {
+          email?: string | null;
+          id?: string;
+          image?: string | null;
+          name?: string | null;
+          player_id?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       hypopg_hidden_indexes: {
         Row: {
-          am_name: unknown | null;
-          index_name: unknown | null;
-          indexrelid: unknown | null;
+          am_name: unknown;
+          index_name: unknown;
+          indexrelid: unknown;
           is_hypo: boolean | null;
-          schema_name: unknown | null;
-          table_name: unknown | null;
+          schema_name: unknown;
+          table_name: unknown;
         };
         Relationships: [];
       };
       hypopg_list_indexes: {
         Row: {
-          am_name: unknown | null;
+          am_name: unknown;
           index_name: string | null;
-          indexrelid: unknown | null;
-          schema_name: unknown | null;
-          table_name: unknown | null;
+          indexrelid: unknown;
+          schema_name: unknown;
+          table_name: unknown;
         };
         Relationships: [];
       };
@@ -419,85 +747,91 @@ export type Database = {
         };
         Relationships: [];
       };
+      player_card_data: {
+        Row: {
+          avatar: string | null;
+          country: string | null;
+          faceit_elo: number | null;
+          id: string | null;
+          match_count: number | null;
+          most_played_map: string | null;
+          nickname: string | null;
+          skill_level: number | null;
+          win_count: number | null;
+          winrate: number | null;
+        };
+        Relationships: [];
+      };
+      player_matches: {
+        Row: {
+          adr: number | null;
+          deaths: number | null;
+          elo_diff: number | null;
+          finished_at: string | null;
+          headshots: number | null;
+          id: string | null;
+          kills: number | null;
+          kr_ratio: number | null;
+          map: string | null;
+          player_id: string | null;
+          round_score: string | null;
+          win: boolean | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       get_map_picks_count: {
-        Args: Record<PropertyKey, never>;
+        Args: never;
         Returns: {
-          map_pick: string;
           count: number;
+          map_pick: string;
         }[];
       };
       get_player_stats: {
         Args: { player_id: string };
         Returns: {
-          id: string;
-          kills: string;
-          deaths: string;
-          headshots: string;
-          kpr: string;
           adr: string;
           assists: string;
+          deaths: string;
+          headshots: string;
+          id: string;
+          kills: string;
+          kpr: string;
           rounds: number;
         }[];
       };
-      hypopg: {
-        Args: Record<PropertyKey, never>;
-        Returns: Record<string, unknown>[];
-      };
+      hypopg: { Args: never; Returns: Record<string, unknown>[] };
       hypopg_create_index: {
         Args: { sql_order: string };
         Returns: Record<string, unknown>[];
       };
-      hypopg_drop_index: {
-        Args: { indexid: unknown };
-        Returns: boolean;
-      };
-      hypopg_get_indexdef: {
-        Args: { indexid: unknown };
-        Returns: string;
-      };
+      hypopg_drop_index: { Args: { indexid: unknown }; Returns: boolean };
+      hypopg_get_indexdef: { Args: { indexid: unknown }; Returns: string };
       hypopg_hidden_indexes: {
-        Args: Record<PropertyKey, never>;
+        Args: never;
         Returns: {
           indexid: unknown;
         }[];
       };
-      hypopg_hide_index: {
-        Args: { indexid: unknown };
-        Returns: boolean;
-      };
-      hypopg_relation_size: {
-        Args: { indexid: unknown };
-        Returns: number;
-      };
-      hypopg_reset: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
-      hypopg_reset_index: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
-      hypopg_unhide_all_indexes: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
-      hypopg_unhide_index: {
-        Args: { indexid: unknown };
-        Returns: boolean;
-      };
+      hypopg_hide_index: { Args: { indexid: unknown }; Returns: boolean };
+      hypopg_relation_size: { Args: { indexid: unknown }; Returns: number };
+      hypopg_reset: { Args: never; Returns: undefined };
+      hypopg_reset_index: { Args: never; Returns: undefined };
+      hypopg_unhide_all_indexes: { Args: never; Returns: undefined };
+      hypopg_unhide_index: { Args: { indexid: unknown }; Returns: boolean };
       index_advisor: {
         Args: { query: string };
         Returns: {
-          startup_cost_before: Json;
-          startup_cost_after: Json;
-          total_cost_before: Json;
-          total_cost_after: Json;
-          index_statements: string[];
           errors: string[];
+          index_statements: string[];
+          startup_cost_after: Json;
+          startup_cost_before: Json;
+          total_cost_after: Json;
+          total_cost_before: Json;
         }[];
       };
+      update_live_matches_if_any: { Args: never; Returns: undefined };
     };
     Enums: {
       [_ in never]: never;
@@ -508,21 +842,28 @@ export type Database = {
   };
 };
 
-type DefaultSchema = Database[Extract<keyof Database, "public">];
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<
+  keyof Database,
+  "public"
+>];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R;
     }
     ? R
@@ -540,14 +881,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I;
     }
     ? I
@@ -563,14 +906,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U;
     }
     ? U
@@ -586,14 +931,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never;
@@ -601,19 +948,27 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never;
 
 export const Constants = {
+  next_auth: {
+    Enums: {},
+  },
+  pgmq_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

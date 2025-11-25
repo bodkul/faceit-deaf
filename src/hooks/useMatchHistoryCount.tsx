@@ -2,22 +2,16 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 
 import { supabase } from "@/lib/supabase";
 
-export function useMatchHistoryCount(
-  player_id_mandatory: string | null | undefined,
-) {
+export function useMatchHistoryCount(player_id: string | null | undefined) {
   return useQuery(
-    player_id_mandatory
+    player_id
       ? supabase
-          .from("matches")
-          .select("match_teams!inner(match_team_players!inner())", {
+          .from("player_matches")
+          .select("*", {
             count: "exact",
             head: true,
           })
-          .eq(
-            "match_teams.match_team_players.player_id_mandatory",
-            player_id_mandatory,
-          )
-          .eq("status", "FINISHED")
+          .match({ player_id })
       : null,
   );
 }

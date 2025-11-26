@@ -17,18 +17,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { formatMapPicks } from "@/lib/formatMapPicks";
 import { supabase } from "@/lib/supabase";
 
 const chartConfig = {
-  map: { color: "var(--chart-1)" },
-  label: { color: "var(--background)" },
   count: { label: "Count" },
 } satisfies ChartConfig;
 
@@ -61,13 +54,12 @@ export default function Page() {
               hide
             />
             <XAxis dataKey="count" type="number" hide />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Bar dataKey="count" fill="var(--color-map)" radius={4}>
+            <Bar dataKey="count" className="fill-orange-500" radius={4}>
               <LabelList
                 dataKey="map"
                 position="insideLeft"
                 offset={8}
-                className="fill-(--color-label)"
+                className="fill-background"
                 fontSize={12}
               />
               <LabelList

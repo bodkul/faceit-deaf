@@ -1,3 +1,4 @@
+import { orderBy } from "lodash";
 import { useMemo } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,20 +21,13 @@ export function TeamStatsTable({
   team: TeamType;
   totalScore: number;
 }) {
-  const sortedPlayers = useMemo(() => {
-    return [...team.team_players].sort((a, b) => {
-      const kdA = a.player_stats
-        ? Number(a.player_stats.kills) - Number(a.player_stats.deaths)
-        : 0;
-      const kdB = b.player_stats
-        ? Number(b.player_stats.kills) - Number(b.player_stats.deaths)
-        : 0;
-      return kdB - kdA;
-    });
-  }, [team.team_players]);
+  const sortedPlayers = useMemo(
+    () => orderBy(team.team_players, (p) => p.player_stats?.kills || 0, "desc"),
+    [team.team_players],
+  );
 
   return (
-    <Card key={team.id}>
+    <Card key={team.id} className="py-0">
       <Table>
         <TableHeader>
           <TableRow>

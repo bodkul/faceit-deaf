@@ -1,3 +1,4 @@
+import { uniqBy } from "lodash";
 import pMap from "p-map";
 
 import faceitClient from "@/lib/faceit/client";
@@ -38,3 +39,111 @@ export const fetchMatchStats = async (matchId: string) => {
     throw new Error(`Unable to fetch match stats with ID ${matchId}`);
   }
 };
+
+interface MatchHistory {
+  match_id: string;
+  game_id: string;
+  region: string;
+  match_type: string;
+  game_mode: string;
+  max_players: number;
+  teams_size: number;
+  teams: Record<
+    string,
+    {
+      team_id: string;
+      nickname: string;
+      avatar: string;
+      type: string;
+      players: {
+        player_id: string;
+        nickname: string;
+        avatar: string;
+        skill_level: number;
+        game_player_id: string;
+        game_player_name: string;
+        faceit_url: string;
+      }[];
+    }
+  >;
+  playing_players: string[];
+  competition_id: string;
+  competition_name: string;
+  competition_type: string;
+  organizer_id: string;
+  status: string;
+  started_at: number;
+  finished_at: number;
+  results: {
+    winner: string;
+    score: Record<string, number>;
+  };
+  faceit_url: string;
+}
+
+const GAME = "cs2";
+const REGION = "EU";
+const ORGANIZER_ID = "faceit";
+const COMPETITION_ID = "f4148ddd-bce8-41b8-9131-ee83afcdd6dd";
+
+export async function fetchFullPlayerHistory(playerId: string) {
+  console.log(`    🔄 Загрузка истории матчей для игрока: ${playerId}`);
+
+  let to = 0;
+  let requestCount = 0;
+  const allMatches: MatchHistory[] = [];
+
+  while (true) {
+    requestCount++;
+    const searchParams = new URLSearchParams({
+      game: GAME,
+      limit: "100",
+    });
+
+    if (allMatches.length < 1000) {
+      searchParams.append("offset", allMatches.length.toString());
+      console.log(
+        `      📥 Запрос ${requestCount}: offset=${allMatches.length}`,
+      );
+    } else {
+      searchParams.append("to", to.toString());
+      console.log(`      📥 Запрос ${requestCount}: timestamp=${to}`);
+    }
+
+    try {
+      const { items } = await faceitClient<{ items: MatchHistory[] }>(
+        `players/${playerId}/history`,
+        { searchParams },
+      ).json();
+
+      console.log(
+        `      ✅ Получено ${items.length} матчей (всего: ${allMatches.length + items.length})`,
+      );
+
+      allMatches.push(...items);
+
+      if (items.length !== 100) {
+        console.log(`      🏁 Достигнут конец истории матчей`);
+        break;
+      }
+
+      to = items[items.length - 1].finished_at;
+    } catch (error) {
+      console.error(`      ❌ Ошибка при запросе ${requestCount}:`, error);
+      throw error;
+    }
+  }
+
+  console.log(
+    `    🔍 Фильтрация матчей (всего загружено: ${allMatches.length})`,
+  );
+
+  const filteredUniqueMatches = uniqBy(allMatches, "match_id").filter(
+    (m) =>
+      m.region === REGION &&
+      m.organizer_id === ORGANIZER_ID &&
+      m.competition_id === COMPETITION_ID,
+  );
+
+  return filteredUniqueMatches;
+}

@@ -14,7 +14,7 @@ import {
 export default function Loading() {
   return (
     <>
-      <Card>
+      <Card className="p-0">
         <Skeleton className="h-[120px] w-auto rounded-none rounded-t-xl" />
         <div className="flex justify-between p-6">
           <div className="flex w-1/3 items-center justify-center space-x-5">
@@ -49,7 +49,7 @@ export default function Loading() {
         <div className="flex w-full flex-col space-y-6">
           <h5 className="text-3xl font-bold">Stats</h5>
           {range(2).map((index) => (
-            <Card key={index}>
+            <Card key={index} className="gap-0 p-0">
               <Table>
                 <TableHeader>
                   <TableRow>

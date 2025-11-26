@@ -4,61 +4,61 @@ import pMap from "p-map";
 
 import { fetchMatches } from "@/lib/faceit/api";
 import { supabase } from "@/lib/supabase";
-import { updateMatch, updateMatchTeam } from "@/lib/supabase/mutations";
+import {
+  getActiveMatches,
+  updateMatch,
+  updateMatchTeam,
+} from "@/lib/supabase/mutations";
 
 export async function GET() {
-  const { data, error } = await supabase
-    .from("matches")
-    .select("id")
-    .in("status", ["READY", "ONGOING"]);
-
-  if (error) {
-    console.error("Error fetching matches:", error);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
-    );
-  }
-
+  const data = await getActiveMatches();
   const matchIds = data?.map((match) => `1-${match.id}`) || [];
 
-  if (matchIds.length === 0) {
-    return NextResponse.json({ message: "No matches found" }, { status: 200 });
+  if (!matchIds.length) {
+    return NextResponse.json({ message: "No matches found" });
   }
 
   const matches = await fetchMatches(matchIds);
 
-  await pMap(
-    matches.filter(
-      (match) => match.status === "ONGOING" || match.status === "READY",
-    ),
-    async (match) => {
-      const matchId = match.match_id.replace(/^1-/, "");
+  const relevantMatches = matches.filter((m) =>
+    ["ONGOING", "READY"].includes(m.status),
+  );
 
-      await updateMatch(matchId, {
-        location_pick: match.voting.location?.pick[0],
-        map_pick: match.voting.map?.pick[0],
-        started_at: match.started_at
-          ? fromUnixTime(match.started_at).toISOString()
+  await pMap(
+    relevantMatches,
+    async ({ match_id, voting, started_at, status, results, teams }) => {
+      const id = match_id.replace(/^1-/, "");
+
+      await updateMatch(id, {
+        location_pick: voting.location?.pick[0],
+        map_pick: voting.map?.pick[0],
+        started_at: started_at
+          ? fromUnixTime(started_at).toISOString()
           : undefined,
-        status: match.status,
-        round_score: match.results
-          ? `${match.results.score.faction1} / ${match.results.score.faction2}`
+        status,
+        round_score: results
+          ? `${results.score.faction1} / ${results.score.faction2}`
           : undefined,
       });
 
-      if (match.results) {
-        await updateMatchTeam(matchId, match.teams.faction1.faction_id, {
-          final_score: match.results.score.faction1,
-        });
-
-        await updateMatchTeam(matchId, match.teams.faction2.faction_id, {
-          final_score: match.results.score.faction2,
-        });
+      if (results) {
+        await Promise.all([
+          updateMatchTeam(id, teams.faction1.faction_id, {
+            final_score: results.score.faction1,
+          }),
+          updateMatchTeam(id, teams.faction2.faction_id, {
+            final_score: results.score.faction2,
+          }),
+        ]);
       }
     },
     { concurrency: 3 },
   );
 
-  return NextResponse.json({ message: "OK" }, { status: 200 });
+  await supabase.channel(`live-matches`).send({
+    type: "broadcast",
+    event: "*",
+  });
+
+  return NextResponse.json({ message: "OK" });
 }

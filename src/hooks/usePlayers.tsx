@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { usePagination } from "@/hooks/usePagination";
 import { supabase } from "@/lib/supabase";
@@ -29,11 +29,9 @@ export function usePlayersWithPagination() {
 
   const { isLoading, count, ...rest } = usePlayers(pagination.pageOffset);
 
-  useEffect(() => {
-    if (typeof count === "number" && count !== totalCount) {
-      setTotalCount(count);
-    }
-  }, [count, totalCount]);
+  if (typeof count === "number" && count !== totalCount) {
+    setTotalCount(count);
+  }
 
   return {
     ...rest,

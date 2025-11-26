@@ -34,13 +34,7 @@ export function Maps({ playerId }: { playerId: string }) {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-64 w-full">
-          <BarChart
-            accessibilityLayer
-            data={maps}
-            margin={{
-              top: 20,
-            }}
-          >
+          <BarChart accessibilityLayer data={maps}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="map"

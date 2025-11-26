@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -16,7 +17,7 @@ import {
 import { useLiveMatches } from "@/hooks/useLiveMatches";
 
 export function LiveMatches() {
-  const { data } = useLiveMatches();
+  const { data: matches, isLoading } = useLiveMatches();
   const router = useRouter();
 
   return (
@@ -36,8 +37,14 @@ export function LiveMatches() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data?.map((match) => {
-                return (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    <Spinner className="inline-block" />
+                  </TableCell>
+                </TableRow>
+              ) : matches?.length ? (
+                matches.map((match) => (
                   <TableRow
                     key={match.id}
                     className="cursor-pointer text-center whitespace-nowrap"
@@ -65,8 +72,14 @@ export function LiveMatches() {
                       ))}
                     </TableCell>
                   </TableRow>
-                );
-              })}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No matches.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>

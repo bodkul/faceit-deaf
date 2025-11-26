@@ -73,7 +73,7 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
           <AvatarFallback></AvatarFallback>
         </Avatar>
         <CardTitle className="text-2xl">{player.nickname}</CardTitle>
-        <div className="text-sm text-muted-foreground">Team HARD</div>
+        {/* <div className="text-sm text-muted-foreground">Team HARD</div> */}
       </CardHeader>
       <CardContent className="space-y-4">
         <Separator />

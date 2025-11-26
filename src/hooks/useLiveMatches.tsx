@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useQuery,
-  useSubscription,
-} from "@supabase-cache-helpers/postgrest-swr";
+import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 
 import { supabase } from "@/lib/supabase";
 
@@ -16,19 +13,10 @@ export function useLiveMatches() {
       .order("started_at", { ascending: false }),
   );
 
-  useSubscription(
-    supabase,
-    "live_matches_subscription",
-    {
-      event: "*",
-      table: "matches",
-      schema: "public",
-    },
-    ["id"],
-    {
-      callback: () => mutate().then(),
-    },
-  );
+  supabase
+    .channel("live-matches")
+    .on("broadcast", { event: "*" }, () => mutate().then())
+    .subscribe();
 
   return query;
 }

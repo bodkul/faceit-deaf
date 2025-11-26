@@ -190,3 +190,16 @@ export async function getMatchesIds(matchesIds: string[]) {
 
   return allResults;
 }
+
+export async function getActiveMatches() {
+  const { data, error } = await supabase
+    .from("matches")
+    .select("id")
+    .in("status", ["READY", "ONGOING"]);
+
+  if (error) {
+    handleSupabaseError(`fetch existing matches`, error);
+  }
+
+  return data || [];
+}

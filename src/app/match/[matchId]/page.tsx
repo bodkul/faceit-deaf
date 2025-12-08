@@ -14,6 +14,10 @@ export default function Page(props: { params: Promise<{ matchId: string }> }) {
   const { matchId } = use(props.params);
   const { match, isLoading } = useMatch(matchId.replace(/^1-/, ""));
 
+  if (!matchId.startsWith("1-")) {
+    return notFound();
+  }
+
   if (isLoading) {
     return <Loading />;
   }

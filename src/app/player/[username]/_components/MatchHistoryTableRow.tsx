@@ -24,9 +24,9 @@ export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
 
   return (
     <TableRow
-      key={match.id}
+      key={`1-${match.id}`}
       className="cursor-pointer text-center whitespace-nowrap"
-      onClick={() => router.push(`/match/${match.id}`)}
+      onClick={() => router.push(`/match/1-${match.id}`)}
     >
       <TableCell>
         {match.finished_at && format(match.finished_at, "dd MMM - HH:mm")}

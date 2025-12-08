@@ -30,11 +30,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+const COUNT_MATCHES = 20;
+
 export default function Statistics({ playerId }: { playerId: string }) {
   const [isAllTime, setIsAllTime] = useState(false);
   const { data, count, isLoading } = usePlayerStatistics(
     playerId,
-    isAllTime ? undefined : 20,
+    isAllTime ? undefined : COUNT_MATCHES,
   );
 
   const stats = useMemo(() => {
@@ -103,7 +105,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
                 <CardDescription>
                   {isAllTime
                     ? "All-time statistics"
-                    : "Based on the last 20 matches"}
+                    : `Based on the last ${COUNT_MATCHES} matches`}
                 </CardDescription>
               </div>
               <div className="flex items-center gap-4">
@@ -229,7 +231,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
               <CardDescription>
                 {isAllTime
                   ? "All-time statistics"
-                  : "Based on the last 20 matches"}
+                  : `Based on the last ${COUNT_MATCHES} matches`}
               </CardDescription>
             </div>
             <div className="flex items-center gap-4">

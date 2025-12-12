@@ -85,7 +85,7 @@ export default function LeaderboardPage() {
       <CardFooter>
         <Pagination>
           <div className="flex items-center space-x-6 lg:space-x-8">
-            <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+            <div className="flex w-25 items-center justify-center text-sm font-medium">
               Page {pageIndex} of {totalPages}
             </div>
             <PaginationContent className="gap-2">

@@ -44,37 +44,37 @@ export default function Loading() {
 
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                  <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                  <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                     <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                       K/D
                     </span>
                   </Skeleton>
-                  <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                  <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                     <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                       Headshots
                     </span>
                   </Skeleton>
-                  <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                  <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                     <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                       Winrate
                     </span>
                   </Skeleton>
-                  <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                  <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                     <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                       Total Matches
                     </span>
                   </Skeleton>
-                  <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                  <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                     <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                       Kills per Round
                     </span>
                   </Skeleton>
-                  <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                  <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                     <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                       +/- ELO
                     </span>
                   </Skeleton>
-                  <Skeleton className="relative col-span-2 flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-12 transition-colors hover:bg-muted/50">
+                  <Skeleton className="relative col-span-2 flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-12 transition-colors hover:bg-muted/50">
                     <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                       W/L History
                     </span>

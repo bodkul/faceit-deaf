@@ -119,33 +119,33 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                 <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                   K/D
                 </span>
               </Skeleton>
-              <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                 <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                   Headshots
                 </span>
               </Skeleton>
-              <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                 <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                   Winrate
                 </span>
               </Skeleton>
-              <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                 <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                   Total Matches
                 </span>
               </Skeleton>
-              <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                 <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                   Kills per Round
                 </span>
               </Skeleton>
               {isAllTime ? (
-                <div className="relative flex min-h-[90px] items-center justify-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
+                <div className="relative flex min-h-22.5 items-center justify-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
                   <div
                     className="absolute inset-0 opacity-15"
                     style={{
@@ -155,13 +155,13 @@ export default function Statistics({ playerId }: { playerId: string }) {
                   ></div>
                 </div>
               ) : (
-                <Skeleton className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
                   <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                     +/- ELO
                   </span>
                 </Skeleton>
               )}
-              <Skeleton className="relative col-span-2 flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-12 transition-colors hover:bg-muted/50">
+              <Skeleton className="relative col-span-2 flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-12 transition-colors hover:bg-muted/50">
                 <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                   W/L History
                 </span>
@@ -178,7 +178,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="h-[150px] w-full">
+            <ChartContainer config={chartConfig} className="h-37.5 w-full">
               <AreaChart accessibilityLayer data={stats.eloChartData.value()}>
                 <CartesianGrid vertical={false} />
                 <YAxis
@@ -245,38 +245,38 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
         <CardContent className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <div className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
               <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                 K/D
               </span>
               <span className="text-2xl font-bold">{stats.kd}</span>
             </div>
-            <div className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
               <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                 Headshots
               </span>
               <span className="text-2xl font-bold">{stats.hsPercent}</span>
             </div>
-            <div className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
               <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                 Winrate
               </span>
               <span className="text-2xl font-bold">{stats.winrate}</span>
             </div>
-            <div className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
               <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                 Total Matches
               </span>
               <span className="text-2xl font-bold">{count}</span>
             </div>
-            <div className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
               <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                 Kills per Round
               </span>
               <span className="text-2xl font-bold">{stats.kpr}</span>
             </div>
             {isAllTime ? (
-              <div className="relative flex min-h-[90px] items-center justify-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
+              <div className="relative flex min-h-22.5 items-center justify-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
                 <div
                   className="absolute inset-0 opacity-15"
                   style={{
@@ -286,7 +286,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
                 ></div>
               </div>
             ) : (
-              <div className="relative flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+              <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
                 <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                   +/- ELO
                 </span>
@@ -295,7 +295,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
                 </span>
               </div>
             )}
-            <div className="relative col-span-2 flex min-h-[90px] flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+            <div className="relative col-span-2 flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
               <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                 W/L History
               </span>
@@ -325,7 +325,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[150px] w-full">
+          <ChartContainer config={chartConfig} className="h-37.5 w-full">
             <AreaChart accessibilityLayer data={stats.eloChartData.value()}>
               <CartesianGrid vertical={false} />
               <YAxis

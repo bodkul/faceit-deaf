@@ -15,7 +15,7 @@ export function MatchHeader({ match }: { match: MatchType }) {
         <Image
           src={`/img/maps/${match.map_pick}.webp`}
           alt="Map"
-          className="h-[120px] w-[1212px] rounded-t-xl object-cover"
+          className="h-30 w-303 rounded-t-xl object-cover"
           width={1212}
           height={120}
         />

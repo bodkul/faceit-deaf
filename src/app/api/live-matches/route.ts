@@ -2,7 +2,7 @@ import { fromUnixTime } from "date-fns";
 import { NextResponse } from "next/server";
 import pMap from "p-map";
 
-import { fetchMatches } from "@/lib/faceit/api";
+import faceitSdk from "@/lib/faceit/sdk";
 import { supabase } from "@/lib/supabase";
 import {
   getActiveMatches,
@@ -18,7 +18,7 @@ export async function GET() {
     return NextResponse.json({ message: "No matches found" });
   }
 
-  const matches = await fetchMatches(matchIds);
+  const matches = await faceitSdk.matches.getMatchesDetails(matchIds);
 
   const relevantMatches = matches.filter((m) =>
     ["ONGOING", "READY"].includes(m.status),

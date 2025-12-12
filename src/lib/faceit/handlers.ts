@@ -1,6 +1,5 @@
 import pMap from "p-map";
 
-import { fetchMatch } from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/match-events";
 import {
   deleteMatch,
@@ -10,6 +9,8 @@ import {
   upsertMatchTeamPlayers,
 } from "@/lib/supabase/mutations";
 
+import faceitSdk from "./sdk";
+
 export async function handleMatchStatusReady(payload: MatchPayload) {
   const matchId = payload.id.replace(/^1-/, "");
   const playerIds = payload.teams.flatMap((team) =>
@@ -18,7 +19,7 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
 
   const [existingPlayers, match] = await Promise.all([
     getExistingPlayers(playerIds),
-    fetchMatch(payload.id),
+    faceitSdk.matches.getMatchDetails(payload.id),
   ]);
 
   const existingPlayerIds = existingPlayers.map((p) => p.id);

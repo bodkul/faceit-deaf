@@ -2,8 +2,7 @@ import { fromUnixTime, subHours } from "date-fns";
 import { NextResponse } from "next/server";
 import pMap from "p-map";
 
-import faceitSdk from "@/lib/faceit/sdk";
-import type { PlayerStatsData } from "@/lib/faceit/types";
+import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import { supabase } from "@/lib/supabase";
 import {
   getExistingPlayers,
@@ -33,13 +32,12 @@ export async function GET() {
           team.match_team_players.map((player) => player.player_id_mandatory),
         ),
       ),
-      faceitSdk.matches.getMatchDetails(`1-${row.id}`),
-      faceitSdk.matches.getMatchStats(`1-${row.id}`),
+      fetchMatch(`1-${row.id}`),
+      fetchMatchStats(`1-${row.id}`),
     ]);
 
     const existingPlayerIds = existingPlayers.map((p) => p.id);
-    const players =
-      await faceitSdk.players.getPlayersDetails(existingPlayerIds);
+    const players = await fetchPlayers(existingPlayerIds);
 
     await upsertPlayers(
       players.map((player) => ({
@@ -63,7 +61,7 @@ export async function GET() {
         status: match.status,
         location_pick: match.voting.location?.pick[0],
         map_pick: match.voting.map?.pick[0],
-        round_score: round.round_stats.Score.toString(),
+        round_score: round.round_stats.Score,
         started_at: fromUnixTime(match.started_at).toISOString(),
         finished_at: fromUnixTime(match.finished_at).toISOString(),
       })
@@ -98,9 +96,9 @@ export async function GET() {
         await pMap(
           team.roster,
           async (player) => {
-            const stats = roundTeam?.players.find(
+            const qwe = roundTeam?.players.find(
               (p) => p.player_id === player.player_id,
-            )?.player_stats as unknown as PlayerStatsData | null;
+            );
 
             const resPlayer = await upsertMatchTeamPlayer({
               match_team_id: resTeam.id,
@@ -120,58 +118,62 @@ export async function GET() {
 
             await upsertPlayerStatsNormalized({
               match_team_player_id: resPlayer.id,
-              adr: stats?.ADR,
-              mvps: stats?.MVPs,
-              kills: stats?.Kills,
-              damage: stats?.Damage,
-              deaths: stats?.Deaths,
-              "1v1wins": stats?.["1v1Wins"],
-              "1v2wins": stats?.["1v2Wins"],
-              assists: stats?.Assists,
-              "1v1count": stats?.["1v1Count"],
-              "1v2count": stats?.["1v2Count"],
-              headshots: stats?.Headshots,
-              kd_ratio: stats?.["K/D Ratio"],
-              kr_ratio: stats?.["K/R Ratio"],
-              entry_wins: stats?.["Entry Wins"],
-              entry_count: stats?.["Entry Count"],
-              first_kills: stats?.["First Kills"],
-              flash_count: stats?.["Flash Count"],
-              headshots_percent: stats?.["Headshots %"],
-              clutch_kills: stats?.["Clutch Kills"],
-              double_kills: stats?.["Double Kills"],
-              pistol_kills: stats?.["Pistol Kills"],
-              quadro_kills: stats?.["Quadro Kills"],
-              triple_kills: stats?.["Triple Kills"],
-              utility_count: stats?.["Utility Count"],
-              utility_damage: stats?.["Utility Damage"],
-              enemies_flashed: stats?.["Enemies Flashed"],
-              flash_successes: stats?.["Flash Successes"],
-              utility_enemies: stats?.["Utility Enemies"],
-              match_entry_rate: stats?.["Match Entry Rate"],
-              utility_successes: stats?.["Utility Successes"],
-              match_1v1_win_rate: stats?.["Match 1v1 Win Rate"],
-              match_1v2_win_rate: stats?.["Match 1v2 Win Rate"],
-              utility_usage_per_round: stats?.["Utility Usage per Round"],
-              match_entry_success_rate: stats?.["Match Entry Success Rate"],
+              adr: qwe?.player_stats?.ADR,
+              mvps: qwe?.player_stats?.MVPs,
+              kills: qwe?.player_stats?.Kills,
+              damage: qwe?.player_stats?.Damage,
+              deaths: qwe?.player_stats?.Deaths,
+              "1v1wins": qwe?.player_stats?.["1v1Wins"],
+              "1v2wins": qwe?.player_stats?.["1v2Wins"],
+              assists: qwe?.player_stats?.Assists,
+              "1v1count": qwe?.player_stats?.["1v1Count"],
+              "1v2count": qwe?.player_stats?.["1v2Count"],
+              headshots: qwe?.player_stats?.Headshots,
+              kd_ratio: qwe?.player_stats?.["K/D Ratio"],
+              kr_ratio: qwe?.player_stats?.["K/R Ratio"],
+              entry_wins: qwe?.player_stats?.["Entry Wins"],
+              entry_count: qwe?.player_stats?.["Entry Count"],
+              first_kills: qwe?.player_stats?.["First Kills"],
+              flash_count: qwe?.player_stats?.["Flash Count"],
+              headshots_percent: qwe?.player_stats?.["Headshots %"],
+              clutch_kills: qwe?.player_stats?.["Clutch Kills"],
+              double_kills: qwe?.player_stats?.["Double Kills"],
+              pistol_kills: qwe?.player_stats?.["Pistol Kills"],
+              quadro_kills: qwe?.player_stats?.["Quadro Kills"],
+              triple_kills: qwe?.player_stats?.["Triple Kills"],
+              utility_count: qwe?.player_stats?.["Utility Count"],
+              utility_damage: qwe?.player_stats?.["Utility Damage"],
+              enemies_flashed: qwe?.player_stats?.["Enemies Flashed"],
+              flash_successes: qwe?.player_stats?.["Flash Successes"],
+              utility_enemies: qwe?.player_stats?.["Utility Enemies"],
+              match_entry_rate: qwe?.player_stats?.["Match Entry Rate"],
+              utility_successes: qwe?.player_stats?.["Utility Successes"],
+              match_1v1_win_rate: qwe?.player_stats?.["Match 1v1 Win Rate"],
+              match_1v2_win_rate: qwe?.player_stats?.["Match 1v2 Win Rate"],
+              utility_usage_per_round:
+                qwe?.player_stats?.["Utility Usage per Round"],
+              match_entry_success_rate:
+                qwe?.player_stats?.["Match Entry Success Rate"],
               flash_success_rate_per_match:
-                stats?.["Flash Success Rate per Match"],
+                qwe?.player_stats?.["Flash Success Rate per Match"],
               flashes_per_round_in_a_match:
-                stats?.["Flashes per Round in a Match"],
+                qwe?.player_stats?.["Flashes per Round in a Match"],
               utility_success_rate_per_match:
-                stats?.["Utility Success Rate per Match"],
+                qwe?.player_stats?.["Utility Success Rate per Match"],
               utility_damage_per_round_in_a_match:
-                stats?.["Utility Damage per Round in a Match"],
+                qwe?.player_stats?.["Utility Damage per Round in a Match"],
               enemies_flashed_per_round_in_a_match:
-                stats?.["Enemies Flashed per Round in a Match"],
+                qwe?.player_stats?.["Enemies Flashed per Round in a Match"],
               utility_damage_success_rate_per_match:
-                stats?.["Utility Damage Success Rate per Match"],
-              zeus_kills: stats?.["Zeus Kills"],
-              knife_kills: stats?.["Knife Kills"],
-              penta_kills: stats?.["Penta Kills"],
-              sniper_kills: stats?.["Sniper Kills"],
-              sniper_kill_rate_per_match: stats?.["Sniper Kill Rate per Match"],
-              sniper_kill_rate_per_round: stats?.["Sniper Kill Rate per Round"],
+                qwe?.player_stats?.["Utility Damage Success Rate per Match"],
+              zeus_kills: qwe?.player_stats?.["Zeus Kills"],
+              knife_kills: qwe?.player_stats?.["Knife Kills"],
+              penta_kills: qwe?.player_stats?.["Penta Kills"],
+              sniper_kills: qwe?.player_stats?.["Sniper Kills"],
+              sniper_kill_rate_per_match:
+                qwe?.player_stats?.["Sniper Kill Rate per Match"],
+              sniper_kill_rate_per_round:
+                qwe?.player_stats?.["Sniper Kill Rate per Round"],
             });
           },
           { concurrency: 5 },

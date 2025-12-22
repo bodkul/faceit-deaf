@@ -1,9 +1,10 @@
 "use client";
 
+import { IconBrandSteam, IconBrandTwitch } from "@tabler/icons-react";
 import { range } from "lodash";
 import { useMemo } from "react";
 
-import { FaceitIcon, SteamIcon, TwitchIcon } from "@/components/icons";
+import { FaceitIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -46,7 +47,7 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
       {
         key: "steam",
         href: `https://steamcommunity.com/profiles/${player.steam_id_64}`,
-        icon: <SteamIcon className="size-6" />,
+        icon: <IconBrandSteam className="size-6" />,
       },
     ];
 
@@ -54,7 +55,7 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
       list.push({
         key: "twitch",
         href: `https://www.twitch.tv/${player.twitch_username}`,
-        icon: <TwitchIcon className="size-6" />,
+        icon: <IconBrandTwitch className="size-6" />,
       });
     }
 

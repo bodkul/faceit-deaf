@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -6,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,11 +17,11 @@ import { PlayerCardSceleton } from "./_components/PlayerCard";
 
 export default function Loading() {
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <>
       <PlayerCardSceleton />
 
       <div className="lg:col-span-2">
-        <Tabs defaultValue="overview">
+        <Tabs defaultValue="overview" className="gap-4">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
@@ -69,30 +72,30 @@ export default function Loading() {
                       Kills per Round
                     </span>
                   </Skeleton>
-                  <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                    <span className="flex gap-1 text-sm font-medium text-muted-foreground">
-                      +/- ELO
-                    </span>
-                  </Skeleton>
+                  <div className="relative flex items-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
+                    <div
+                      className="absolute inset-0 opacity-15"
+                      style={{
+                        backgroundImage:
+                          "repeating-linear-gradient(-45deg, transparent, transparent 6px, rgb(107, 114, 128) 8px, rgb(107, 114, 128) 10px)",
+                      }}
+                    ></div>
+                  </div>
                   <Skeleton className="relative col-span-2 flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-12 transition-colors hover:bg-muted/50">
                     <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                       W/L History
                     </span>
                   </Skeleton>
                 </div>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Elo Statistics</CardTitle>
-                <CardDescription>Based on the last 20 matches</CardDescription>
-              </CardHeader>
-              <CardContent></CardContent>
+                <Separator />
+
+                <div className="h-40 w-full" />
+              </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </>
   );
 }

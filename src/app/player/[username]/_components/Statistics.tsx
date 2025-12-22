@@ -12,11 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { usePlayerStatistics } from "@/hooks/usePlayerStatistics";
@@ -64,10 +65,6 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
     const kpr = playerStats.meanBy((p) => p.stats?.kr_ratio ?? 0);
 
-    const eloDiff = playerStats
-      .take(20)
-      .sumBy((p) => (p.eloAfter ?? 0) - (p.eloBefore ?? 0));
-
     const history = playerStats
       .take(10)
       .map((m) => (m.win ? "W" : "L"))
@@ -88,7 +85,6 @@ export default function Statistics({ playerId }: { playerId: string }) {
       hsPercent: hsPercent.toFixed() + "%",
       winrate: winrate.toFixed() + "%",
       kpr: kpr.toFixed(2),
-      eloDiff,
       history,
       eloChartData,
     };
@@ -119,102 +115,50 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                <span className="flex text-sm font-medium text-muted-foreground">
                   K/D
                 </span>
               </Skeleton>
-              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                <span className="flex text-sm font-medium text-muted-foreground">
                   Headshots
                 </span>
               </Skeleton>
-              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                <span className="flex text-sm font-medium text-muted-foreground">
                   Winrate
                 </span>
               </Skeleton>
-              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                <span className="flex text-sm font-medium text-muted-foreground">
                   Total Matches
                 </span>
               </Skeleton>
-              <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+                <span className="flex text-sm font-medium text-muted-foreground">
                   Kills per Round
                 </span>
               </Skeleton>
-              {isAllTime ? (
-                <div className="relative flex min-h-22.5 items-center justify-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
-                  <div
-                    className="absolute inset-0 opacity-15"
-                    style={{
-                      backgroundImage:
-                        "repeating-linear-gradient(-45deg, transparent, transparent 6px, rgb(107, 114, 128) 8px, rgb(107, 114, 128) 10px)",
-                    }}
-                  ></div>
-                </div>
-              ) : (
-                <Skeleton className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                  <span className="flex gap-1 text-sm font-medium text-muted-foreground">
-                    +/- ELO
-                  </span>
-                </Skeleton>
-              )}
-              <Skeleton className="relative col-span-2 flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 pb-12 transition-colors hover:bg-muted/50">
-                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+              <div className="relative flex items-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
+                <div
+                  className="absolute inset-0 opacity-15"
+                  style={{
+                    backgroundImage:
+                      "repeating-linear-gradient(-45deg, transparent, transparent 6px, rgb(107, 114, 128) 8px, rgb(107, 114, 128) 10px)",
+                  }}
+                ></div>
+              </div>
+              <Skeleton className="col-span-2 flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-12 transition-colors hover:bg-muted/50">
+                <span className="flex text-sm font-medium text-muted-foreground">
                   W/L History
                 </span>
               </Skeleton>
             </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Elo Statistics</CardTitle>
-            <CardDescription>
-              Based on the last {stats.eloChartData.size()} matches
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-37.5 w-full">
-              <AreaChart accessibilityLayer data={stats.eloChartData.value()}>
-                <CartesianGrid vertical={false} />
-                <YAxis
-                  dataKey="match"
-                  domain={[
-                    Math.min(...stats.eloChartData.map((m) => m.elo).value()) -
-                      10,
-                    Math.max(...stats.eloChartData.map((m) => m.elo).value()) +
-                      10,
-                  ]}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={({ payload }) =>
-                    payload?.[0] ? (
-                      <div className="rounded border bg-muted p-2 text-sm shadow-sm">
-                        <div>ELO: {payload[0].payload.elo}</div>
-                        <div>
-                          Diff:{" "}
-                          {formatNumberWithSign(payload[0].payload.eloDiff)}
-                        </div>
-                      </div>
-                    ) : null
-                  }
-                />
-                <Area
-                  dataKey="elo"
-                  type="linear"
-                  fill="var(--color-desktop)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-desktop)"
-                />
-              </AreaChart>
-            </ChartContainer>
+            <Separator />
+
+            <div className="h-40 w-full" />
           </CardContent>
         </Card>
       </>
@@ -245,58 +189,47 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
         <CardContent className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+              <span className="flex text-sm font-medium text-muted-foreground">
                 K/D
               </span>
               <span className="text-2xl font-bold">{stats.kd}</span>
             </div>
-            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+              <span className="flex text-sm font-medium text-muted-foreground">
                 Headshots
               </span>
               <span className="text-2xl font-bold">{stats.hsPercent}</span>
             </div>
-            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+              <span className="flex text-sm font-medium text-muted-foreground">
                 Winrate
               </span>
               <span className="text-2xl font-bold">{stats.winrate}</span>
             </div>
-            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+              <span className="flex text-sm font-medium text-muted-foreground">
                 Total Matches
               </span>
               <span className="text-2xl font-bold">{count}</span>
             </div>
-            <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+              <span className="flex text-sm font-medium text-muted-foreground">
                 Kills per Round
               </span>
               <span className="text-2xl font-bold">{stats.kpr}</span>
             </div>
-            {isAllTime ? (
-              <div className="relative flex min-h-22.5 items-center justify-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
-                <div
-                  className="absolute inset-0 opacity-15"
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(-45deg, transparent, transparent 6px, rgb(107, 114, 128) 8px, rgb(107, 114, 128) 10px)",
-                  }}
-                ></div>
-              </div>
-            ) : (
-              <div className="relative flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
-                  +/- ELO
-                </span>
-                <span className="text-2xl font-bold">
-                  {formatNumberWithSign(stats.eloDiff)}
-                </span>
-              </div>
-            )}
-            <div className="relative col-span-2 flex min-h-22.5 flex-col items-center justify-center space-y-1 rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+            <div className="relative flex items-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
+              <div
+                className="absolute inset-0 opacity-15"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(-45deg, transparent, transparent 6px, rgb(107, 114, 128) 8px, rgb(107, 114, 128) 10px)",
+                }}
+              ></div>
+            </div>
+            <div className="col-span-2 flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+              <span className="flex text-sm font-medium text-muted-foreground">
                 W/L History
               </span>
               <div className="flex items-center gap-1.5">
@@ -314,18 +247,10 @@ export default function Statistics({ playerId }: { playerId: string }) {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Elo Statistics</CardTitle>
-          <CardDescription>
-            Based on the last {stats.eloChartData.size()} matches
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={chartConfig} className="h-37.5 w-full">
+          <Separator />
+
+          <ChartContainer config={chartConfig} className="h-40 w-full">
             <AreaChart accessibilityLayer data={stats.eloChartData.value()}>
               <CartesianGrid vertical={false} />
               <YAxis

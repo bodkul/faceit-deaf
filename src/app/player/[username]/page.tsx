@@ -25,11 +25,11 @@ export default async function Page(props: { params: Params }) {
   if (!player) return notFound();
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <>
       <PlayerCard player={player} />
 
       <div className="lg:col-span-2">
-        <Tabs defaultValue="overview">
+        <Tabs defaultValue="overview" className="gap-4">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="matches">Matches</TabsTrigger>
@@ -47,6 +47,6 @@ export default async function Page(props: { params: Params }) {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </>
   );
 }

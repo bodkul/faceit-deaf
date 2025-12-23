@@ -4,23 +4,26 @@ import _ from "lodash";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
-import { usePlayerStatistics } from "@/hooks/usePlayerStatistics";
+import {
+  type PlayerStatisticsRange,
+  usePlayerStatistics,
+} from "@/hooks/usePlayerStatistics";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 
@@ -31,42 +34,89 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const COUNT_MATCHES = 20;
+function StatisticCardSkeleton({ label }: { label: string }) {
+  return (
+    <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
+      <span className="flex text-sm font-medium text-muted-foreground">
+        {label}
+      </span>
+    </Skeleton>
+  );
+}
+
+function StatisticsCard({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+      <span className="flex text-sm font-medium text-muted-foreground">
+        {label}
+      </span>
+      {children}
+    </div>
+  );
+}
+
+export function StatisticsLoading() {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex flex-row justify-between gap-4">
+          <CardTitle>Statistics</CardTitle>
+          <Select>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+          </Select>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {[
+            "K/D/A",
+            "K/D",
+            "K/R",
+            "Headshots %",
+            "ADR",
+            "Winrate",
+            "Matches",
+            "W/L History",
+          ].map((label) => (
+            <StatisticCardSkeleton key={label} label={label} />
+          ))}
+        </div>
+        <Separator />
+        <div className="h-40 w-full" />
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Statistics({ playerId }: { playerId: string }) {
-  const [isAllTime, setIsAllTime] = useState(false);
-  const { data, count, isLoading } = usePlayerStatistics(
-    playerId,
-    isAllTime ? undefined : COUNT_MATCHES,
-  );
+  const [statisticsRange, setStatisticsRange] =
+    useState<PlayerStatisticsRange>("20matches");
+  const { data, isLoading } = usePlayerStatistics(playerId, statisticsRange);
 
   const stats = useMemo(() => {
-    const playerStats = _(data)
-      .flatMap((m) =>
-        m.match_teams.map((t) => ({
-          win: t.team_win,
-          stats: t.match_team_players[0]?.player_stats_normalized,
-          eloBefore: t.match_team_players[0]?.elo_before,
-          eloAfter: t.match_team_players[0]?.elo_after,
-        })),
-      )
-      .compact();
+    const playerStats = _(data);
 
-    const totalKills = playerStats.sumBy((p) => p.stats?.kills ?? 0);
-    const totalDeaths = playerStats.sumBy((p) => p.stats?.deaths ?? 0);
+    const totalKills = playerStats.sumBy((p) => p.kills ?? 0);
+    const totalDeaths = playerStats.sumBy((p) => p.deaths ?? 0);
     const kd = totalDeaths > 0 ? totalKills / totalDeaths : totalKills;
 
-    const totalHS = playerStats.sumBy((p) => p.stats?.headshots ?? 0);
+    const totalHS = playerStats.sumBy((p) => p.headshots ?? 0);
     const hsPercent = totalKills > 0 ? (totalHS / totalKills) * 100 : 0;
 
-    const totalMatches = playerStats.size();
+    const matches = playerStats.size();
     const wins = playerStats.filter((p) => p.win === true).size();
-    const winrate = (wins / totalMatches) * 100;
-
-    const kpr = playerStats.meanBy((p) => p.stats?.kr_ratio ?? 0);
+    const winrate = (wins / matches) * 100;
 
     const history = playerStats
-      .take(10)
+      .take(5)
       .map((m) => (m.win ? "W" : "L"))
       .reverse()
       .value();
@@ -84,154 +134,75 @@ export default function Statistics({ playerId }: { playerId: string }) {
       kd: kd.toFixed(2),
       hsPercent: hsPercent.toFixed() + "%",
       winrate: winrate.toFixed() + "%",
-      kpr: kpr.toFixed(2),
+      kpr: playerStats.meanBy((p) => p.krRatio ?? 0).toFixed(2),
       history,
       eloChartData,
+      matches,
+      avgKills: playerStats.meanBy((p) => p.kills ?? 0).toFixed(),
+      avgDeaths: playerStats.meanBy((p) => p.deaths ?? 0).toFixed(),
+      avgAssists: playerStats.meanBy((p) => p.assists ?? 0).toFixed(),
+      adr: playerStats.meanBy((p) => p.adr ?? 0).toFixed(1),
     };
   }, [data]);
 
-  if (isLoading) {
-    return (
-      <>
-        <Card>
-          <CardHeader>
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <CardTitle>Statistics</CardTitle>
-                <CardDescription>
-                  {isAllTime
-                    ? "All-time statistics"
-                    : `Based on the last ${COUNT_MATCHES} matches`}
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex h-10 items-center justify-end space-x-2 rounded-lg border bg-muted/50 p-2">
-                  <Switch id="all-time-toggle" disabled />
-                  <Label htmlFor="all-time-toggle">All Time</Label>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex text-sm font-medium text-muted-foreground">
-                  K/D
-                </span>
-              </Skeleton>
-              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex text-sm font-medium text-muted-foreground">
-                  Headshots
-                </span>
-              </Skeleton>
-              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex text-sm font-medium text-muted-foreground">
-                  Winrate
-                </span>
-              </Skeleton>
-              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex text-sm font-medium text-muted-foreground">
-                  Total Matches
-                </span>
-              </Skeleton>
-              <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-                <span className="flex text-sm font-medium text-muted-foreground">
-                  Kills per Round
-                </span>
-              </Skeleton>
-              <div className="relative flex items-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
-                <div
-                  className="absolute inset-0 opacity-15"
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(-45deg, transparent, transparent 6px, rgb(107, 114, 128) 8px, rgb(107, 114, 128) 10px)",
-                  }}
-                ></div>
-              </div>
-              <Skeleton className="col-span-2 flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-12 transition-colors hover:bg-muted/50">
-                <span className="flex text-sm font-medium text-muted-foreground">
-                  W/L History
-                </span>
-              </Skeleton>
-            </div>
-
-            <Separator />
-
-            <div className="h-40 w-full" />
-          </CardContent>
-        </Card>
-      </>
-    );
-  }
+  if (isLoading) return <StatisticsLoading />;
 
   return (
     <>
       <Card>
         <CardHeader>
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-            <div>
-              <CardTitle>Statistics</CardTitle>
-              <CardDescription>
-                {isAllTime
-                  ? "All-time statistics"
-                  : `Based on the last ${COUNT_MATCHES} matches`}
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex h-10 items-center justify-end space-x-2 rounded-lg border bg-muted/50 p-2">
-                <Switch id="all-time-toggle" onCheckedChange={setIsAllTime} />
-                <Label htmlFor="all-time-toggle">All Time</Label>
-              </div>
-            </div>
+          <div className="flex flex-row justify-between gap-4">
+            <CardTitle>Statistics</CardTitle>
+
+            <Select
+              value={statisticsRange}
+              onValueChange={(value) =>
+                setStatisticsRange(value as PlayerStatisticsRange)
+              }
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="alltime">All time</SelectItem>
+                <SelectSeparator />
+                <SelectItem value="20matches">20 matches</SelectItem>
+                <SelectItem value="100matches">100 matches</SelectItem>
+                <SelectSeparator />
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="last7days">Last 7 days</SelectItem>
+                <SelectItem value="last30days">Last 30 days</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex text-sm font-medium text-muted-foreground">
-                K/D
+            <StatisticsCard label="K/D/A">
+              <span className="text-2xl font-bold">
+                {stats.avgKills}/{stats.avgDeaths}/{stats.avgAssists}
               </span>
+            </StatisticsCard>
+            <StatisticsCard label="K/D">
               <span className="text-2xl font-bold">{stats.kd}</span>
-            </div>
-            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex text-sm font-medium text-muted-foreground">
-                Headshots
-              </span>
-              <span className="text-2xl font-bold">{stats.hsPercent}</span>
-            </div>
-            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex text-sm font-medium text-muted-foreground">
-                Winrate
-              </span>
-              <span className="text-2xl font-bold">{stats.winrate}</span>
-            </div>
-            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex text-sm font-medium text-muted-foreground">
-                Total Matches
-              </span>
-              <span className="text-2xl font-bold">{count}</span>
-            </div>
-            <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex text-sm font-medium text-muted-foreground">
-                Kills per Round
-              </span>
+            </StatisticsCard>
+            <StatisticsCard label="K/R">
               <span className="text-2xl font-bold">{stats.kpr}</span>
-            </div>
-            <div className="relative flex items-center overflow-hidden rounded-lg border border-muted-foreground/20 bg-muted/10 p-4">
-              <div
-                className="absolute inset-0 opacity-15"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(-45deg, transparent, transparent 6px, rgb(107, 114, 128) 8px, rgb(107, 114, 128) 10px)",
-                }}
-              ></div>
-            </div>
-            <div className="col-span-2 flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-              <span className="flex text-sm font-medium text-muted-foreground">
-                W/L History
-              </span>
+            </StatisticsCard>
+            <StatisticsCard label="Headshots %">
+              <span className="text-2xl font-bold">{stats.hsPercent}</span>
+            </StatisticsCard>
+            <StatisticsCard label="ADR">
+              <span className="text-2xl font-bold">{stats.adr}</span>
+            </StatisticsCard>
+            <StatisticsCard label="Winrate">
+              <span className="text-2xl font-bold">{stats.winrate}</span>
+            </StatisticsCard>
+            <StatisticsCard label="Matches">
+              <span className="text-2xl font-bold">{stats.matches}</span>
+            </StatisticsCard>
+            <StatisticsCard label="W/L History">
               <div className="flex items-center gap-1.5">
                 {stats.history.map((result, index) => (
                   <span
@@ -245,7 +216,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
                   </span>
                 ))}
               </div>
-            </div>
+            </StatisticsCard>
           </div>
 
           <Separator />

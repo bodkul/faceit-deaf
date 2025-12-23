@@ -11,20 +11,7 @@ import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
 import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
 import renderLoadingRows from "./renderLoadingRows";
 
-export default function RecentMatches({ playerId }: { playerId: string }) {
-  const { data, isLoading, mutate } = useRecentMatches(playerId);
-
-  useMatchesSubscription(() => mutate().then());
-
-  const rows = useMemo(() => {
-    if (isLoading) return renderLoadingRows(10);
-    if (!data?.length) return null;
-
-    return data.map((match) => (
-      <MatchHistoryTableRow key={match.id} match={match} />
-    ));
-  }, [isLoading, data]);
-
+function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
   return (
     <Card>
       <CardHeader>
@@ -36,10 +23,34 @@ export default function RecentMatches({ playerId }: { playerId: string }) {
             <TableHeader>
               <MatchHistoryTableHead />
             </TableHeader>
-            <TableBody>{rows}</TableBody>
+            <TableBody>{children}</TableBody>
           </Table>
         </div>
       </CardContent>
     </Card>
   );
+}
+
+export function RecentMatchesLoading() {
+  const rows = renderLoadingRows(10);
+
+  return <RecentMatchesLayout>{rows}</RecentMatchesLayout>;
+}
+
+export default function RecentMatches({ playerId }: { playerId: string }) {
+  const { data, isLoading, mutate } = useRecentMatches(playerId);
+
+  useMatchesSubscription(() => mutate().then());
+
+  const rows = useMemo(() => {
+    if (!data?.length) return null;
+
+    return data.map((match) => (
+      <MatchHistoryTableRow key={match.id} match={match} />
+    ));
+  }, [data]);
+
+  if (isLoading) return <RecentMatchesLoading />;
+
+  return <RecentMatchesLayout>{rows}</RecentMatchesLayout>;
 }

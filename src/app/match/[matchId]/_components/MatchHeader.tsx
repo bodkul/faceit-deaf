@@ -28,7 +28,7 @@ export function MatchHeader({ match }: { match: MatchType }) {
               src={match.teams[0].avatar ?? undefined}
               alt="First team's avatar"
             />
-            <AvatarFallback></AvatarFallback>
+            <AvatarFallback />
           </Avatar>
           <div className="flex flex-col items-start overflow-hidden">
             <span className="w-full overflow-hidden text-3xl font-bold text-ellipsis">
@@ -87,7 +87,7 @@ export function MatchHeader({ match }: { match: MatchType }) {
               src={match.teams[1].avatar ?? undefined}
               alt="Second team's avatar"
             />
-            <AvatarFallback></AvatarFallback>
+            <AvatarFallback />
           </Avatar>
         </div>
       </div>

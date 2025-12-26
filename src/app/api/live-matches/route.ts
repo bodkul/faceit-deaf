@@ -55,10 +55,7 @@ export async function GET() {
     { concurrency: 3 },
   );
 
-  await supabase.channel(`live-matches`).send({
-    type: "broadcast",
-    event: "*",
-  });
+  await supabase.channel(`live-matches`).httpSend("*", {});
 
   return NextResponse.json({ message: "OK" });
 }

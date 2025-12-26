@@ -1,6 +1,8 @@
 "use client";
 
+import { RealtimeChannel } from "@supabase/supabase-js";
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
+import { useEffect, useRef } from "react";
 
 import { supabase } from "@/lib/supabase";
 
@@ -11,12 +13,25 @@ export function useLiveMatches() {
       .select()
       .order("status", { ascending: false })
       .order("started_at", { ascending: false }),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   );
 
-  supabase
-    .channel("live-matches")
-    .on("broadcast", { event: "*" }, () => mutate().then())
-    .subscribe();
+  const channelRef = useRef<RealtimeChannel>(null!);
+
+  useEffect(() => {
+    channelRef.current = supabase.channel("live-matches");
+
+    channelRef.current
+      .on("broadcast", { event: "*" }, () => mutate().then())
+      .subscribe();
+
+    return () => {
+      channelRef.current.unsubscribe();
+    };
+  }, [mutate]);
 
   return query;
 }

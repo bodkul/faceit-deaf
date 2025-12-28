@@ -1,8 +1,9 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 
 import { PlayerCardSceleton } from "./_components/PlayerCard";
+import { PlayerTabs } from "./_components/PlayerTabs";
 import { RecentMatchesLoading } from "./_components/RecentMatches";
 import { StatisticsLoading } from "./_components/Statistics";
 
@@ -11,18 +12,12 @@ export default function Loading() {
     <>
       <PlayerCardSceleton />
 
-      <div className="lg:col-span-2">
-        <Tabs defaultValue="overview" className="gap-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="matches">Matches</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-4">
-            <StatisticsLoading />
-            <RecentMatchesLoading />
-          </TabsContent>
-        </Tabs>
-      </div>
+      <PlayerTabs>
+        <TabsContent value="overview" className="space-y-4">
+          <StatisticsLoading />
+          <RecentMatchesLoading />
+        </TabsContent>
+      </PlayerTabs>
     </>
   );
 }

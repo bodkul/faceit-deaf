@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronsLeft,
+  IconChevronsRight,
+} from "@tabler/icons-react";
 import { useMemo } from "react";
 
 import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
@@ -82,7 +82,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                   disabled={firstPage === null}
                 >
                   <span className="sr-only">Go to first page</span>
-                  <ChevronsLeft />
+                  <IconChevronsLeft />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -93,7 +93,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                   disabled={previousPage === null}
                 >
                   <span className="sr-only">Go to previous page</span>
-                  <ChevronLeft />
+                  <IconChevronLeft />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -104,7 +104,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                   disabled={nextPage === null}
                 >
                   <span className="sr-only">Go to next page</span>
-                  <ChevronRight />
+                  <IconChevronRight />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -115,7 +115,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                   disabled={lastPage === null}
                 >
                   <span className="sr-only">Go to last page</span>
-                  <ChevronsRight />
+                  <IconChevronsRight />
                 </Button>
               </PaginationItem>
             </PaginationContent>

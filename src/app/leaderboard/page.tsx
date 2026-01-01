@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronsLeft,
+  IconChevronsRight,
+} from "@tabler/icons-react";
 
 import { PlayerRow } from "@/components/leaderboard/player-row";
 import { renderLoadingRows } from "@/components/leaderboard/render-loading-rows";
@@ -97,7 +97,7 @@ export default function LeaderboardPage() {
                   disabled={!canPreviousPage}
                 >
                   <span className="sr-only">Go to first page</span>
-                  <ChevronsLeft />
+                  <IconChevronsLeft />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -108,7 +108,7 @@ export default function LeaderboardPage() {
                   disabled={!canPreviousPage}
                 >
                   <span className="sr-only">Go to previous page</span>
-                  <ChevronLeft />
+                  <IconChevronLeft />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -119,7 +119,7 @@ export default function LeaderboardPage() {
                   disabled={!canNextPage}
                 >
                   <span className="sr-only">Go to next page</span>
-                  <ChevronRight />
+                  <IconChevronRight />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -130,7 +130,7 @@ export default function LeaderboardPage() {
                   disabled={!canNextPage}
                 >
                   <span className="sr-only">Go to last page</span>
-                  <ChevronsRight />
+                  <IconChevronsRight />
                 </Button>
               </PaginationItem>
             </PaginationContent>

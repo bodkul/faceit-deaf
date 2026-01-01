@@ -62,8 +62,8 @@ export function PlayerStatsRow({
       <TableCell>
         {player.player_stats && Number(player.player_stats.adr).toFixed(1)}
       </TableCell>
-      <TableCell>{stats && stats.kast.toFixed(1)}</TableCell>
-      <TableCell>{stats && stats.rating.toFixed(2)}</TableCell>
+      <TableCell>{stats?.kast.toFixed(1)}</TableCell>
+      <TableCell>{stats?.rating.toFixed(2)}</TableCell>
     </TableRow>
   );
 }

@@ -16,8 +16,8 @@ import {
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
-  upsertPlayers,
   upsertPlayerStatsNormalized,
+  upsertPlayers,
 } from "@/lib/supabase/mutations";
 
 export async function GET() {
@@ -276,7 +276,6 @@ export async function GET() {
           `      ❌ Ошибка при обработке матча ${match_id}:`,
           error,
         );
-        continue;
       }
     }
 

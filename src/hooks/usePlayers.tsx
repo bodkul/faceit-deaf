@@ -5,8 +5,17 @@ import { useState } from "react";
 
 import { usePagination } from "@/hooks/usePagination";
 import { supabase } from "@/lib/supabase";
+import type { Tables } from "@/types/database";
 
 const PAGE_SIZE = 20;
+
+type LeaderboardPlayer = Tables<"leaderboard_players"> & {
+  id: string;
+  nickname: string;
+  avatar: string;
+  skill_level: number;
+  faceit_elo: number;
+};
 
 function usePlayers(pageOffset: number) {
   return useQuery(
@@ -19,7 +28,8 @@ function usePlayers(pageOffset: number) {
         },
       )
       .order("faceit_elo", { ascending: false })
-      .range(pageOffset * PAGE_SIZE, (pageOffset + 1) * PAGE_SIZE - 1),
+      .range(pageOffset * PAGE_SIZE, (pageOffset + 1) * PAGE_SIZE - 1)
+      .overrideTypes<LeaderboardPlayer[]>(),
   );
 }
 

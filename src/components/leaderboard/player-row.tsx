@@ -3,11 +3,10 @@
 import { useRouter } from "next/navigation";
 import Flag from "react-world-flags";
 
+import { EloDelta } from "./elo-delta";
 import { SkillLevelIcon } from "@/components/icons";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { PlayerWithPagination } from "@/types/player";
-
-import { EloDelta } from "./elo-delta";
 
 export function PlayerRow({
   player,
@@ -36,7 +35,7 @@ export function PlayerRow({
         </div>
       </TableCell>
       <TableCell>
-        <SkillLevelIcon level={player.skill_level!} className="size-6" />
+        <SkillLevelIcon level={player.skill_level} className="size-6" />
       </TableCell>
       <TableCell>
         {player.faceit_elo}

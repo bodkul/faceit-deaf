@@ -1,9 +1,7 @@
-import { ReactNode } from "react";
-
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PlayerTabsProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export function PlayerTabs({ children }: PlayerTabsProps) {

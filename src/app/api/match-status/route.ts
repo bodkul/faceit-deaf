@@ -5,7 +5,7 @@ import {
   handleMatchStatusCancelled,
   handleMatchStatusReady,
 } from "@/lib/faceit/handlers";
-import { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
+import type { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
 
 const VALID_MATCH = {
   game: "cs2",

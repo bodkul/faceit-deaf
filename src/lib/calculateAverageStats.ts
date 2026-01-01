@@ -37,13 +37,13 @@ export function calculateAverageStats(
 
   const matchStats = matches.map((match) => {
     return {
-      kills: match["Kills"],
-      deaths: match["Deaths"],
-      rounds: match["Rounds"],
+      kills: match.Kills,
+      deaths: match.Deaths,
+      rounds: match.Rounds,
       kpr: match["K/R Ratio"],
-      adr: match["ADR"] || match["K/R Ratio"] * DMG_PER_KILL,
-      headshots: match["Headshots"],
-      assists: match["Assists"],
+      adr: match.ADR || match["K/R Ratio"] * DMG_PER_KILL,
+      headshots: match.Headshots,
+      assists: match.Assists,
     };
   });
 

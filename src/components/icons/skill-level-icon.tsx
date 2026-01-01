@@ -1,5 +1,3 @@
-import React from "react";
-
 import LevelIcon1 from "./faceit/levels/1.svg";
 import LevelIcon2 from "./faceit/levels/2.svg";
 import LevelIcon3 from "./faceit/levels/3.svg";

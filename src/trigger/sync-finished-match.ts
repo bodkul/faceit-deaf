@@ -3,14 +3,14 @@ import { fromUnixTime } from "date-fns";
 import pMap from "p-map";
 
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
-import { MatchPayload } from "@/lib/faceit/match-events";
+import type { MatchPayload } from "@/lib/faceit/match-events";
 import {
   getExistingPlayers,
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
-  upsertPlayers,
   upsertPlayerStatsNormalized,
+  upsertPlayers,
 } from "@/lib/supabase/mutations";
 
 export const syncFinishedMatchTask = task({

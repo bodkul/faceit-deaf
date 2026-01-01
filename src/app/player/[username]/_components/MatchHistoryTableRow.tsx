@@ -5,7 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
-import { RecentMatchType } from "@/types/match";
+import type { RecentMatchType } from "@/types/match";
 
 export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
   const router = useRouter();

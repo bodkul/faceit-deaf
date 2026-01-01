@@ -4,11 +4,10 @@ import { sumBy } from "lodash";
 import { notFound } from "next/navigation";
 import { use } from "react";
 
-import { useMatch } from "@/hooks/useMatch";
-
 import { MatchHeader } from "./_components/MatchHeader";
 import { TeamStatsTable } from "./_components/TeamStatsTable";
 import Loading from "./loading";
+import { useMatch } from "@/hooks/useMatch";
 
 export default function Page(props: { params: Promise<{ matchId: string }> }) {
   const { matchId } = use(props.params);

@@ -8,6 +8,9 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 
+import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
+import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
+import renderLoadingRows from "./renderLoadingRows";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,10 +27,6 @@ import {
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import { useMatchesSubscription } from "@/hooks/useMatchesSubscription";
 import { useMatchHistory } from "@/hooks/useMatchHistory";
-
-import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
-import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
-import renderLoadingRows from "./renderLoadingRows";
 
 export default function MatchHistory({ playerId }: { playerId: string }) {
   const {

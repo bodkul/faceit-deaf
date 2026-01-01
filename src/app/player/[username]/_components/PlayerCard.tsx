@@ -1,7 +1,6 @@
 "use client";
 
 import { IconBrandSteam, IconBrandTwitch } from "@tabler/icons-react";
-import { range } from "lodash";
 import { useMemo } from "react";
 
 import { FaceitIcon } from "@/components/icons";
@@ -27,8 +26,11 @@ export function PlayerCardSceleton() {
       <CardContent className="flex flex-1 flex-col space-y-4">
         <Separator />
         <div className="flex justify-center gap-4">
-          {range(3).map((_, i) => (
-            <Skeleton key={i} className="size-12 rounded-2xl border" />
+          {["faceit", "steam", "twitch"].map((key) => (
+            <Skeleton
+              key={`skeleton-${key}`}
+              className="size-12 rounded-2xl border"
+            />
           ))}
         </div>
       </CardContent>

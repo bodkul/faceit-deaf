@@ -121,19 +121,22 @@ export default function Statistics({ playerId }: { playerId: string }) {
       .reverse()
       .value();
 
-    const eloChartData = playerStats
-      .filter((m) => m.eloAfter !== null && m.eloBefore !== null)
+    const eloChartData = _(data)
+      .filter(
+        (m): m is typeof m & { eloAfter: number; eloBefore: number } =>
+          typeof m.eloAfter === "number" && typeof m.eloBefore === "number",
+      )
       .map((m, index) => ({
         match: `#${index + 1}`,
-        elo: m.eloAfter!,
-        eloDiff: m.eloAfter! - m.eloBefore!,
+        elo: m.eloAfter,
+        eloDiff: m.eloAfter - m.eloBefore,
       }))
       .reverse();
 
     return {
       kd: kd.toFixed(2),
-      hsPercent: hsPercent.toFixed() + "%",
-      winrate: winrate.toFixed() + "%",
+      hsPercent: `${hsPercent.toFixed()}%`,
+      winrate: `${winrate.toFixed()}%`,
       kpr: playerStats.meanBy((p) => p.krRatio ?? 0).toFixed(2),
       history,
       eloChartData,
@@ -148,117 +151,113 @@ export default function Statistics({ playerId }: { playerId: string }) {
   if (isLoading) return <StatisticsLoading />;
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className="flex flex-row justify-between gap-4">
-            <CardTitle>Statistics</CardTitle>
+    <Card>
+      <CardHeader>
+        <div className="flex flex-row justify-between gap-4">
+          <CardTitle>Statistics</CardTitle>
 
-            <Select
-              value={statisticsRange}
-              onValueChange={(value) =>
-                setStatisticsRange(value as PlayerStatisticsRange)
-              }
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="alltime">All time</SelectItem>
-                <SelectSeparator />
-                <SelectItem value="20matches">20 matches</SelectItem>
-                <SelectItem value="100matches">100 matches</SelectItem>
-                <SelectSeparator />
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="last7days">Last 7 days</SelectItem>
-                <SelectItem value="last30days">Last 30 days</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
+          <Select
+            value={statisticsRange}
+            onValueChange={(value) =>
+              setStatisticsRange(value as PlayerStatisticsRange)
+            }
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="alltime">All time</SelectItem>
+              <SelectSeparator />
+              <SelectItem value="20matches">20 matches</SelectItem>
+              <SelectItem value="100matches">100 matches</SelectItem>
+              <SelectSeparator />
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="last7days">Last 7 days</SelectItem>
+              <SelectItem value="last30days">Last 30 days</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </CardHeader>
 
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatisticsCard label="K/D/A">
-              <span className="text-2xl font-bold">
-                {stats.avgKills}/{stats.avgDeaths}/{stats.avgAssists}
-              </span>
-            </StatisticsCard>
-            <StatisticsCard label="K/D">
-              <span className="text-2xl font-bold">{stats.kd}</span>
-            </StatisticsCard>
-            <StatisticsCard label="K/R">
-              <span className="text-2xl font-bold">{stats.kpr}</span>
-            </StatisticsCard>
-            <StatisticsCard label="Headshots %">
-              <span className="text-2xl font-bold">{stats.hsPercent}</span>
-            </StatisticsCard>
-            <StatisticsCard label="ADR">
-              <span className="text-2xl font-bold">{stats.adr}</span>
-            </StatisticsCard>
-            <StatisticsCard label="Winrate">
-              <span className="text-2xl font-bold">{stats.winrate}</span>
-            </StatisticsCard>
-            <StatisticsCard label="Matches">
-              <span className="text-2xl font-bold">{stats.matches}</span>
-            </StatisticsCard>
-            <StatisticsCard label="W/L History">
-              <div className="flex items-center gap-1.5">
-                {stats.history.map((result, index) => (
-                  <span
-                    key={`history-${index + 1}`}
-                    className={cn("text-xl font-bold", {
-                      "text-rose-500": result === "L",
-                      "text-emerald-500": result === "W",
-                    })}
-                  >
-                    {result}
-                  </span>
-                ))}
-              </div>
-            </StatisticsCard>
-          </div>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <StatisticsCard label="K/D/A">
+            <span className="text-2xl font-bold">
+              {stats.avgKills}/{stats.avgDeaths}/{stats.avgAssists}
+            </span>
+          </StatisticsCard>
+          <StatisticsCard label="K/D">
+            <span className="text-2xl font-bold">{stats.kd}</span>
+          </StatisticsCard>
+          <StatisticsCard label="K/R">
+            <span className="text-2xl font-bold">{stats.kpr}</span>
+          </StatisticsCard>
+          <StatisticsCard label="Headshots %">
+            <span className="text-2xl font-bold">{stats.hsPercent}</span>
+          </StatisticsCard>
+          <StatisticsCard label="ADR">
+            <span className="text-2xl font-bold">{stats.adr}</span>
+          </StatisticsCard>
+          <StatisticsCard label="Winrate">
+            <span className="text-2xl font-bold">{stats.winrate}</span>
+          </StatisticsCard>
+          <StatisticsCard label="Matches">
+            <span className="text-2xl font-bold">{stats.matches}</span>
+          </StatisticsCard>
+          <StatisticsCard label="W/L History">
+            <div className="flex items-center gap-1.5">
+              {stats.history.map((result, index) => (
+                <span
+                  key={`history-${index + 1}`}
+                  className={cn("text-xl font-bold", {
+                    "text-rose-500": result === "L",
+                    "text-emerald-500": result === "W",
+                  })}
+                >
+                  {result}
+                </span>
+              ))}
+            </div>
+          </StatisticsCard>
+        </div>
 
-          <Separator />
+        <Separator />
 
-          <ChartContainer config={chartConfig} className="h-40 w-full">
-            <AreaChart accessibilityLayer data={stats.eloChartData.value()}>
-              <CartesianGrid vertical={false} />
-              <YAxis
-                dataKey="match"
-                domain={[
-                  Math.min(...stats.eloChartData.map((m) => m.elo).value()) -
-                    10,
-                  Math.max(...stats.eloChartData.map((m) => m.elo).value()) +
-                    10,
-                ]}
-                tickLine={false}
-                axisLine={false}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={({ payload }) =>
-                  payload?.[0] ? (
-                    <div className="rounded border bg-muted p-2 text-sm shadow-sm">
-                      <div>ELO: {payload[0].payload.elo}</div>
-                      <div>
-                        Diff: {formatNumberWithSign(payload[0].payload.eloDiff)}
-                      </div>
+        <ChartContainer config={chartConfig} className="h-40 w-full">
+          <AreaChart accessibilityLayer data={stats.eloChartData.value()}>
+            <CartesianGrid vertical={false} />
+            <YAxis
+              dataKey="match"
+              domain={[
+                Math.min(...stats.eloChartData.map((m) => m.elo).value()) - 10,
+                Math.max(...stats.eloChartData.map((m) => m.elo).value()) + 10,
+              ]}
+              tickLine={false}
+              axisLine={false}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={({ payload }) =>
+                payload?.[0] ? (
+                  <div className="rounded border bg-muted p-2 text-sm shadow-sm">
+                    <div>ELO: {payload[0].payload.elo}</div>
+                    <div>
+                      Diff: {formatNumberWithSign(payload[0].payload.eloDiff)}
                     </div>
-                  ) : null
-                }
-              />
-              <Area
-                dataKey="elo"
-                type="linear"
-                fill="var(--color-desktop)"
-                fillOpacity={0.4}
-                stroke="var(--color-desktop)"
-              />
-            </AreaChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
-    </>
+                  </div>
+                ) : null
+              }
+            />
+            <Area
+              dataKey="elo"
+              type="linear"
+              fill="var(--color-desktop)"
+              fillOpacity={0.4}
+              stroke="var(--color-desktop)"
+            />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }

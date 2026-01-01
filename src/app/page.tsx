@@ -1,8 +1,7 @@
 "use client";
 
-import { siteConfig } from "@/config/site";
-
 import { LiveMatches } from "./_components/LiveMatches";
+import { siteConfig } from "@/config/site";
 
 export default function Page() {
   return (

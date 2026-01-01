@@ -1,6 +1,6 @@
 "use client";
 
-import { sumBy } from "lodash";
+import { sumBy } from "lodash-es";
 import { notFound } from "next/navigation";
 import { use } from "react";
 

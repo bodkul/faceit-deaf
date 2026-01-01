@@ -1,4 +1,4 @@
-import { range } from "lodash";
+import { range } from "lodash-es";
 
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

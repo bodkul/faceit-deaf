@@ -1,6 +1,6 @@
 "use client";
 
-import _ from "lodash";
+import { meanBy, sumBy, take } from "lodash-es";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 
@@ -102,27 +102,23 @@ export default function Statistics({ playerId }: { playerId: string }) {
   const { data, isLoading } = usePlayerStatistics(playerId, statisticsRange);
 
   const stats = useMemo(() => {
-    const playerStats = _(data);
-
-    const totalKills = playerStats.sumBy((p) => p.kills ?? 0);
-    const totalDeaths = playerStats.sumBy((p) => p.deaths ?? 0);
+    const totalKills = sumBy(data, (p) => p.kills ?? 0);
+    const totalDeaths = sumBy(data, (p) => p.deaths ?? 0);
     const kd = totalDeaths > 0 ? totalKills / totalDeaths : totalKills;
 
-    const totalHS = playerStats.sumBy((p) => p.headshots ?? 0);
+    const totalHS = sumBy(data, (p) => p.headshots ?? 0);
     const hsPercent = totalKills > 0 ? (totalHS / totalKills) * 100 : 0;
 
-    const matches = playerStats.size();
-    const wins = playerStats.filter((p) => p.win === true).size();
+    const matches = data?.length ?? 0;
+    const wins = data?.filter((p) => p.win === true).length ?? 0;
     const winrate = (wins / matches) * 100;
 
-    const history = playerStats
-      .take(5)
+    const history = take(data, 5)
       .map((m) => (m.win ? "W" : "L"))
-      .reverse()
-      .value();
+      .reverse();
 
-    const eloChartData = _(data)
-      .filter(
+    const eloChartData = data
+      ?.filter(
         (m): m is typeof m & { eloAfter: number; eloBefore: number } =>
           typeof m.eloAfter === "number" && typeof m.eloBefore === "number",
       )
@@ -131,20 +127,20 @@ export default function Statistics({ playerId }: { playerId: string }) {
         elo: m.eloAfter,
         eloDiff: m.eloAfter - m.eloBefore,
       }))
-      .reverse();
+      .reverse() || [];
 
     return {
       kd: kd.toFixed(2),
       hsPercent: `${hsPercent.toFixed()}%`,
       winrate: `${winrate.toFixed()}%`,
-      kpr: playerStats.meanBy((p) => p.krRatio ?? 0).toFixed(2),
+      kpr: meanBy(data, (p) => p.krRatio ?? 0).toFixed(2),
       history,
       eloChartData,
       matches,
-      avgKills: playerStats.meanBy((p) => p.kills ?? 0).toFixed(),
-      avgDeaths: playerStats.meanBy((p) => p.deaths ?? 0).toFixed(),
-      avgAssists: playerStats.meanBy((p) => p.assists ?? 0).toFixed(),
-      adr: playerStats.meanBy((p) => p.adr ?? 0).toFixed(1),
+      avgKills: meanBy(data, (p) => p.kills ?? 0).toFixed(),
+      avgDeaths: meanBy(data, (p) => p.deaths ?? 0).toFixed(),
+      avgAssists: meanBy(data, (p) => p.assists ?? 0).toFixed(),
+      adr: meanBy(data, (p) => p.adr ?? 0).toFixed(1),
     };
   }, [data]);
 
@@ -224,13 +220,13 @@ export default function Statistics({ playerId }: { playerId: string }) {
         <Separator />
 
         <ChartContainer config={chartConfig} className="h-40 w-full">
-          <AreaChart accessibilityLayer data={stats.eloChartData.value()}>
+          <AreaChart accessibilityLayer data={stats.eloChartData}>
             <CartesianGrid vertical={false} />
             <YAxis
               dataKey="match"
               domain={[
-                Math.min(...stats.eloChartData.map((m) => m.elo).value()) - 10,
-                Math.max(...stats.eloChartData.map((m) => m.elo).value()) + 10,
+                Math.min(...stats.eloChartData.map((m) => m.elo)) - 10,
+                Math.max(...stats.eloChartData.map((m) => m.elo)) + 10,
               ]}
               tickLine={false}
               axisLine={false}

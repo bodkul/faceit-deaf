@@ -1,6 +1,6 @@
 "use client";
 
-import _ from "lodash";
+import { countBy, map, orderBy } from "lodash-es";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,11 +21,10 @@ const chartConfig = {
 
 export function Maps({ playerId }: { playerId: string }) {
   const { data } = usePlayerMaps(playerId);
-  const maps = _(data)
-    .countBy("map")
-    .map((count, map) => ({ map, count }))
-    .orderBy(["count", "map"], ["desc", "asc"])
-    .value();
+
+  const mapsCount = countBy(data, "map");
+  const mapsArray = map(mapsCount, (count, map) => ({ map, count }));
+  const maps = orderBy(mapsArray, ["count", "map"], ["desc", "asc"]);
 
   return (
     <Card>

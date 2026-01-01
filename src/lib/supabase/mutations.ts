@@ -1,10 +1,9 @@
-import { chunk } from "lodash";
+import { chunk } from "lodash-es";
 import pMap from "p-map";
-
-import type { TablesInsert, TablesUpdate } from "@/types/database";
 
 import { supabase } from "./client";
 import { handleSupabaseError, onConflictConfig } from "./utils";
+import type { TablesInsert, TablesUpdate } from "@/types/database";
 
 export async function getPlayers() {
   const { data, error } = await supabase.from("players").select("id, nickname");

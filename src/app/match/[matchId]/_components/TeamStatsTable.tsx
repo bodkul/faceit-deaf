@@ -1,6 +1,7 @@
-import { orderBy } from "lodash";
+import { orderBy } from "lodash-es";
 import { useMemo } from "react";
 
+import { PlayerStatsRow } from "./PlayerStatsRow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import {
@@ -11,8 +12,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { TeamType } from "@/types/match";
-
-import { PlayerStatsRow } from "./PlayerStatsRow";
 
 export function TeamStatsTable({
   team,

@@ -1,4 +1,4 @@
-import { meanBy, sumBy } from "lodash";
+import { meanBy, sumBy } from "lodash-es";
 
 export function calculateAverageStats(
   matches: {

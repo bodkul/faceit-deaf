@@ -1,4 +1,9 @@
-import { IconChevronLeft, IconChevronRight, IconDots } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconDots,
+} from "@tabler/icons-react";
+import Link from "next/link";
 
 import { type Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -34,7 +39,7 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 type PaginationLinkProps = {
   isActive?: boolean;
 } & Pick<React.ComponentProps<typeof Button>, "size"> &
-  React.ComponentProps<"a">;
+  React.ComponentProps<typeof Link>;
 
 function PaginationLink({
   className,
@@ -43,7 +48,7 @@ function PaginationLink({
   ...props
 }: PaginationLinkProps) {
   return (
-    <a
+    <Link
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}

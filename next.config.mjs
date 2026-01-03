@@ -53,15 +53,9 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "distribution.faceit-cdn.net",
-        pathname: "/images/**",
-      },
-      {
-        protocol: "https",
-        hostname: "assets.faceit-cdn.net",
-      },
+      new URL("https://distribution.faceit-cdn.net/images/**"),
+      new URL("https://assets.faceit-cdn.net/**"),
+      new URL("https://flagcdn.com/w20/**.png")
     ],
   },
   logging: {

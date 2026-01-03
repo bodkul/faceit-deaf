@@ -1,7 +1,7 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Flag from "react-world-flags";
 
 import { SkillLevelIcon } from "@/components/icons";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -28,7 +28,13 @@ export function PlayerRow({
       <TableCell>
         <div className="flex items-center space-x-2">
           {player.country ? (
-            <Flag code={player.country} className="h-2.5 w-3.75 rounded-xs" />
+            <Image
+              className="h-2.5 w-3.75 rounded-xs"
+              src={`https://flagcdn.com/w20/${player.country.toLowerCase()}.png`}
+              width={15}
+              height={10}
+              alt={`${player.country} flag`}
+            />
           ) : (
             <div className="h-2.5 w-3.75 rounded-xs bg-neutral-700" />
           )}

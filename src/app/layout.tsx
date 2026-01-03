@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 
 import { Header } from "@/components/header";
 import { siteConfig } from "@/config/site";
+import { ReactQueryProvider } from "@/providers/react-query";
 
 export const metadata: Metadata = {
   title: {
@@ -28,7 +29,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
           <Header />
           <main className="mx-auto max-w-6xl flex-1 space-y-4 p-4">
-            {children}
+            <ReactQueryProvider>{children}</ReactQueryProvider>
           </main>
         </ThemeProvider>
 

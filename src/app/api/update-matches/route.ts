@@ -3,17 +3,17 @@ import { NextResponse } from "next/server";
 import pMap from "p-map";
 
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
-import { supabase } from "@/lib/supabase";
 import {
   getExistingPlayers,
+  supabaseClient,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
-  upsertPlayers,
   upsertPlayerStatsNormalized,
-} from "@/lib/supabase/mutations";
+  upsertPlayers,
+} from "@/lib/supabase";
 
 export async function GET() {
-  const { data } = await supabase
+  const { data } = await supabaseClient
     .from("matches")
     .select("id, match_teams(match_team_players(player_id_mandatory))")
     .neq("status", "FINISHED")
@@ -55,7 +55,7 @@ export async function GET() {
 
     console.log(`Fetched match and stats: ${row.id}.`);
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from("matches")
       .update({
         status: match.status,

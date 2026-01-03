@@ -1,7 +1,7 @@
-import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
+import { useQuery } from "@tanstack/react-query";
 import { startOfToday, subDays } from "date-fns";
 
-import { supabase } from "@/lib/supabase";
+import { supabaseClient } from "@/lib/supabase";
 
 export type PlayerStatisticsRange =
   | "20matches"
@@ -26,26 +26,32 @@ export function usePlayerStatistics(
   playerId: string,
   range: PlayerStatisticsRange,
 ) {
-  let query = supabase
-    .from("matches")
-    .select(
-      "match_teams!inner(team_win, match_team_players!inner(elo_before, elo_after, player_stats_normalized!inner(kills, deaths, assists, headshots, kr_ratio, adr)))",
-    )
-    .eq("status", "FINISHED")
-    .eq("match_teams.match_team_players.player_id_mandatory", playerId)
-    .order("finished_at", { ascending: false });
+  const { data, ...rest } = useQuery({
+    queryKey: [playerId, range],
+    queryFn: async () => {
+      let query = supabaseClient
+        .from("matches")
+        .select(
+          "match_teams!inner(team_win, match_team_players!inner(elo_before, elo_after, player_stats_normalized!inner(kills, deaths, assists, headshots, kr_ratio, adr)))",
+        )
+        .eq("status", "FINISHED")
+        .eq("match_teams.match_team_players.player_id_mandatory", playerId)
+        .order("finished_at", { ascending: false });
 
-  if (range === "20matches" || range === "100matches") {
-    const limit = range === "20matches" ? 20 : 100;
-    query = query.limit(limit);
-  } else if (range !== "alltime") {
-    const date = getDateFromRange(range);
-    if (date) {
-      query = query.gte("finished_at", date.toISOString());
-    }
-  }
+      if (range === "20matches" || range === "100matches") {
+        const limit = range === "20matches" ? 20 : 100;
+        query = query.limit(limit);
+      } else if (range !== "alltime") {
+        const date = getDateFromRange(range);
+        if (date) {
+          query = query.gte("finished_at", date.toISOString());
+        }
+      }
 
-  const { data, ...rest } = useQuery(query);
+      const { data } = await query;
+      return data;
+    },
+  });
 
   const enhancedData = data?.map((match) => {
     const team = match.match_teams[0];

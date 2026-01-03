@@ -2,10 +2,14 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
 import { TableCell, TableRow } from "@/components/ui/table";
+import type { useRecentMatches } from "@/features/recent-matches";
 import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
-import type { RecentMatchType } from "@/types/match";
+
+type RecentMatchType = NonNullable<
+  ReturnType<typeof useRecentMatches>["data"]
+>[number];
 
 export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
   const router = useRouter();
@@ -24,8 +28,8 @@ export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
 
   return (
     <TableRow
+      className="cursor-pointer whitespace-nowrap text-center"
       key={`1-${match.id}`}
-      className="cursor-pointer text-center whitespace-nowrap"
       onClick={() => router.push(`/match/1-${match.id}`)}
     >
       <TableCell>

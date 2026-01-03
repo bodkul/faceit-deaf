@@ -37,7 +37,7 @@ const chartConfig = {
 function StatisticCardSkeleton({ label }: { label: string }) {
   return (
     <Skeleton className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 pb-13 transition-colors hover:bg-muted/50">
-      <span className="flex text-sm font-medium text-muted-foreground">
+      <span className="flex font-medium text-muted-foreground text-sm">
         {label}
       </span>
     </Skeleton>
@@ -53,7 +53,7 @@ function StatisticsCard({
 }) {
   return (
     <div className="flex flex-col items-center space-y-1 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-      <span className="flex text-sm font-medium text-muted-foreground">
+      <span className="flex font-medium text-muted-foreground text-sm">
         {label}
       </span>
       {children}
@@ -117,17 +117,18 @@ export default function Statistics({ playerId }: { playerId: string }) {
       .map((m) => (m.win ? "W" : "L"))
       .reverse();
 
-    const eloChartData = data
-      ?.filter(
-        (m): m is typeof m & { eloAfter: number; eloBefore: number } =>
-          typeof m.eloAfter === "number" && typeof m.eloBefore === "number",
-      )
-      .map((m, index) => ({
-        match: `#${index + 1}`,
-        elo: m.eloAfter,
-        eloDiff: m.eloAfter - m.eloBefore,
-      }))
-      .reverse() || [];
+    const eloChartData =
+      data
+        ?.filter(
+          (m): m is typeof m & { eloAfter: number; eloBefore: number } =>
+            typeof m.eloAfter === "number" && typeof m.eloBefore === "number",
+        )
+        .map((m, index) => ({
+          match: `#${index + 1}`,
+          elo: m.eloAfter,
+          eloDiff: m.eloAfter - m.eloBefore,
+        }))
+        .reverse() || [];
 
     return {
       kd: kd.toFixed(2),
@@ -153,10 +154,10 @@ export default function Statistics({ playerId }: { playerId: string }) {
           <CardTitle>Statistics</CardTitle>
 
           <Select
-            value={statisticsRange}
             onValueChange={(value) =>
               setStatisticsRange(value as PlayerStatisticsRange)
             }
+            value={statisticsRange}
           >
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -178,37 +179,37 @@ export default function Statistics({ playerId }: { playerId: string }) {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatisticsCard label="K/D/A">
-            <span className="text-2xl font-bold">
+            <span className="font-bold text-2xl">
               {stats.avgKills}/{stats.avgDeaths}/{stats.avgAssists}
             </span>
           </StatisticsCard>
           <StatisticsCard label="K/D">
-            <span className="text-2xl font-bold">{stats.kd}</span>
+            <span className="font-bold text-2xl">{stats.kd}</span>
           </StatisticsCard>
           <StatisticsCard label="K/R">
-            <span className="text-2xl font-bold">{stats.kpr}</span>
+            <span className="font-bold text-2xl">{stats.kpr}</span>
           </StatisticsCard>
           <StatisticsCard label="Headshots %">
-            <span className="text-2xl font-bold">{stats.hsPercent}</span>
+            <span className="font-bold text-2xl">{stats.hsPercent}</span>
           </StatisticsCard>
           <StatisticsCard label="ADR">
-            <span className="text-2xl font-bold">{stats.adr}</span>
+            <span className="font-bold text-2xl">{stats.adr}</span>
           </StatisticsCard>
           <StatisticsCard label="Winrate">
-            <span className="text-2xl font-bold">{stats.winrate}</span>
+            <span className="font-bold text-2xl">{stats.winrate}</span>
           </StatisticsCard>
           <StatisticsCard label="Matches">
-            <span className="text-2xl font-bold">{stats.matches}</span>
+            <span className="font-bold text-2xl">{stats.matches}</span>
           </StatisticsCard>
           <StatisticsCard label="W/L History">
             <div className="flex items-center gap-1.5">
               {stats.history.map((result, index) => (
                 <span
-                  key={`history-${index + 1}`}
-                  className={cn("text-xl font-bold", {
+                  className={cn("font-bold text-xl", {
                     "text-rose-500": result === "L",
                     "text-emerald-500": result === "W",
                   })}
+                  key={`history-${index + 1}`}
                 >
                   {result}
                 </span>
@@ -219,20 +220,19 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
         <Separator />
 
-        <ChartContainer config={chartConfig} className="h-40 w-full">
+        <ChartContainer className="h-40 w-full" config={chartConfig}>
           <AreaChart accessibilityLayer data={stats.eloChartData}>
             <CartesianGrid vertical={false} />
             <YAxis
+              axisLine={false}
               dataKey="match"
               domain={[
                 Math.min(...stats.eloChartData.map((m) => m.elo)) - 10,
                 Math.max(...stats.eloChartData.map((m) => m.elo)) + 10,
               ]}
               tickLine={false}
-              axisLine={false}
             />
             <ChartTooltip
-              cursor={false}
               content={({ payload }) =>
                 payload?.[0] ? (
                   <div className="rounded border bg-muted p-2 text-sm shadow-sm">
@@ -243,13 +243,14 @@ export default function Statistics({ playerId }: { playerId: string }) {
                   </div>
                 ) : null
               }
+              cursor={false}
             />
             <Area
               dataKey="elo"
-              type="linear"
               fill="var(--color-desktop)"
               fillOpacity={0.4}
               stroke="var(--color-desktop)"
+              type="linear"
             />
           </AreaChart>
         </ChartContainer>

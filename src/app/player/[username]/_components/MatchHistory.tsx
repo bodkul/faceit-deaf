@@ -6,6 +6,7 @@ import {
   IconChevronsLeft,
   IconChevronsRight,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
@@ -25,23 +26,51 @@ import {
   PaginationItem,
 } from "@/components/ui/pagination";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
-import { useMatchesSubscription } from "@/hooks/useMatchesSubscription";
-import { useMatchHistory } from "@/hooks/useMatchHistory";
+import { usePagination } from "@/hooks/usePagination";
+import { supabaseClient } from "@/lib/supabase";
+
+const PAGE_SIZE = 20;
 
 export default function MatchHistory({ playerId }: { playerId: string }) {
+  const { data: count } = useQuery({
+    queryKey: ["player-matches-count", playerId],
+    enabled: Boolean(playerId),
+    queryFn: async () => {
+      const { count } = await supabaseClient
+        .from("player_matches")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("player_id", playerId);
+
+      return count;
+    },
+  });
+
   const {
-    matches,
-    isLoading,
     pageIndex,
     totalPages,
     nextPage,
     previousPage,
     firstPage,
     lastPage,
-    mutate,
-  } = useMatchHistory(playerId);
+    pageOffset,
+  } = usePagination(count ?? 0, PAGE_SIZE);
 
-  useMatchesSubscription(() => mutate().then());
+  const { data: matches, isLoading } = useQuery({
+    queryKey: ["player-matches", playerId, pageIndex],
+    enabled: Boolean(playerId),
+    queryFn: async () => {
+      const { data } = await supabaseClient
+        .from("player_matches")
+        .select()
+        .eq("player_id", playerId)
+        .order("finished_at", { ascending: false })
+        .range(pageOffset * PAGE_SIZE, (pageOffset + 1) * PAGE_SIZE - 1);
+      return data;
+    },
+  });
 
   const rows = useMemo(() => {
     if (isLoading) return renderLoadingRows(20);
@@ -70,16 +99,16 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
       <CardFooter>
         <Pagination>
           <div className="flex items-center space-x-6 lg:space-x-8">
-            <div className="flex w-25 items-center justify-center text-sm font-medium">
+            <div className="flex w-25 items-center justify-center font-medium text-sm">
               Page {pageIndex} of {totalPages}
             </div>
             <PaginationContent className="gap-2">
               <PaginationItem>
                 <Button
-                  variant="outline"
                   className="h-8 w-8 p-0"
-                  onClick={() => firstPage?.()}
                   disabled={firstPage === null}
+                  onClick={() => firstPage?.()}
+                  variant="outline"
                 >
                   <span className="sr-only">Go to first page</span>
                   <IconChevronsLeft />
@@ -87,10 +116,10 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
               </PaginationItem>
               <PaginationItem>
                 <Button
-                  variant="outline"
                   className="h-8 w-8 p-0"
-                  onClick={() => previousPage?.()}
                   disabled={previousPage === null}
+                  onClick={() => previousPage?.()}
+                  variant="outline"
                 >
                   <span className="sr-only">Go to previous page</span>
                   <IconChevronLeft />
@@ -98,10 +127,10 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
               </PaginationItem>
               <PaginationItem>
                 <Button
-                  variant="outline"
                   className="h-8 w-8 p-0"
-                  onClick={() => nextPage?.()}
                   disabled={nextPage === null}
+                  onClick={() => nextPage?.()}
+                  variant="outline"
                 >
                   <span className="sr-only">Go to next page</span>
                   <IconChevronRight />
@@ -109,10 +138,10 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
               </PaginationItem>
               <PaginationItem>
                 <Button
-                  variant="outline"
                   className="h-8 w-8 p-0"
-                  onClick={() => lastPage?.()}
                   disabled={lastPage === null}
+                  onClick={() => lastPage?.()}
+                  variant="outline"
                 >
                   <span className="sr-only">Go to last page</span>
                   <IconChevronsRight />

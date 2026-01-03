@@ -1,12 +1,14 @@
 import { chunk } from "lodash-es";
 import pMap from "p-map";
 
-import { supabase } from "./client";
+import { supabaseClient } from "./client";
 import { handleSupabaseError, onConflictConfig } from "./utils";
 import type { TablesInsert, TablesUpdate } from "@/types/database";
 
 export async function getPlayers() {
-  const { data, error } = await supabase.from("players").select("id, nickname");
+  const { data, error } = await supabaseClient
+    .from("players")
+    .select("id, nickname");
 
   if (error) {
     handleSupabaseError("fetch all players", error);
@@ -16,7 +18,7 @@ export async function getPlayers() {
 }
 
 export async function getExistingPlayers(playerIds: string[]) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("players")
     .select("id, faceit_elo")
     .in("id", playerIds);
@@ -29,7 +31,7 @@ export async function getExistingPlayers(playerIds: string[]) {
 }
 
 export async function upsertPlayers(players: TablesInsert<"players">[]) {
-  const { error } = await supabase.from("players").upsert(players);
+  const { error } = await supabaseClient.from("players").upsert(players);
 
   if (error) {
     handleSupabaseError("upsert players", error);
@@ -40,7 +42,7 @@ export async function updateMatch(
   id: string,
   updates: TablesUpdate<"matches">,
 ) {
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("matches")
     .update(updates)
     .match({ id });
@@ -51,7 +53,7 @@ export async function updateMatch(
 }
 
 export async function upsertMatch(match: TablesInsert<"matches">) {
-  const { error } = await supabase.from("matches").upsert(match);
+  const { error } = await supabaseClient.from("matches").upsert(match);
 
   if (error) {
     handleSupabaseError("upsert match", error);
@@ -59,7 +61,7 @@ export async function upsertMatch(match: TablesInsert<"matches">) {
 }
 
 export async function deleteMatch(id: string) {
-  const { error } = await supabase.from("matches").delete().match({ id });
+  const { error } = await supabaseClient.from("matches").delete().match({ id });
 
   if (error) {
     handleSupabaseError(`delete match with ID ${id}`, error);
@@ -71,7 +73,7 @@ export async function updateMatchTeam(
   team_id: string,
   rows: TablesUpdate<"match_teams">,
 ) {
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("match_teams")
     .update(rows)
     .match({ match_id, team_id });
@@ -82,7 +84,7 @@ export async function updateMatchTeam(
 }
 
 export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("match_teams")
     .upsert(team, { onConflict: onConflictConfig.matchTeams })
     .select("id")
@@ -98,7 +100,7 @@ export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
 export async function upsertMatchTeamPlayer(
   player: TablesInsert<"match_team_players">,
 ) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("match_team_players")
     .upsert(player, { onConflict: onConflictConfig.matchTeamPlayers })
     .select("id")
@@ -114,7 +116,7 @@ export async function upsertMatchTeamPlayer(
 export async function upsertMatchTeamPlayers(
   players: TablesInsert<"match_team_players">[],
 ) {
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("match_team_players")
     .upsert(players, { onConflict: onConflictConfig.matchTeamPlayers });
 
@@ -126,7 +128,7 @@ export async function upsertMatchTeamPlayers(
 export async function upsertPlayerStatsNormalized(
   player: TablesInsert<"player_stats_normalized">,
 ) {
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("player_stats_normalized")
     .upsert(player, { onConflict: onConflictConfig.playerStatsNormalized });
 
@@ -136,7 +138,7 @@ export async function upsertPlayerStatsNormalized(
 }
 
 export async function getMatchesCount(playerId: string) {
-  const { count, error } = await supabase
+  const { count, error } = await supabaseClient
     .from("match_team_players")
     .select("", { count: "exact", head: true })
     .eq("player_id_mandatory", playerId);
@@ -163,7 +165,7 @@ export async function getMatchesIds(matchesIds: string[]) {
         `      🔍 Обработка чанка ${index + 1}/${chunks.length} (${matchesChunk.length} матчей)`,
       );
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from("matches")
         .select("id")
         .in("id", matchesChunk);
@@ -191,7 +193,7 @@ export async function getMatchesIds(matchesIds: string[]) {
 }
 
 export async function getActiveMatches() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("matches")
     .select("id")
     .in("status", ["READY", "ONGOING"]);

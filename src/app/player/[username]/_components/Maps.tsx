@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { countBy, map, orderBy } from "lodash-es";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
@@ -10,7 +11,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { usePlayerMaps } from "@/hooks/usePlayerMaps";
+import { supabaseClient } from "@/lib/supabase";
 
 const chartConfig = {
   map: {
@@ -20,7 +21,17 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function Maps({ playerId }: { playerId: string }) {
-  const { data } = usePlayerMaps(playerId);
+  const { data } = useQuery({
+    queryKey: ["player-matches", playerId],
+    queryFn: async () => {
+      const { data } = await supabaseClient
+        .from("player_matches")
+        .select("map")
+        .eq("player_id", playerId)
+        .order("finished_at", { ascending: false });
+      return data;
+    },
+  });
 
   const mapsCount = countBy(data, "map");
   const mapsArray = map(mapsCount, (count, map) => ({ map, count }));

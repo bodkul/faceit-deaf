@@ -18,7 +18,7 @@ import {
   upsertMatchTeamPlayer,
   upsertPlayerStatsNormalized,
   upsertPlayers,
-} from "@/lib/supabase/mutations";
+} from "@/lib/supabase";
 
 export async function GET() {
   console.log("🚀 Начало загрузки матчей для всех игроков");

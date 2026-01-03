@@ -8,7 +8,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use } from "react";
 
-import Loading from "./loading";
 import { SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
@@ -24,6 +23,8 @@ import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { supabaseClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+
+import Loading from "./loading";
 
 export const countryMap: Record<string, string> = {
   France: "FR",

@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
 
-import MatchHistory from "./_components/MatchHistory";
-import Statistics from "./_components/Statistics";
 import { Maps } from "@/app/player/[username]/_components/Maps";
 import { TabsContent } from "@/components/ui/tabs";
 import { PlayerCard, PlayerTabs } from "@/features/player";
 import { RecentMatches } from "@/features/recent-matches/recent-matches";
 import { getPlayerByUsername } from "@/lib/supabase/players";
+
+import MatchHistory from "./_components/MatchHistory";
+import Statistics from "./_components/Statistics";
 
 export async function generateMetadata({
   params,
@@ -30,7 +31,7 @@ export default async function Page({
       <PlayerCard player={player} />
 
       <PlayerTabs>
-        <TabsContent value="overview" className="space-y-4">
+        <TabsContent className="space-y-4" value="overview">
           <Statistics playerId={player.id} />
           <RecentMatches playerId={player.id} />
         </TabsContent>

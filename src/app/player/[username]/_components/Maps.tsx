@@ -43,28 +43,28 @@ export function Maps({ playerId }: { playerId: string }) {
         <CardTitle>Maps Statistics</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-64 w-full">
+        <ChartContainer className="h-64 w-full" config={chartConfig}>
           <BarChart accessibilityLayer data={maps}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="map"
-              tickLine={false}
-              tickMargin={10}
               axisLine={false}
+              dataKey="map"
               tickFormatter={(value) => {
                 const short = value.slice(3);
                 return short.charAt(0).toUpperCase() + short.slice(1);
               }}
+              tickLine={false}
+              tickMargin={10}
             />
             <ChartTooltip
-              cursor={false}
               content={<ChartTooltipContent hideLabel />}
+              cursor={false}
             />
             <Bar dataKey="count" fill="var(--color-map)" radius={8}>
               <LabelList
-                position="top"
-                offset={12}
                 className="fill-foreground"
+                offset={12}
+                position="top"
               />
             </Bar>
           </BarChart>

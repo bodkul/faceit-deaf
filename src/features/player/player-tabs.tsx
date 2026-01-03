@@ -6,7 +6,7 @@ interface PlayerTabsProps {
 
 export function PlayerTabs({ children }: PlayerTabsProps) {
   return (
-    <Tabs defaultValue="overview" className="gap-4 lg:col-span-2">
+    <Tabs className="gap-4 lg:col-span-2" defaultValue="overview">
       <TabsList className="w-full">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="matches">Matches</TabsTrigger>

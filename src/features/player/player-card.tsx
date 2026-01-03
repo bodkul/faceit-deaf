@@ -42,9 +42,9 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
       <CardHeader className="flex flex-col items-center">
         <Avatar className="size-28">
           <AvatarImage
+            alt="Player avatar"
             className="object-cover"
             src={player.avatar}
-            alt="Player avatar"
           />
           <AvatarFallback></AvatarFallback>
         </Avatar>
@@ -56,9 +56,9 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
         <div className="flex justify-center gap-4">
           {socials.map((s) => (
             <a
-              key={s.key}
               className="flex size-12 items-center justify-center rounded-2xl border bg-muted text-card-foreground shadow transition-all duration-200 hover:scale-110"
               href={s.href}
+              key={s.key}
               target="_blank"
             >
               {s.icon}

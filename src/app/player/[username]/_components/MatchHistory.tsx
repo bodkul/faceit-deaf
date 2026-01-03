@@ -9,9 +9,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
-import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
-import renderLoadingRows from "./renderLoadingRows";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,6 +25,10 @@ import {
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import { usePagination } from "@/hooks/usePagination";
 import { supabaseClient } from "@/lib/supabase";
+
+import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
+import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
+import renderLoadingRows from "./renderLoadingRows";
 
 const PAGE_SIZE = 20;
 

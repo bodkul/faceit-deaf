@@ -3,10 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { RecentMatchesLayout } from "./layout";
-import { RecentMatchesLoading } from "./loading";
 import { MatchHistoryTableRow } from "@/app/player/[username]/_components/MatchHistoryTableRow";
 import { supabaseClient } from "@/lib/supabase";
+
+import { RecentMatchesLayout } from "./layout";
+import { RecentMatchesLoading } from "./loading";
 
 export function useRecentMatches(playerId: string) {
   return useQuery({

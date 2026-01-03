@@ -55,29 +55,29 @@ export default function Page() {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
+              axisLine={false}
               dataKey="map"
-              type="category"
+              hide
+              tickFormatter={(value) => value.slice(0, 3)}
               tickLine={false}
               tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-              hide
+              type="category"
             />
-            <XAxis dataKey="count" type="number" hide />
-            <Bar dataKey="count" className="fill-orange-500" radius={4}>
+            <XAxis dataKey="count" hide type="number" />
+            <Bar className="fill-orange-500" dataKey="count" radius={4}>
               <LabelList
-                dataKey="map"
-                position="insideLeft"
-                offset={8}
                 className="fill-background"
+                dataKey="map"
                 fontSize={12}
+                offset={8}
+                position="insideLeft"
               />
               <LabelList
-                dataKey="count"
-                position="right"
-                offset={8}
                 className="fill-foreground"
+                dataKey="count"
                 fontSize={12}
+                offset={8}
+                position="right"
               />
             </Bar>
           </BarChart>

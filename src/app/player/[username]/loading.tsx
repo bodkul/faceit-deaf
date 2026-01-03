@@ -1,6 +1,5 @@
 "use client";
 
-import { StatisticsLoading } from "./_components/Statistics";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -8,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TabsContent } from "@/components/ui/tabs";
 import { PlayerTabs } from "@/features/player/player-tabs";
 import { RecentMatchesLoading } from "@/features/recent-matches";
+
+import { StatisticsLoading } from "./_components/Statistics";
 
 export default function Loading() {
   return (
@@ -28,8 +29,8 @@ export default function Loading() {
           <div className="flex justify-center gap-4">
             {["faceit", "steam", "twitch"].map((key) => (
               <Skeleton
-                key={`skeleton-${key}`}
                 className="size-12 rounded-2xl border"
+                key={`skeleton-${key}`}
               />
             ))}
           </div>
@@ -37,7 +38,7 @@ export default function Loading() {
       </Card>
 
       <PlayerTabs>
-        <TabsContent value="overview" className="space-y-4">
+        <TabsContent className="space-y-4" value="overview">
           <StatisticsLoading />
           <RecentMatchesLoading />
         </TabsContent>

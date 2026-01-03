@@ -22,7 +22,6 @@ import {
   PaginationItem,
 } from "@/components/ui/pagination";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
-import { useMatchesSubscription } from "@/hooks/useMatchesSubscription";
 import { useMatchHistory } from "@/hooks/useMatchHistory";
 
 import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
@@ -31,7 +30,7 @@ import renderLoadingRows from "./renderLoadingRows";
 
 export default function MatchHistory({ playerId }: { playerId: string }) {
   const {
-    matches,
+    data: matches,
     isLoading,
     pageIndex,
     totalPages,
@@ -39,10 +38,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
     previousPage,
     firstPage,
     lastPage,
-    mutate,
   } = useMatchHistory(playerId);
-
-  useMatchesSubscription(() => mutate().then());
 
   const rows = useMemo(() => {
     if (isLoading) return renderLoadingRows(20);

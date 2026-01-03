@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { usePagination } from "@/hooks/usePagination";
@@ -17,27 +17,43 @@ type LeaderboardPlayer = Tables<"leaderboard_players"> & {
   faceit_elo: number;
 };
 
+function usePlayersCount() {
+  const { data: count, ...query } = useQuery({
+    queryKey: ["leaderboard_players_count"],
+    queryFn: async () => {
+      const { count } = await supabaseClient
+        .from("leaderboard_players")
+        .select("id", { count: "exact", head: true });
+      return count;
+    },
+  });
+  return { count, ...query };
+}
+
 function usePlayers(pageOffset: number) {
-  return useQuery(
-    supabaseClient
-      .from("leaderboard_players")
-      .select(
-        "id, nickname, avatar, skill_level, faceit_elo, elo_before, country",
-        {
-          count: "exact",
-        },
-      )
-      .order("faceit_elo", { ascending: false })
-      .range(pageOffset * PAGE_SIZE, (pageOffset + 1) * PAGE_SIZE - 1)
-      .overrideTypes<LeaderboardPlayer[]>(),
-  );
+  return useQuery({
+    queryKey: ["leaderboard_players", pageOffset],
+    queryFn: async () => {
+      const start = pageOffset * PAGE_SIZE;
+      const end = (pageOffset + 1) * PAGE_SIZE - 1;
+      const { data } = await supabaseClient
+        .from("leaderboard_players")
+        .select(
+          "id, nickname, avatar, skill_level, faceit_elo, elo_before, country",
+        )
+        .order("faceit_elo", { ascending: false })
+        .range(start, end)
+        .overrideTypes<LeaderboardPlayer[]>();
+      return data;
+    },
+  });
 }
 
 export function usePlayersWithPagination() {
   const [totalCount, setTotalCount] = useState(0);
   const pagination = usePagination(totalCount, PAGE_SIZE);
-
-  const { isLoading, count, ...rest } = usePlayers(pagination.pageOffset);
+  const { count } = usePlayersCount();
+  const { isLoading, ...rest } = usePlayers(pagination.pageOffset);
 
   if (typeof count === "number" && count !== totalCount) {
     setTotalCount(count);

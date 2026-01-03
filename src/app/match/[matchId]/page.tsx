@@ -12,7 +12,7 @@ import Loading from "./loading";
 
 export default function Page(props: PageProps<"/match/[matchId]">) {
   const { matchId } = use(props.params);
-  const { match, isLoading } = useMatch(matchId.replace(/^1-/, ""));
+  const { data: match, isLoading } = useMatch(matchId.replace(/^1-/, ""));
 
   if (!matchId.startsWith("1-")) {
     return notFound();

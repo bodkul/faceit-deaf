@@ -2,13 +2,13 @@
 
 import { useMemo } from "react";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableHeader } from "@/components/ui/table";
+import { useRecentMatches } from "@/hooks/useRecentMatches";
+
 import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
 import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
 import renderLoadingRows from "./renderLoadingRows";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableHeader } from "@/components/ui/table";
-import { useMatchesSubscription } from "@/hooks/useMatchesSubscription";
-import { useRecentMatches } from "@/hooks/useRecentMatches";
 
 function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,9 +37,7 @@ export function RecentMatchesLoading() {
 }
 
 export default function RecentMatches({ playerId }: { playerId: string }) {
-  const { data, isLoading, mutate } = useRecentMatches(playerId);
-
-  useMatchesSubscription(() => mutate().then());
+  const { data, isLoading } = useRecentMatches(playerId);
 
   const rows = useMemo(() => {
     if (!data?.length) return null;

@@ -30,7 +30,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePlayersWithPagination } from "@/hooks/usePlayers";
-import { usePlayersSubscription } from "@/hooks/usePlayersSubscription";
 
 const PAGE_SIZE = 20;
 
@@ -45,12 +44,7 @@ export default function LeaderboardPage() {
     previousPage,
     firstPage,
     lastPage,
-    mutate,
   } = usePlayersWithPagination();
-
-  usePlayersSubscription(async () => {
-    await mutate();
-  });
 
   const offset = (pageIndex - 1) * PAGE_SIZE;
 

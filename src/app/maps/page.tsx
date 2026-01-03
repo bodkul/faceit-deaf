@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
+import { useQuery } from "@tanstack/react-query";
 import {
   Bar,
   BarChart,
@@ -26,8 +26,14 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function Page() {
-  const { data } = useQuery(supabaseClient.rpc("get_map_picks_count"));
-  const maps = formatMapPicks(data ?? undefined);
+  const { data: maps } = useQuery({
+    queryKey: ["map-picks-count"],
+    queryFn: async () => {
+      const { data } = await supabaseClient.rpc("get_map_picks_count");
+      return data;
+    },
+    select: (data) => formatMapPicks(data ?? []),
+  });
 
   return (
     <Card>

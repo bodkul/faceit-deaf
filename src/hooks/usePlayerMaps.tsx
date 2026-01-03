@@ -1,10 +1,10 @@
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 
-import { supabase } from "@/lib/supabase";
+import { supabaseClient } from "@/lib/supabase";
 
 export function usePlayerMaps(player_id: string) {
   return useQuery(
-    supabase
+    supabaseClient
       .from("player_matches")
       .select("map")
       .match({ player_id })

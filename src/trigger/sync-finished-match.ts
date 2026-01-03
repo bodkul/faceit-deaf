@@ -11,7 +11,7 @@ import {
   upsertMatchTeamPlayer,
   upsertPlayerStatsNormalized,
   upsertPlayers,
-} from "@/lib/supabase/mutations";
+} from "@/lib/supabase";
 
 export const syncFinishedMatchTask = task({
   id: "sync-finished-match",

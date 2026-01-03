@@ -19,14 +19,14 @@ import {
 } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { formatMapPicks } from "@/lib/formatMapPicks";
-import { supabase } from "@/lib/supabase";
+import { supabaseClient } from "@/lib/supabase";
 
 const chartConfig = {
   count: { label: "Count" },
 } satisfies ChartConfig;
 
 export default function Page() {
-  const { data } = useQuery(supabase.rpc("get_map_picks_count"));
+  const { data } = useQuery(supabaseClient.rpc("get_map_picks_count"));
   const maps = formatMapPicks(data ?? undefined);
 
   return (

@@ -1,7 +1,7 @@
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 
 import { usePagination } from "@/hooks/usePagination";
-import { supabase } from "@/lib/supabase";
+import { supabaseClient } from "@/lib/supabase";
 
 import { useMatchHistoryCount } from "./useMatchHistoryCount";
 
@@ -12,7 +12,7 @@ export function useMatchHistory(player_id: string) {
   const pagination = usePagination(count ?? 0, PAGE_SIZE);
 
   const { data: matches, ...query } = useQuery(
-    supabase
+    supabaseClient
       .from("player_matches")
       .select()
       .match({ player_id })

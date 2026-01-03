@@ -55,7 +55,7 @@ const nextConfig = {
     remotePatterns: [
       new URL("https://distribution.faceit-cdn.net/images/**"),
       new URL("https://assets.faceit-cdn.net/**"),
-      new URL("https://flagcdn.com/w20/**.png")
+      new URL("https://flagcdn.com/w20/**.png"),
     ],
   },
   logging: {

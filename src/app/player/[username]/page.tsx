@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { TabsContent } from "@/components/ui/tabs";
-import { getPlayerByUsername } from "@/lib/supabase/players";
+import { getPlayerByUsername } from "@/lib/supabase";
 
 import { Maps } from "./_components/Maps";
 import MatchHistory from "./_components/MatchHistory";

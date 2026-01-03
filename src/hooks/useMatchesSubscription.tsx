@@ -1,10 +1,10 @@
 import { useSubscription } from "@supabase-cache-helpers/postgrest-swr";
 
-import { supabase } from "@/lib/supabase";
+import { supabaseClient } from "@/lib/supabase";
 
 export function useMatchesSubscription(callback: () => Promise<void>) {
   return useSubscription(
-    supabase,
+    supabaseClient,
     "matches_subscription",
     {
       event: "*",

@@ -1,7 +1,7 @@
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import { startOfToday, subDays } from "date-fns";
 
-import { supabase } from "@/lib/supabase";
+import { supabaseClient } from "@/lib/supabase";
 
 export type PlayerStatisticsRange =
   | "20matches"
@@ -26,7 +26,7 @@ export function usePlayerStatistics(
   playerId: string,
   range: PlayerStatisticsRange,
 ) {
-  let query = supabase
+  let query = supabaseClient
     .from("matches")
     .select(
       "match_teams!inner(team_win, match_team_players!inner(elo_before, elo_after, player_stats_normalized!inner(kills, deaths, assists, headshots, kr_ratio, adr)))",

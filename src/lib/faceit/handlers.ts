@@ -8,7 +8,7 @@ import {
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayers,
-} from "@/lib/supabase/mutations";
+} from "@/lib/supabase";
 
 export async function handleMatchStatusReady(payload: MatchPayload) {
   const matchId = payload.id.replace(/^1-/, "");

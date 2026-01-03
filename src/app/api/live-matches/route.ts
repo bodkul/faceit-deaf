@@ -3,12 +3,12 @@ import { NextResponse } from "next/server";
 import pMap from "p-map";
 
 import { fetchMatches } from "@/lib/faceit/api";
-import { supabase } from "@/lib/supabase";
 import {
   getActiveMatches,
+  supabaseClient,
   updateMatch,
   updateMatchTeam,
-} from "@/lib/supabase/mutations";
+} from "@/lib/supabase";
 
 export async function GET() {
   const data = await getActiveMatches();
@@ -55,7 +55,7 @@ export async function GET() {
     { concurrency: 3 },
   );
 
-  await supabase.channel(`live-matches`).httpSend("*", {});
+  await supabaseClient.channel(`live-matches`).httpSend("*", {});
 
   return NextResponse.json({ message: "OK" });
 }

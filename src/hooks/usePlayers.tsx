@@ -4,7 +4,7 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import { useState } from "react";
 
 import { usePagination } from "@/hooks/usePagination";
-import { supabase } from "@/lib/supabase";
+import { supabaseClient } from "@/lib/supabase";
 import type { Tables } from "@/types/database";
 
 const PAGE_SIZE = 20;
@@ -19,7 +19,7 @@ type LeaderboardPlayer = Tables<"leaderboard_players"> & {
 
 function usePlayers(pageOffset: number) {
   return useQuery(
-    supabase
+    supabaseClient
       .from("leaderboard_players")
       .select(
         "id, nickname, avatar, skill_level, faceit_elo, elo_before, country",

@@ -1,6 +1,7 @@
 "use client";
 
 import { differenceInMinutes } from "date-fns";
+import { now } from "lodash-es";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +55,7 @@ export function LiveMatches() {
                       {match.finished_at
                         ? "Finished"
                         : match.started_at
-                          ? `${differenceInMinutes(new Date(), new Date(match.started_at))}m`
+                          ? `${differenceInMinutes(now(), match.started_at)}m`
                           : "Soon"}
                     </TableCell>
                     <TableCell>{match.round_score ?? "0 / 0"}</TableCell>

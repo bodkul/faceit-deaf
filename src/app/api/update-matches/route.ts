@@ -1,4 +1,5 @@
 import { fromUnixTime, subHours } from "date-fns";
+import { now } from "lodash-es";
 import { NextResponse } from "next/server";
 import pMap from "p-map";
 
@@ -17,7 +18,7 @@ export async function GET() {
     .from("matches")
     .select("id, match_teams(match_team_players(player_id_mandatory))")
     .neq("status", "FINISHED")
-    .lt("started_at", subHours(new Date(), 1).toISOString());
+    .lt("started_at", subHours(now(), 1).toISOString());
 
   const matches = data ?? [];
 

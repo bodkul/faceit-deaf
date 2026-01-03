@@ -10,15 +10,13 @@ import { PlayerTabs } from "./_components/PlayerTabs";
 import RecentMatches from "./_components/RecentMatches";
 import Statistics from "./_components/Statistics";
 
-type Params = Promise<{ username: string }>;
-
-export async function generateMetadata({ params }: { params: Params }) {
-  const { username } = await params;
+export async function generateMetadata(props: PageProps<"/player/[username]">) {
+  const { username } = await props.params;
 
   return { title: username };
 }
 
-export default async function Page(props: { params: Params }) {
+export default async function Page(props: PageProps<"/player/[username]">) {
   const { username } = await props.params;
 
   const player = await getPlayerByUsername(username);

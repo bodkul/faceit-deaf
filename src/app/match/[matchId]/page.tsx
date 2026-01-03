@@ -10,7 +10,7 @@ import { MatchHeader } from "./_components/MatchHeader";
 import { TeamStatsTable } from "./_components/TeamStatsTable";
 import Loading from "./loading";
 
-export default function Page(props: { params: Promise<{ matchId: string }> }) {
+export default function Page(props: PageProps<"/match/[matchId]">) {
   const { matchId } = use(props.params);
   const { match, isLoading } = useMatch(matchId.replace(/^1-/, ""));
 

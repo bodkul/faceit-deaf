@@ -31,11 +31,11 @@ export function MatchHeader({ match }: { match: MatchType }) {
             <AvatarFallback />
           </Avatar>
           <div className="flex flex-col items-start overflow-hidden">
-            <span className="w-full overflow-hidden text-3xl font-bold text-ellipsis">
+            <span className="w-full overflow-hidden text-ellipsis font-bold text-3xl">
               {match.teams[0].name}
             </span>
             <span
-              className={cn("text-3xl font-bold", {
+              className={cn("font-bold text-3xl", {
                 "text-green-500": match.teams[0].team_win === true,
                 "text-red-500": match.teams[0].team_win === false,
               })}
@@ -51,7 +51,7 @@ export function MatchHeader({ match }: { match: MatchType }) {
             </span>
           )}
           {match.location_pick && (
-            <div className="rounded-4 flex items-center space-x-2 overflow-hidden">
+            <div className="flex items-center space-x-2 overflow-hidden rounded-4">
               <Image
                 src={getFlagUrl(getCountryCode(match.location_pick), "sm")}
                 alt="Server location country"
@@ -70,11 +70,11 @@ export function MatchHeader({ match }: { match: MatchType }) {
         </div>
         <div className="flex w-1/3 items-center justify-center space-x-5 overflow-hidden">
           <div className="flex flex-col items-end overflow-hidden">
-            <span className="w-full overflow-hidden text-3xl font-bold text-ellipsis">
+            <span className="w-full overflow-hidden text-ellipsis font-bold text-3xl">
               {match.teams[1].name}
             </span>
             <span
-              className={cn("text-3xl font-bold", {
+              className={cn("font-bold text-3xl", {
                 "text-green-500": match.teams[1].team_win === true,
                 "text-red-500": match.teams[1].team_win === false,
               })}

@@ -8,9 +8,6 @@ import {
 } from "@tabler/icons-react";
 import { useMemo } from "react";
 
-import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
-import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
-import renderLoadingRows from "./renderLoadingRows";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,6 +24,10 @@ import {
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import { useMatchesSubscription } from "@/hooks/useMatchesSubscription";
 import { useMatchHistory } from "@/hooks/useMatchHistory";
+
+import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
+import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
+import renderLoadingRows from "./renderLoadingRows";
 
 export default function MatchHistory({ playerId }: { playerId: string }) {
   const {
@@ -70,7 +71,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
       <CardFooter>
         <Pagination>
           <div className="flex items-center space-x-6 lg:space-x-8">
-            <div className="flex w-25 items-center justify-center text-sm font-medium">
+            <div className="flex w-25 items-center justify-center font-medium text-sm">
               Page {pageIndex} of {totalPages}
             </div>
             <PaginationContent className="gap-2">

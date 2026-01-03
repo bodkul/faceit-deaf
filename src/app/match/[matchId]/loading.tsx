@@ -28,7 +28,7 @@ export default function Loading() {
             <span className="text-2xl">
               <Skeleton className="h-8 w-52" />
             </span>
-            <div className="rounded-4 flex items-center space-x-2 overflow-hidden">
+            <div className="flex items-center space-x-2 overflow-hidden rounded-4">
               <Skeleton className="h-8 w-16 rounded" />
               <Skeleton className="h-6 w-18" />
             </div>
@@ -47,7 +47,7 @@ export default function Loading() {
       </Card>
       <div className="flex space-x-12">
         <div className="flex w-full flex-col space-y-6">
-          <h5 className="text-3xl font-bold">Stats</h5>
+          <h5 className="font-bold text-3xl">Stats</h5>
           {range(2).map((index) => (
             <Card key={index} className="gap-0 p-0">
               <Table>

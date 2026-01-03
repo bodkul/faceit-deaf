@@ -1,8 +1,9 @@
 import { uniqBy } from "lodash-es";
 import pMap from "p-map";
 
-import type { Match, MatchStats, Player } from "./types";
 import faceitClient from "@/lib/faceit/client";
+
+import type { Match, MatchStats, Player } from "./types";
 
 export const fetchPlayer = async (playerId: string) => {
   try {

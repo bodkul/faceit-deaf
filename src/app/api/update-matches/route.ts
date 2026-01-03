@@ -8,8 +8,8 @@ import {
   getExistingPlayers,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
-  upsertPlayers,
   upsertPlayerStatsNormalized,
+  upsertPlayers,
 } from "@/lib/supabase/mutations";
 
 export async function GET() {

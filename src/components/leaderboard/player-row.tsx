@@ -3,10 +3,11 @@
 import { useRouter } from "next/navigation";
 import Flag from "react-world-flags";
 
-import { EloDelta } from "./elo-delta";
 import { SkillLevelIcon } from "@/components/icons";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { PlayerWithPagination } from "@/types/player";
+
+import { EloDelta } from "./elo-delta";
 
 export function PlayerRow({
   player,

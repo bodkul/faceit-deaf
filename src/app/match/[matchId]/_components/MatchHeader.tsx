@@ -10,7 +10,7 @@ import { getCountryCode, getFlagUrl } from "./country";
 
 export function MatchHeader({ match }: { match: MatchType }) {
   return (
-    <Card className="py-0">
+    <Card className="gap-0 py-0">
       {match.map_pick && (
         <Image
           src={`/img/maps/${match.map_pick}.webp`}

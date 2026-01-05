@@ -3,8 +3,9 @@
 import { IconBrandSteam, IconBrandTwitch } from "@tabler/icons-react";
 import { useMemo } from "react";
 
-import { FaceitIcon } from "@/components/icons";
+import { FaceitIcon, SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,11 +15,10 @@ export function PlayerCardSceleton() {
   return (
     <Card>
       <CardHeader className="flex flex-col items-center space-y-2 text-center">
-        <Avatar className="size-28">
-          <AvatarFallback>
-            <Skeleton className="size-28 rounded-full" />
-          </AvatarFallback>
-        </Avatar>
+        <div className="relative w-fit">
+          <Skeleton className="size-28 rounded-full" />
+          <Skeleton className="absolute -right-1 -bottom-1 size-10 rounded-full" />
+        </div>
         <CardTitle className="text-2xl">
           <Skeleton className="h-6 w-32 rounded" />
         </CardTitle>
@@ -67,14 +67,20 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
   return (
     <Card>
       <CardHeader className="flex flex-col items-center">
-        <Avatar className="size-28">
-          <AvatarImage
-            className="object-cover"
-            src={player.avatar}
-            alt="Player avatar"
+        <div className="relative w-fit">
+          <Avatar className="size-28">
+            <AvatarImage
+              className="object-cover"
+              src={player.avatar}
+              alt="Player avatar"
+            />
+            <AvatarFallback></AvatarFallback>
+          </Avatar>
+          <SkillLevelIcon
+            level={player.skill_level}
+            className="absolute -right-1 -bottom-1 size-10"
           />
-          <AvatarFallback></AvatarFallback>
-        </Avatar>
+        </div>
         <CardTitle className="text-2xl">{player.nickname}</CardTitle>
         {/* <div className="text-sm text-muted-foreground">Team HARD</div> */}
       </CardHeader>
@@ -82,14 +88,17 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
         <Separator />
         <div className="flex justify-center gap-4">
           {socials.map((s) => (
-            <a
+            <Button
               key={s.key}
-              className="flex size-12 items-center justify-center rounded-2xl border bg-muted text-card-foreground shadow transition-all duration-200 hover:scale-110"
-              href={s.href}
-              target="_blank"
+              className="duration-200 hover:scale-110"
+              variant="outline"
+              size="icon-lg"
+              asChild
             >
-              {s.icon}
-            </a>
+              <a href={s.href} target="_blank">
+                {s.icon}
+              </a>
+            </Button>
           ))}
         </div>
       </CardContent>

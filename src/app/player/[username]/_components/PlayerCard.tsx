@@ -29,7 +29,7 @@ export function PlayerCardSceleton() {
           {["faceit", "steam", "twitch"].map((key) => (
             <Skeleton
               key={`skeleton-${key}`}
-              className="size-12 rounded-2xl border"
+              className="size-10 rounded-md border"
             />
           ))}
         </div>

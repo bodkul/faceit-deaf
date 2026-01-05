@@ -5,6 +5,7 @@ import type { MatchPayload } from "@/lib/faceit/match-events";
 import {
   deleteMatch,
   getExistingPlayers,
+  supabaseClient,
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayers,
@@ -61,6 +62,8 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
     },
     { concurrency: 3 },
   );
+
+  await supabaseClient.channel(`match:${matchId}`).httpSend("*", {});
 }
 
 export async function handleMatchStatusCancelled(payload: MatchPayload) {

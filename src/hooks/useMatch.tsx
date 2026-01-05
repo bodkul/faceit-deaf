@@ -2,9 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 
 import { supabaseClient } from "@/lib/supabase";
 
+import useRealtimeChannel from "./useRealtimeChannel";
+
 export function useMatch(id: string) {
+  const queryKey = ["match", id] as const;
+
+  useRealtimeChannel(queryKey);
+
   return useQuery({
-    queryKey: ["match", id],
+    queryKey,
     queryFn: async () => {
       const { data } = await supabaseClient
         .from("matches")

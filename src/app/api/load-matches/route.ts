@@ -13,6 +13,7 @@ import {
   getMatchesCount,
   getMatchesIds,
   getPlayers,
+  supabaseClient,
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
@@ -269,6 +270,10 @@ export async function GET() {
           },
           { concurrency: 2 },
         );
+
+        await supabaseClient
+          .channel(`match:${match_id.replace(/^1-/, "")}`)
+          .httpSend("*", {});
 
         console.log(`      🎉 Матч ${match_id} обработан успешно`);
       } catch (error) {

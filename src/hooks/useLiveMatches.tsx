@@ -1,35 +1,22 @@
 "use client";
 
-import type { RealtimeChannel } from "@supabase/supabase-js";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { supabaseClient } from "@/lib/supabase";
 
+import useRealtimeChannel from "./useRealtimeChannel";
+
 export function useLiveMatches() {
-  const queryClient = useQueryClient();
-  const channelRef = useRef<RealtimeChannel | null>(null);
+  const queryKey = ["live-matches"] as const;
 
-  useEffect(() => {
-    channelRef.current = supabaseClient.channel("live-matches");
-
-    channelRef.current
-      .on("broadcast", { event: "*" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["live-matches"] });
-      })
-      .subscribe();
-
-    return () => {
-      channelRef.current?.unsubscribe();
-    };
-  }, [queryClient]);
+  useRealtimeChannel(queryKey);
 
   return useQuery({
-    queryKey: ["live-matches"],
+    queryKey,
     queryFn: async () => {
       const { data } = await supabaseClient
         .from("live_matches")
-        .select("*")
+        .select("id, map_pick, round_score, started_at, finished_at, players")
         .order("status", { ascending: false })
         .order("started_at", { ascending: false });
       return data;

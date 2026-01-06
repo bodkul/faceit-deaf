@@ -1,6 +1,6 @@
 "use client";
 
-import { meanBy, sumBy, take } from "lodash-es";
+import { add, maxBy, meanBy, minBy, subtract, sumBy, take } from "lodash-es";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 
@@ -9,6 +9,7 @@ import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
+  ChartTooltipContent,
 } from "@/components/ui/chart";
 import {
   Select,
@@ -24,12 +25,10 @@ import {
   type PlayerStatisticsRange,
   usePlayerStatistics,
 } from "@/hooks/usePlayerStatistics";
-import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  elo: {
     color: "oklch(70.5% 0.213 47.604)",
   },
 } satisfies ChartConfig;
@@ -178,29 +177,22 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatisticsCard label="K/D/A">
-            <span className="font-bold text-2xl">
-              {stats.avgKills}/{stats.avgDeaths}/{stats.avgAssists}
-            </span>
-          </StatisticsCard>
-          <StatisticsCard label="K/D">
-            <span className="font-bold text-2xl">{stats.kd}</span>
-          </StatisticsCard>
-          <StatisticsCard label="K/R">
-            <span className="font-bold text-2xl">{stats.kpr}</span>
-          </StatisticsCard>
-          <StatisticsCard label="Headshots %">
-            <span className="font-bold text-2xl">{stats.hsPercent}</span>
-          </StatisticsCard>
-          <StatisticsCard label="ADR">
-            <span className="font-bold text-2xl">{stats.adr}</span>
-          </StatisticsCard>
-          <StatisticsCard label="Winrate">
-            <span className="font-bold text-2xl">{stats.winrate}</span>
-          </StatisticsCard>
-          <StatisticsCard label="Matches">
-            <span className="font-bold text-2xl">{stats.matches}</span>
-          </StatisticsCard>
+          {[
+            {
+              label: "K/D/A",
+              value: `${stats.avgKills}/${stats.avgDeaths}/${stats.avgAssists}`,
+            },
+            { label: "K/D", value: stats.kd },
+            { label: "K/R", value: stats.kpr },
+            { label: "Headshots %", value: stats.hsPercent },
+            { label: "ADR", value: stats.adr },
+            { label: "Winrate", value: stats.winrate },
+            { label: "Matches", value: stats.matches },
+          ].map(({ label, value }) => (
+            <StatisticsCard key={label} label={label}>
+              <span className="font-bold text-2xl">{value}</span>
+            </StatisticsCard>
+          ))}
           <StatisticsCard label="W/L History">
             <div className="flex items-center gap-1.5">
               {stats.history.map((result, index) => (
@@ -226,31 +218,33 @@ export default function Statistics({ playerId }: { playerId: string }) {
             <YAxis
               dataKey="match"
               domain={[
-                Math.min(...stats.eloChartData.map((m) => m.elo)) - 10,
-                Math.max(...stats.eloChartData.map((m) => m.elo)) + 10,
+                subtract(minBy(stats.eloChartData, "elo")?.elo ?? 0, 10),
+                add(maxBy(stats.eloChartData, "elo")?.elo ?? 0, 10),
               ]}
               tickLine={false}
               axisLine={false}
             />
-            <ChartTooltip
-              cursor={false}
-              content={({ payload }) =>
-                payload?.[0] ? (
-                  <div className="rounded border bg-muted p-2 text-sm shadow-sm">
-                    <div>ELO: {payload[0].payload.elo}</div>
-                    <div>
-                      Diff: {formatNumberWithSign(payload[0].payload.eloDiff)}
-                    </div>
-                  </div>
-                ) : null
-              }
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <defs>
+              <linearGradient id="fillElo" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-elo)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-elo)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
             <Area
               dataKey="elo"
-              type="linear"
-              fill="var(--color-desktop)"
+              type="natural"
+              fill="url(#fillElo)"
               fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              stroke="var(--color-elo)"
             />
           </AreaChart>
         </ChartContainer>

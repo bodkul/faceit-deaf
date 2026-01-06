@@ -82,7 +82,9 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
           />
         </div>
         <CardTitle className="text-2xl">{player.nickname}</CardTitle>
-        {/* <div className="text-sm text-muted-foreground">Team HARD</div> */}
+        <div className="items-center rounded-lg border bg-muted/30 p-4 py-2 font-semibold text-lg text-primary transition-colors">
+          {player.faceit_elo} ELO
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <Separator />

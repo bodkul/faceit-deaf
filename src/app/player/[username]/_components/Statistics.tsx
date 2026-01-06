@@ -97,7 +97,7 @@ export function StatisticsLoading() {
 
 export default function Statistics({ playerId }: { playerId: string }) {
   const [statisticsRange, setStatisticsRange] =
-    useState<PlayerStatisticsRange>("20matches");
+    useState<PlayerStatisticsRange>("last20Matches");
   const { data, isLoading } = usePlayerStatistics(playerId, statisticsRange);
 
   const stats = useMemo(() => {
@@ -162,14 +162,15 @@ export default function Statistics({ playerId }: { playerId: string }) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="alltime">All time</SelectItem>
+              <SelectItem value="currentSession">Current session</SelectItem>
               <SelectSeparator />
-              <SelectItem value="20matches">20 matches</SelectItem>
-              <SelectItem value="100matches">100 matches</SelectItem>
+
+              <SelectItem value="last20Matches">Last 20 matches</SelectItem>
+              <SelectItem value="last7Days">Last 7 days</SelectItem>
+              <SelectItem value="last30Days">Last 30 days</SelectItem>
               <SelectSeparator />
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="last7days">Last 7 days</SelectItem>
-              <SelectItem value="last30days">Last 30 days</SelectItem>
+
+              <SelectItem value="allTime">All time</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
+import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
@@ -31,13 +32,17 @@ export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
       <TableCell>
         {match.finished_at && format(match.finished_at, "dd MMM - HH:mm")}
       </TableCell>
-      <TableCell
-        className={cn({
-          "text-red-500": match.win === false,
-          "text-green-500": match.win === true,
-        })}
-      >
-        {typeof match.win === "boolean" && match.win ? "W" : "L"}
+      <TableCell>
+        {match.win === true && (
+          <Badge className="rounded-sm border-none bg-green-600/10 text-green-600 focus-visible:outline-none focus-visible:ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:focus-visible:ring-green-400/40 [a&]:hover:bg-green-600/5 dark:[a&]:hover:bg-green-400/5">
+            W
+          </Badge>
+        )}
+        {match.win === false && (
+          <Badge className="rounded-sm border-none bg-destructive/10 text-destructive focus-visible:outline-none focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/5">
+            L
+          </Badge>
+        )}
       </TableCell>
       <TableCell>{match.round_score}</TableCell>
       <TableCell>

@@ -1,5 +1,6 @@
-import { format } from "date-fns";
+import { format, getYear, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -11,17 +12,21 @@ import type { RecentMatchType } from "@/types/match";
 export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
   const router = useRouter();
 
-  const stats = calculateAverageStats([
-    {
-      Rounds: 0,
-      Assists: 0,
-      Kills: match.kills ?? 0,
-      Deaths: match.deaths ?? 0,
-      Headshots: match.headshots ?? 0,
-      ADR: match.adr ?? 0,
-      "K/R Ratio": match.kr_ratio ?? 0,
-    },
-  ]);
+  const stats = useMemo(
+    () =>
+      calculateAverageStats([
+        {
+          Rounds: 0,
+          Assists: 0,
+          Kills: match.kills ?? 0,
+          Deaths: match.deaths ?? 0,
+          Headshots: match.headshots ?? 0,
+          ADR: match.adr ?? 0,
+          "K/R Ratio": match.kr_ratio ?? 0,
+        },
+      ]),
+    [match],
+  );
 
   return (
     <TableRow
@@ -30,7 +35,13 @@ export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
       onClick={() => router.push(`/match/1-${match.id}`)}
     >
       <TableCell>
-        {match.finished_at && format(match.finished_at, "dd MMM - HH:mm")}
+        {match.finished_at &&
+          (() => {
+            const date = parseISO(match.finished_at);
+            return getYear(date) === new Date().getFullYear()
+              ? format(date, "d. MMM HH:mm")
+              : format(date, "d. MMM yyyy");
+          })()}
       </TableCell>
       <TableCell>
         {match.win === true && (

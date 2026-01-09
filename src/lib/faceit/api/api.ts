@@ -1,6 +1,7 @@
 import { uniqBy } from "lodash-es";
 import pMap from "p-map";
 
+import { COMPETITION_ID } from "@/lib/faceit";
 import faceitClient from "@/lib/faceit/client";
 
 import type { Match, MatchStats, Player } from "./types";
@@ -84,7 +85,6 @@ interface MatchHistory {
 const GAME = "cs2";
 const REGION = "EU";
 const ORGANIZER_ID = "faceit";
-const COMPETITION_ID = "f4148ddd-bce8-41b8-9131-ee83afcdd6dd";
 
 export async function fetchFullPlayerHistory(playerId: string) {
   console.log(`    🔄 Загрузка истории матчей для игрока: ${playerId}`);

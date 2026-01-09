@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import * as React from "react";
 
 import { usePagination } from "@/hooks/usePagination";
 import { supabaseClient } from "@/lib/supabase";
@@ -23,7 +23,7 @@ function usePlayersCount() {
     queryFn: async () => {
       const { count } = await supabaseClient
         .from("leaderboard_players")
-        .select("id", { count: "exact", head: true });
+        .select("*", { count: "exact", head: true });
       return count;
     },
   });
@@ -50,7 +50,7 @@ function usePlayers(pageOffset: number) {
 }
 
 export function usePlayersWithPagination() {
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = React.useState(0);
   const pagination = usePagination(totalCount, PAGE_SIZE);
   const { count } = usePlayersCount();
   const { isLoading, ...rest } = usePlayers(pagination.pageOffset);

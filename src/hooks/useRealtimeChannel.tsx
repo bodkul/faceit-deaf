@@ -1,5 +1,5 @@
 import { type QueryKey, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import * as React from "react";
 
 import { supabaseClient } from "@/lib/supabase";
 
@@ -9,7 +9,7 @@ export default function useRealtimeChannel(
 ) {
   const queryClient = useQueryClient();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const channelName = queryKey.join(":");
 
     const channel = supabaseClient

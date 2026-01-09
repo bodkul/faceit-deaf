@@ -2,7 +2,7 @@
 
 import { sumBy } from "lodash-es";
 import { notFound } from "next/navigation";
-import { use } from "react";
+import * as React from "react";
 
 import { useMatch } from "@/hooks/useMatch";
 
@@ -11,7 +11,7 @@ import { TeamStatsTable } from "./_components/TeamStatsTable";
 import Loading from "./loading";
 
 export default function Page(props: PageProps<"/match/[matchId]">) {
-  const { matchId } = use(props.params);
+  const { matchId } = React.use(props.params);
   const { data: match, isLoading } = useMatch(matchId.replace(/^1-/, ""));
 
   if (!matchId.startsWith("1-")) {

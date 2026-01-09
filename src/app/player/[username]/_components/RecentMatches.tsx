@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import * as React from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
@@ -39,7 +39,7 @@ export function RecentMatchesLoading() {
 export default function RecentMatches({ playerId }: { playerId: string }) {
   const { data, isLoading } = useRecentMatches(playerId);
 
-  const rows = useMemo(() => {
+  const rows = React.useMemo(() => {
     if (!data?.length) return null;
 
     return data.map((match) => (

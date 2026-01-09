@@ -1,7 +1,7 @@
 "use client";
 
 import { IconBrandSteam, IconBrandTwitch } from "@tabler/icons-react";
-import { useMemo } from "react";
+import * as React from "react";
 
 import { FaceitIcon, SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,7 +39,7 @@ export function PlayerCardSceleton() {
 }
 
 export function PlayerCard({ player }: { player: PlayerByUsername }) {
-  const socials = useMemo(() => {
+  const socials = React.useMemo(() => {
     const list = [
       {
         key: "faceit",

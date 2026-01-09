@@ -277,8 +277,10 @@ export type Database = {
       };
       match_team_players: {
         Row: {
+          elo: number | null;
           elo_after: number | null;
           elo_before: number | null;
+          elo_delta: number | null;
           game_skill_level: number | null;
           id: string;
           match_team_id: string;
@@ -287,8 +289,10 @@ export type Database = {
           player_id_nullable: string | null;
         };
         Insert: {
+          elo?: number | null;
           elo_after?: number | null;
           elo_before?: number | null;
+          elo_delta?: number | null;
           game_skill_level?: number | null;
           id?: string;
           match_team_id: string;
@@ -297,8 +301,10 @@ export type Database = {
           player_id_nullable?: string | null;
         };
         Update: {
+          elo?: number | null;
           elo_after?: number | null;
           elo_before?: number | null;
+          elo_delta?: number | null;
           game_skill_level?: number | null;
           id?: string;
           match_team_id?: string;

@@ -1,6 +1,6 @@
 import { format, getYear, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -12,7 +12,7 @@ import type { RecentMatchType } from "@/types/match";
 export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
   const router = useRouter();
 
-  const stats = useMemo(
+  const stats = React.useMemo(
     () =>
       calculateAverageStats([
         {

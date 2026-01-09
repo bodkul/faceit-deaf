@@ -1,5 +1,5 @@
 import { orderBy } from "lodash-es";
-import { useMemo } from "react";
+import * as React from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
@@ -21,7 +21,7 @@ export function TeamStatsTable({
   team: TeamType;
   totalScore: number;
 }) {
-  const sortedPlayers = useMemo(
+  const sortedPlayers = React.useMemo(
     () => orderBy(team.team_players, (p) => p.player_stats?.kills || 0, "desc"),
     [team.team_players],
   );

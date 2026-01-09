@@ -100,8 +100,8 @@ export function usePlayerStatistics(
           match_teams!inner(
             team_win,
             match_team_players!inner(
-              elo_before,
-              elo_after,
+              elo,
+              elo_delta,
               player_stats_normalized!inner(
                 kills,
                 deaths,
@@ -144,8 +144,8 @@ export function usePlayerStatistics(
 
     return {
       win: team.team_win,
-      eloBefore: player.elo_before,
-      eloAfter: player.elo_after,
+      elo: player.elo,
+      eloDelta: player.elo_delta,
       kills: stats.kills,
       deaths: stats.deaths,
       assists: stats.assists,

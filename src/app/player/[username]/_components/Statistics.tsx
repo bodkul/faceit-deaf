@@ -1,7 +1,7 @@
 "use client";
 
 import { add, maxBy, meanBy, minBy, subtract, sumBy, take } from "lodash-es";
-import { useMemo, useState } from "react";
+import * as React from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -97,10 +97,10 @@ export function StatisticsLoading() {
 
 export default function Statistics({ playerId }: { playerId: string }) {
   const [statisticsRange, setStatisticsRange] =
-    useState<PlayerStatisticsRange>("last20Matches");
+    React.useState<PlayerStatisticsRange>("last20Matches");
   const { data, isLoading } = usePlayerStatistics(playerId, statisticsRange);
 
-  const stats = useMemo(() => {
+  const stats = React.useMemo(() => {
     const totalKills = sumBy(data, (p) => p.kills ?? 0);
     const totalDeaths = sumBy(data, (p) => p.deaths ?? 0);
     const kd = totalDeaths > 0 ? totalKills / totalDeaths : totalKills;
@@ -119,13 +119,12 @@ export default function Statistics({ playerId }: { playerId: string }) {
     const eloChartData =
       data
         ?.filter(
-          (m): m is typeof m & { eloAfter: number; eloBefore: number } =>
-            typeof m.eloAfter === "number" && typeof m.eloBefore === "number",
+          (m) => typeof m.elo === "number" || typeof m.eloDelta === "number",
         )
         .map((m, index) => ({
           match: `#${index + 1}`,
-          elo: m.eloAfter,
-          eloDiff: m.eloAfter - m.eloBefore,
+          elo: m.elo,
+          eloDelta: m.eloDelta,
         }))
         .reverse() || [];
 

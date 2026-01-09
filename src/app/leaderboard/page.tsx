@@ -33,6 +33,13 @@ import { usePlayersWithPagination } from "@/hooks/usePlayers";
 
 const PAGE_SIZE = 20;
 
+const columns = [
+  { header: "Ranking" },
+  { header: "Player" },
+  { header: "Skill level" },
+  { header: "ELO" },
+];
+
 export default function LeaderboardPage() {
   const {
     data,
@@ -58,10 +65,9 @@ export default function LeaderboardPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Ranking</TableHead>
-                <TableHead>Player</TableHead>
-                <TableHead>Skill level</TableHead>
-                <TableHead>ELO</TableHead>
+                {columns.map((column) => (
+                  <TableHead key={column.header}>{column.header}</TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -90,7 +96,6 @@ export default function LeaderboardPage() {
                   onClick={() => firstPage?.()}
                   disabled={!canPreviousPage}
                 >
-                  <span className="sr-only">Go to first page</span>
                   <IconChevronsLeft />
                 </Button>
               </PaginationItem>
@@ -101,7 +106,6 @@ export default function LeaderboardPage() {
                   onClick={() => previousPage?.()}
                   disabled={!canPreviousPage}
                 >
-                  <span className="sr-only">Go to previous page</span>
                   <IconChevronLeft />
                 </Button>
               </PaginationItem>
@@ -112,7 +116,6 @@ export default function LeaderboardPage() {
                   onClick={() => nextPage?.()}
                   disabled={!canNextPage}
                 >
-                  <span className="sr-only">Go to next page</span>
                   <IconChevronRight />
                 </Button>
               </PaginationItem>
@@ -123,7 +126,6 @@ export default function LeaderboardPage() {
                   onClick={() => lastPage?.()}
                   disabled={!canNextPage}
                 >
-                  <span className="sr-only">Go to last page</span>
                   <IconChevronsRight />
                 </Button>
               </PaginationItem>

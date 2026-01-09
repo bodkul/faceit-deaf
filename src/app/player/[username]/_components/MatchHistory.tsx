@@ -6,7 +6,7 @@ import {
   IconChevronsLeft,
   IconChevronsRight,
 } from "@tabler/icons-react";
-import { useMemo } from "react";
+import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +40,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
     lastPage,
   } = useMatchHistory(playerId);
 
-  const rows = useMemo(() => {
+  const rows = React.useMemo(() => {
     if (isLoading) return renderLoadingRows(20);
     if (!matches?.length) return null;
 

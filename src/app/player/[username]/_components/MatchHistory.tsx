@@ -6,7 +6,6 @@ import {
   IconChevronsLeft,
   IconChevronsRight,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -23,55 +22,23 @@ import {
   PaginationItem,
 } from "@/components/ui/pagination";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
-import { usePagination } from "@/hooks/usePagination";
-import { supabaseClient } from "@/lib/supabase";
+import { useMatchHistory } from "@/hooks/useMatchHistory";
 
 import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
 import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
 import renderLoadingRows from "./renderLoadingRows";
 
-const PAGE_SIZE = 20;
-
 export default function MatchHistory({ playerId }: { playerId: string }) {
-  const { data: count } = useQuery({
-    queryKey: ["player-matches-count", playerId],
-    enabled: Boolean(playerId),
-    queryFn: async () => {
-      const { count } = await supabaseClient
-        .from("player_matches")
-        .select("*", {
-          count: "exact",
-          head: true,
-        })
-        .eq("player_id", playerId);
-
-      return count;
-    },
-  });
-
   const {
+    data: matches,
+    isLoading,
     pageIndex,
     totalPages,
     nextPage,
     previousPage,
     firstPage,
     lastPage,
-    pageOffset,
-  } = usePagination(count ?? 0, PAGE_SIZE);
-
-  const { data: matches, isLoading } = useQuery({
-    queryKey: ["player-matches", playerId, pageIndex],
-    enabled: Boolean(playerId),
-    queryFn: async () => {
-      const { data } = await supabaseClient
-        .from("player_matches")
-        .select()
-        .eq("player_id", playerId)
-        .order("finished_at", { ascending: false })
-        .range(pageOffset * PAGE_SIZE, (pageOffset + 1) * PAGE_SIZE - 1);
-      return data;
-    },
-  });
+  } = useMatchHistory(playerId);
 
   const rows = useMemo(() => {
     if (isLoading) return renderLoadingRows(20);

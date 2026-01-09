@@ -14,7 +14,7 @@ import {
 export default function Loading() {
   return (
     <>
-      <Card className="p-0">
+      <Card className="gap-0 p-0">
         <Skeleton className="h-30 w-auto rounded-none rounded-t-xl" />
         <div className="flex justify-between p-6">
           <div className="flex w-1/3 items-center justify-center space-x-5">

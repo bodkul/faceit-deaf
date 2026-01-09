@@ -1,26 +1,23 @@
 import { notFound } from "next/navigation";
 
-import { Maps } from "@/app/player/[username]/_components/Maps";
 import { TabsContent } from "@/components/ui/tabs";
-import { PlayerCard, PlayerTabs } from "@/features/player";
-import { RecentMatches } from "@/features/recent-matches/recent-matches";
-import { getPlayerByUsername } from "@/lib/supabase/players";
+import { getPlayerByUsername } from "@/lib/supabase";
 
+import { Maps } from "./_components/Maps";
 import MatchHistory from "./_components/MatchHistory";
+import { PlayerCard } from "./_components/PlayerCard";
+import { PlayerTabs } from "./_components/PlayerTabs";
+import RecentMatches from "./_components/RecentMatches";
 import Statistics from "./_components/Statistics";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/player/[username]">) {
-  const { username } = await params;
+export async function generateMetadata(props: PageProps<"/player/[username]">) {
+  const { username } = await props.params;
 
   return { title: username };
 }
 
-export default async function Page({
-  params,
-}: PageProps<"/player/[username]">) {
-  const { username } = await params;
+export default async function Page(props: PageProps<"/player/[username]">) {
+  const { username } = await props.params;
 
   const player = await getPlayerByUsername(username);
 

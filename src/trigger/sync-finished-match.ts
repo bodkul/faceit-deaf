@@ -6,6 +6,7 @@ import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/match-events";
 import {
   getExistingPlayers,
+  supabaseClient,
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
@@ -167,6 +168,8 @@ export const syncFinishedMatchTask = task({
       },
       { concurrency: 2 },
     );
+
+    await supabaseClient.channel(`match:${matchId}`).httpSend("*", {});
 
     logger.log("Finished syncing match", { matchId });
 

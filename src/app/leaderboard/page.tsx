@@ -6,19 +6,9 @@ import {
   IconChevronsLeft,
   IconChevronsRight,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { range } from "lodash-es";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
 
-import { SkillLevelIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -41,87 +31,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { usePagination } from "@/hooks/usePagination";
-import { formatNumberWithSign } from "@/lib/faceit/utils";
-import { supabaseClient } from "@/lib/supabase";
-import type { Tables } from "@/types/database";
+import { usePlayersWithPagination } from "@/hooks/usePlayers";
 
 const PAGE_SIZE = 20;
-
-type LeaderboardPlayer = Tables<"leaderboard_players"> & {
-  id: string;
-  nickname: string;
-  avatar: string;
-  skill_level: number;
-  faceit_elo: number;
-};
-
-function usePlayers(pagination: ReturnType<typeof usePagination>) {
-  return useQuery({
-    queryKey: ["leaderboard_players", pagination.pageOffset],
-    queryFn: async () => {
-      const { data } = await supabaseClient
-        .from("leaderboard_players")
-        .select(
-          "id, nickname, avatar, skill_level, faceit_elo, elo_before, country",
-        )
-        .order("faceit_elo", { ascending: false })
-        .range(
-          pagination.pageOffset * PAGE_SIZE,
-          (pagination.pageOffset + 1) * PAGE_SIZE - 1,
-        )
-        .overrideTypes<LeaderboardPlayer[]>();
-      return data;
-    },
-  });
-}
-
-function usePlayersWithPagination() {
-  const [totalCount, setTotalCount] = useState(0);
-  const pagination = usePagination(totalCount, PAGE_SIZE);
-  const { data: count } = useQuery({
-    queryKey: ["leaderboard_players_count"],
-    queryFn: async () => {
-      const { count } = await supabaseClient
-        .from("leaderboard_players")
-        .select("id", { count: "exact", head: true });
-      return count;
-    },
-  });
-  const query = usePlayers(pagination);
-
-  if (typeof count === "number" && count !== totalCount) {
-    setTotalCount(count);
-  }
-
-  return {
-    ...query,
-    count,
-    ...pagination,
-  };
-}
-
-type PlayerWithPagination = NonNullable<
-  Awaited<ReturnType<typeof usePlayers>>["data"]
->[number];
-
-function EloDelta({ player }: { player: PlayerWithPagination }) {
-  if (player.elo_before == null || player.faceit_elo == null) {
-    return null;
-  }
-
-  const difference = player.faceit_elo - player.elo_before;
-  if (difference === 0) return null;
-
-  const color = difference > 0 ? "text-green-500" : "text-red-500";
-
-  return (
-    <>
-      {" "}
-      <sup className={color}>{formatNumberWithSign(difference)}</sup>
-    </>
-  );
-}
 
 export default function LeaderboardPage() {
   const router = useRouter();
@@ -137,58 +49,6 @@ export default function LeaderboardPage() {
     firstPage,
     lastPage,
   } = usePlayersWithPagination();
-
-  const columns = useMemo<ColumnDef<LeaderboardPlayer>[]>(
-    () => [
-      {
-        header: "Ranking",
-        cell: (props) => {
-          return props.row.index + 1;
-        },
-      },
-      {
-        header: "Player",
-        cell: ({ row }) => (
-          <div className="flex items-center space-x-2">
-            {row.original.country ? (
-              <Image
-                alt={`${row.original.country} flag`}
-                className="h-2.5 w-3.75 rounded-xs"
-                height={10}
-                src={`https://flagcdn.com/w20/${row.original.country.toLowerCase()}.png`}
-                width={15}
-              />
-            ) : (
-              <div className="h-2.5 w-3.75 rounded-xs bg-neutral-700" />
-            )}
-            <div className="font-medium">{row.original.nickname}</div>
-          </div>
-        ),
-      },
-      {
-        header: "Skill level",
-        cell: ({ row }) => (
-          <SkillLevelIcon className="size-6" level={row.original.skill_level} />
-        ),
-      },
-      {
-        header: "ELO",
-        cell: ({ row }) => (
-          <>
-            {row.original.faceit_elo}
-            <EloDelta player={row.original} />
-          </>
-        ),
-      },
-    ],
-    [],
-  );
-
-  const table = useReactTable({
-    data: data || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   const offset = (pageIndex - 1) * PAGE_SIZE;
 

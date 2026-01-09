@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { formatMapPicks } from "@/lib/formatMapPicks";
 import { supabaseClient } from "@/lib/supabase";
 
 const chartConfig = {
@@ -29,14 +30,9 @@ export default function Page() {
     queryKey: ["map-picks-count"],
     queryFn: async () => {
       const { data } = await supabaseClient.rpc("get_map_picks_count");
-
-      return data?.map(({ map_pick, count }) => ({
-        map: map_pick
-          .replace("de_", "")
-          .replace(/^./, (char) => char.toUpperCase()),
-        count,
-      }));
+      return data;
     },
+    select: (data) => formatMapPicks(data ?? []),
   });
 
   return (

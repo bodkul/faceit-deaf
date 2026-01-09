@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */
+/** @type {import("next").NextConfig} */
 const nextConfig = {
   webpack(config) {
     const fileLoaderRule = config.module.rules.find((rule) =>
@@ -53,7 +53,11 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      new URL("https://distribution.faceit-cdn.net/images/**"),
+      {
+        protocol: "https",
+        hostname: "distribution.faceit-cdn.net",
+        pathname: "/images/**",
+      },
       new URL("https://assets.faceit-cdn.net/**"),
       new URL("https://flagcdn.com/w20/**.png"),
     ],

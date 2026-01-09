@@ -1,4 +1,5 @@
 import { fromUnixTime, subHours } from "date-fns";
+import { now } from "lodash-es";
 import { NextResponse } from "next/server";
 import pMap from "p-map";
 
@@ -6,6 +7,7 @@ import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import {
   getExistingPlayers,
   supabaseClient,
+  updateMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
   upsertPlayerStatsNormalized,
@@ -17,7 +19,7 @@ export async function GET() {
     .from("matches")
     .select("id, match_teams(match_team_players(player_id_mandatory))")
     .neq("status", "FINISHED")
-    .lt("started_at", subHours(new Date(), 1).toISOString());
+    .lt("started_at", subHours(now(), 1).toISOString());
 
   const matches = data ?? [];
 
@@ -55,21 +57,14 @@ export async function GET() {
 
     console.log(`Fetched match and stats: ${row.id}.`);
 
-    const { error } = await supabaseClient
-      .from("matches")
-      .update({
-        status: match.status,
-        location_pick: match.voting.location?.pick[0],
-        map_pick: match.voting.map?.pick[0],
-        round_score: round.round_stats.Score,
-        started_at: fromUnixTime(match.started_at).toISOString(),
-        finished_at: fromUnixTime(match.finished_at).toISOString(),
-      })
-      .match({ id: row.id });
-    if (error) {
-      console.error("Failed to update match", error);
-      throw error;
-    }
+    await updateMatch(row.id, {
+      status: match.status,
+      location_pick: match.voting.location?.pick[0],
+      map_pick: match.voting.map?.pick[0],
+      round_score: round.round_stats.Score,
+      started_at: fromUnixTime(match.started_at).toISOString(),
+      finished_at: fromUnixTime(match.finished_at).toISOString(),
+    });
 
     await pMap(
       [match.teams.faction1, match.teams.faction2],
@@ -181,6 +176,8 @@ export async function GET() {
       },
       { concurrency: 2 },
     );
+
+    await supabaseClient.channel(`match:${row.id}`).httpSend("*", {});
 
     const end = performance.now();
 

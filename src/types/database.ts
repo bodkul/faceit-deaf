@@ -158,58 +158,6 @@ export type Database = {
       [_ in never]: never;
     };
   };
-  pgmq_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      archive: {
-        Args: { message_id: number; queue_name: string };
-        Returns: boolean;
-      };
-      delete: {
-        Args: { message_id: number; queue_name: string };
-        Returns: boolean;
-      };
-      pop: {
-        Args: { queue_name: string };
-        Returns: unknown[];
-        SetofOptions: {
-          from: "*";
-          to: "message_record";
-          isOneToOne: false;
-          isSetofReturn: true;
-        };
-      };
-      read: {
-        Args: { n: number; queue_name: string; sleep_seconds: number };
-        Returns: unknown[];
-        SetofOptions: {
-          from: "*";
-          to: "message_record";
-          isOneToOne: false;
-          isSetofReturn: true;
-        };
-      };
-      send: {
-        Args: { message: Json; queue_name: string; sleep_seconds?: number };
-        Returns: number[];
-      };
-      send_batch: {
-        Args: { messages: Json[]; queue_name: string; sleep_seconds?: number };
-        Returns: number[];
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
   public: {
     Tables: {
       event_teams: {
@@ -964,9 +912,6 @@ export type CompositeTypes<
 
 export const Constants = {
   next_auth: {
-    Enums: {},
-  },
-  pgmq_public: {
     Enums: {},
   },
   public: {

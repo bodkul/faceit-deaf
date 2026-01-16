@@ -736,19 +736,6 @@ export type Database = {
           map_pick: string;
         }[];
       };
-      get_player_stats: {
-        Args: { player_id: string };
-        Returns: {
-          adr: string;
-          assists: string;
-          deaths: string;
-          headshots: string;
-          id: string;
-          kills: string;
-          kpr: string;
-          rounds: number;
-        }[];
-      };
       hypopg: { Args: never; Returns: Record<string, unknown>[] };
       hypopg_create_index: {
         Args: { sql_order: string };

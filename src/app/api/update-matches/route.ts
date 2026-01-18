@@ -10,7 +10,6 @@ import {
   updateMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
-  upsertPlayerStatsNormalized,
   upsertPlayers,
 } from "@/lib/supabase";
 
@@ -95,7 +94,7 @@ export async function GET() {
               (p) => p.player_id === player.player_id,
             );
 
-            const resPlayer = await upsertMatchTeamPlayer({
+            await upsertMatchTeamPlayer({
               match_team_id: resTeam.id,
               player_id_nullable: existingPlayerIds.includes(player.player_id)
                 ? player.player_id
@@ -107,12 +106,6 @@ export async function GET() {
                 ?.faceit_elo,
               elo_after: players.find((p) => p.player_id === player.player_id)
                 ?.games.cs2.faceit_elo,
-            });
-
-            if (!resPlayer) return;
-
-            await upsertPlayerStatsNormalized({
-              match_team_player_id: resPlayer.id,
               adr: qwe?.player_stats?.ADR,
               mvps: qwe?.player_stats?.MVPs,
               kills: qwe?.player_stats?.Kills,

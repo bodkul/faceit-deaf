@@ -17,7 +17,6 @@ import {
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayer,
-  upsertPlayerStatsNormalized,
   upsertPlayers,
 } from "@/lib/supabase";
 
@@ -162,7 +161,7 @@ export async function GET() {
                   (p) => p.player_id === player.player_id,
                 );
 
-                const resPlayer = await upsertMatchTeamPlayer({
+                await upsertMatchTeamPlayer({
                   match_team_id: resTeam.id,
                   player_id_nullable: existingPlayerIds.includes(
                     player.player_id,
@@ -180,17 +179,6 @@ export async function GET() {
                       ? existingPlayers.find((p) => p.id === player.player_id)
                           ?.faceit_elo
                       : undefined,
-                });
-
-                if (!resPlayer) {
-                  console.log(
-                    `          ❌ Не удалось сохранить игрока ${player.nickname}`,
-                  );
-                  return;
-                }
-
-                await upsertPlayerStatsNormalized({
-                  match_team_player_id: resPlayer.id,
                   adr: playerStats?.player_stats?.ADR,
                   mvps: playerStats?.player_stats?.MVPs,
                   kills: playerStats?.player_stats?.Kills,

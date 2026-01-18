@@ -101,17 +101,13 @@ export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
 export async function upsertMatchTeamPlayer(
   player: TablesInsert<"match_team_players">,
 ) {
-  const { data, error } = await supabaseClient
+  const { error } = await supabaseClient
     .from("match_team_players")
-    .upsert(player, { onConflict: onConflictConfig.matchTeamPlayers })
-    .select("id")
-    .single();
+    .upsert(player, { onConflict: onConflictConfig.matchTeamPlayers });
 
   if (error) {
     handleSupabaseError("upsert match team player", error);
   }
-
-  return data;
 }
 
 export async function upsertMatchTeamPlayers(

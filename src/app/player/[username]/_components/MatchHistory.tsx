@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -53,6 +54,9 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
     <Card>
       <CardHeader>
         <CardTitle>Match History</CardTitle>
+        <CardDescription>
+          Complete list of all played matches with detailed statistics
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex rounded-md border">

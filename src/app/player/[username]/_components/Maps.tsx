@@ -3,7 +3,13 @@
 import { countBy, map, orderBy } from "lodash-es";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
@@ -30,6 +36,9 @@ export function Maps({ playerId }: { playerId: string }) {
     <Card>
       <CardHeader>
         <CardTitle>Maps Statistics</CardTitle>
+        <CardDescription>
+          Distribution of maps played by this player
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-64 w-full">

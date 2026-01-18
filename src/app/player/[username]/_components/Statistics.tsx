@@ -4,7 +4,13 @@ import { add, maxBy, meanBy, minBy, subtract, sumBy, take } from "lodash-es";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
@@ -150,7 +156,12 @@ export default function Statistics({ playerId }: { playerId: string }) {
     <Card>
       <CardHeader>
         <div className="flex flex-row justify-between gap-4">
-          <CardTitle>Statistics</CardTitle>
+          <div>
+            <CardTitle>Statistics</CardTitle>
+            <CardDescription>
+              Performance metrics and ELO progression
+            </CardDescription>
+          </div>
 
           <Select
             value={statisticsRange}

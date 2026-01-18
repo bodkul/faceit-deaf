@@ -2,7 +2,13 @@
 
 import { useMemo } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import { useRecentMatches } from "@/hooks/useRecentMatches";
 
@@ -15,6 +21,7 @@ function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
     <Card>
       <CardHeader>
         <CardTitle>Recent Matches</CardTitle>
+        <CardDescription>Last 10 played matches</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex rounded-md border">

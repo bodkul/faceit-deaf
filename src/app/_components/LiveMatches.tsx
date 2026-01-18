@@ -5,7 +5,13 @@ import { now } from "lodash-es";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
@@ -25,6 +31,9 @@ export function LiveMatches() {
     <Card className="h-min w-full">
       <CardHeader>
         <CardTitle>Live Matches</CardTitle>
+        <CardDescription>
+          Currently active FACEIT matches in the deaf community
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex rounded-md border">

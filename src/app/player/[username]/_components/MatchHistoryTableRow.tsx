@@ -21,8 +21,8 @@ export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
           Kills: match.kills ?? 0,
           Deaths: match.deaths ?? 0,
           Headshots: match.headshots ?? 0,
-          ADR: match.adr ?? 0,
-          "K/R Ratio": match.kr_ratio ?? 0,
+          ADR: 0,
+          "K/R Ratio": 0,
         },
       ]),
     [match],
@@ -68,9 +68,7 @@ export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
       >
         {stats && stats.kd > 0 ? stats.kd.toFixed(2) : null}
       </TableCell>
-      <TableCell>
-        {stats && stats.adr > 0 ? stats.adr.toFixed(1) : null}
-      </TableCell>
+      <TableCell>{match.adr?.toFixed(1)}</TableCell>
       <TableCell>
         {stats && stats.hsp > 0 ? `${stats.hsp.toFixed(0)} %` : null}
       </TableCell>

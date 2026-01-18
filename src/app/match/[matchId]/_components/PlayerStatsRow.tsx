@@ -1,3 +1,4 @@
+import { isNumber } from "lodash-es";
 import Link from "next/link";
 
 import { SkillLevelIcon } from "@/components/icons";
@@ -14,17 +15,25 @@ export function PlayerStatsRow({
   player: PlayerType;
   totalScore: number;
 }) {
-  const stats = calculateAverageStats([
-    {
-      Rounds: totalScore,
-      Assists: player.assists ?? 0,
-      Kills: player.kills ?? 0,
-      Deaths: player.deaths ?? 0,
-      Headshots: player.headshots ?? 0,
-      ADR: player.adr ?? 0,
-      "K/R Ratio": player.kr_ratio ?? 0,
-    },
-  ]);
+  const stats =
+    isNumber(player.assists) &&
+    isNumber(player.kills) &&
+    isNumber(player.deaths) &&
+    isNumber(player.headshots) &&
+    isNumber(player.adr) &&
+    isNumber(player.kr_ratio)
+      ? calculateAverageStats([
+          {
+            Rounds: totalScore,
+            Assists: player.assists ?? 0,
+            Kills: player.kills ?? 0,
+            Deaths: player.deaths ?? 0,
+            Headshots: player.headshots ?? 0,
+            ADR: player.adr ?? 0,
+            "K/R Ratio": player.kr_ratio ?? 0,
+          },
+        ])
+      : undefined;
 
   const kdString =
     player.kills !== null && player.deaths !== null
@@ -58,7 +67,7 @@ export function PlayerStatsRow({
       >
         {kdDiffString}
       </TableCell>
-      <TableCell>{Number(player.adr).toFixed(1)}</TableCell>
+      <TableCell>{player.adr?.toFixed(1)}</TableCell>
       <TableCell>{stats?.kast.toFixed(1)}</TableCell>
       <TableCell>{stats?.rating.toFixed(2)}</TableCell>
     </TableRow>

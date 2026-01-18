@@ -7,6 +7,11 @@ import { FaceitIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
+const navigation = [
+  { name: "Leaderboard", href: "/leaderboard" },
+  { name: "Maps", href: "/maps" },
+];
+
 export default function MainNav() {
   const pathname = usePathname();
 
@@ -17,26 +22,18 @@ export default function MainNav() {
         <span className="inline-block font-bold">{siteConfig.name}</span>
       </Link>
       <nav className="flex items-center gap-4 text-sm xl:gap-6">
-        <Link
-          href="/leaderboard"
-          className={cn(
-            "transition-colors hover:text-foreground/80",
-            pathname === "/leaderboard"
-              ? "text-foreground"
-              : "text-foreground/80",
-          )}
-        >
-          Leaderboard
-        </Link>
-        <Link
-          href="/maps"
-          className={cn(
-            "transition-colors hover:text-foreground/80",
-            pathname === "/maps" ? "text-foreground" : "text-foreground/80",
-          )}
-        >
-          Maps
-        </Link>
+        {navigation.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              "transition-colors hover:text-foreground/80",
+              pathname === item.href ? "text-foreground" : "text-foreground/80",
+            )}
+          >
+            {item.name}
+          </Link>
+        ))}
       </nav>
     </div>
   );

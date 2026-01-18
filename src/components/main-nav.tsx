@@ -8,6 +8,7 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 const navigation = [
+  { name: "Home", href: "/" },
   { name: "Leaderboard", href: "/leaderboard" },
   { name: "Maps", href: "/maps" },
 ];

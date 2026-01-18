@@ -22,7 +22,7 @@ export function TeamStatsTable({
   totalScore: number;
 }) {
   const sortedPlayers = useMemo(
-    () => orderBy(team.team_players, (p) => p.player_stats?.kills || 0, "desc"),
+    () => orderBy(team.team_players, (player) => player.kills || 0, "desc"),
     [team.team_players],
   );
 

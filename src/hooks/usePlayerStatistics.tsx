@@ -102,14 +102,12 @@ export function usePlayerStatistics(
             match_team_players!inner(
               elo_before,
               elo_after,
-              player_stats_normalized!inner(
-                kills,
-                deaths,
-                assists,
-                headshots,
-                kr_ratio,
-                adr
-              )
+              kills,
+              deaths,
+              assists,
+              headshots,
+              kr_ratio,
+              adr
             )
           )
         `,
@@ -140,18 +138,17 @@ export function usePlayerStatistics(
   const enhancedData = data?.map((match) => {
     const team = match.match_teams[0];
     const player = team.match_team_players[0];
-    const stats = player.player_stats_normalized;
 
     return {
       win: team.team_win,
       eloBefore: player.elo_before,
       eloAfter: player.elo_after,
-      kills: stats.kills,
-      deaths: stats.deaths,
-      assists: stats.assists,
-      headshots: stats.headshots,
-      krRatio: stats.kr_ratio,
-      adr: stats.adr,
+      kills: player.kills,
+      deaths: player.deaths,
+      assists: player.assists,
+      headshots: player.headshots,
+      krRatio: player.kr_ratio,
+      adr: player.adr,
     };
   });
 

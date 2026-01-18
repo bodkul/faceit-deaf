@@ -126,18 +126,6 @@ export async function upsertMatchTeamPlayers(
   }
 }
 
-export async function upsertPlayerStatsNormalized(
-  player: TablesInsert<"player_stats_normalized">,
-) {
-  const { error } = await supabaseClient
-    .from("player_stats_normalized")
-    .upsert(player, { onConflict: onConflictConfig.playerStatsNormalized });
-
-  if (error) {
-    handleSupabaseError("upsert player stats normalized", error);
-  }
-}
-
 export async function getMatchesCount(playerId: string) {
   const { count, error } = await supabaseClient
     .from("match_team_players")

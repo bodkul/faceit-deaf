@@ -14,27 +14,26 @@ export function PlayerStatsRow({
   player: PlayerType;
   totalScore: number;
 }) {
-  const stats = player.player_stats
-    ? calculateAverageStats([
-        {
-          Rounds: totalScore,
-          Assists: player.player_stats.assists ?? 0,
-          Kills: player.player_stats.kills ?? 0,
-          Deaths: player.player_stats.deaths ?? 0,
-          Headshots: player.player_stats.headshots ?? 0,
-          ADR: player.player_stats.adr ?? 0,
-          "K/R Ratio": player.player_stats.kr_ratio ?? 0,
-        },
-      ])
-    : null;
+  const stats = calculateAverageStats([
+    {
+      Rounds: totalScore,
+      Assists: player.assists ?? 0,
+      Kills: player.kills ?? 0,
+      Deaths: player.deaths ?? 0,
+      Headshots: player.headshots ?? 0,
+      ADR: player.adr ?? 0,
+      "K/R Ratio": player.kr_ratio ?? 0,
+    },
+  ]);
 
-  const kills = player.player_stats ? Number(player.player_stats.kills) : null;
-  const deaths = player.player_stats
-    ? Number(player.player_stats.deaths)
-    : null;
   const kdString =
-    kills !== null && deaths !== null ? `${kills} - ${deaths}` : "";
-  const kdDiff = kills !== null && deaths !== null ? kills - deaths : null;
+    player.kills !== null && player.deaths !== null
+      ? `${player.kills} - ${player.deaths}`
+      : "";
+  const kdDiff =
+    player.kills !== null && player.deaths !== null
+      ? player.kills - player.deaths
+      : null;
   const kdDiffString = kdDiff !== null ? formatNumberWithSign(kdDiff) : "";
 
   return (
@@ -59,9 +58,7 @@ export function PlayerStatsRow({
       >
         {kdDiffString}
       </TableCell>
-      <TableCell>
-        {player.player_stats && Number(player.player_stats.adr).toFixed(1)}
-      </TableCell>
+      <TableCell>{Number(player.adr).toFixed(1)}</TableCell>
       <TableCell>{stats?.kast.toFixed(1)}</TableCell>
       <TableCell>{stats?.rating.toFixed(2)}</TableCell>
     </TableRow>

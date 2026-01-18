@@ -24,6 +24,8 @@ export const syncFinishedMatchTask = task({
       team.roster.map((p) => p.id),
     );
 
+    logger.log("Fetching existing players and match data", { matchId, playerIds });
+
     const [existingPlayers, match, matchStats] = await Promise.all([
       getExistingPlayers(playerIds),
       fetchMatch(payload.id),

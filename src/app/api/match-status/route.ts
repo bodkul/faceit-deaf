@@ -1,11 +1,10 @@
-import { tasks } from "@trigger.dev/sdk";
 import { type NextRequest, NextResponse } from "next/server";
 
 import {
   handleMatchStatusCancelled,
   handleMatchStatusReady,
 } from "@/lib/faceit/handlers";
-import type { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
+import { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
 
 const VALID_MATCH = {
   game: "cs2",
@@ -36,10 +35,7 @@ export async function POST(request: NextRequest) {
       break;
 
     case "match_status_finished": {
-      const handle = await tasks.trigger<typeof syncFinishedMatchTask>(
-        "sync-finished-match",
-        payload,
-      );
+      const handle = await syncFinishedMatchTask.trigger(payload);
       console.log("✅ Task triggered successfully:", handle.id);
       return NextResponse.json(handle);
     }

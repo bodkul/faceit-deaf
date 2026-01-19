@@ -7,8 +7,7 @@
     "trigger:dev": "npx trigger.dev@latest dev",
     "build": "next build",
     "start": "next start",
-    "lint": "npx biome lint --write --unsafe",
-    "format": "npx biome format --write",
+    "check": "npx biome check --write --unsafe",
     "update-types": "npx supabase gen types --lang=typescript --project-id %PROJECT_REF% > src/types/database.ts"
   },
   "dependencies": {

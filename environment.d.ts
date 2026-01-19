@@ -8,8 +8,8 @@ declare global {
       FACEIT_CLIENT_ID: string;
       FACEIT_CLIENT_SECRET: string;
 
-      NEXTAUTH_SECRET: string;
-      NEXTAUTH_URL: string;
+      AUTH_SECRET: string;
+      AUTH_URL?: string;
     }
   }
 }

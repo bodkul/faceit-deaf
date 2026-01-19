@@ -1,70 +1,25 @@
-import type { NextAuthOptions } from "next-auth";
-import type { OAuthConfig } from "next-auth/providers/oauth";
+import { SupabaseAdapter } from "@auth/supabase-adapter";
+import NextAuth from "next-auth";
+import FaceIt from "next-auth/providers/faceit";
 
-interface FaceitProfile {
-  guid: string;
-  sub?: string;
-  nickname?: string;
-  name?: string;
-  email?: string;
-  picture?: string;
-}
-
-export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
+export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    {
-      id: "faceit",
-      name: "FACEIT",
-      type: "oauth",
-      clientId: process.env.FACEIT_CLIENT_ID!,
-      clientSecret: process.env.FACEIT_CLIENT_SECRET!,
-      authorization: {
-        url: "https://accounts.faceit.com",
-        params: { scope: "openid profile email" },
-      },
-      token: "https://api.faceit.com/auth/v1/oauth/token",
-      userinfo: "https://api.faceit.com/auth/v1/resources/userinfo",
+    FaceIt({
+      clientId: process.env.FACEIT_CLIENT_ID,
+      clientSecret: process.env.FACEIT_CLIENT_SECRET,
       issuer: "https://api.faceit.com/auth",
-      checks: ["pkce", "state"],
-      idToken: true,
-      profile(profile: FaceitProfile) {
+      profile(profile) {
         return {
-          id: profile.guid ?? profile.sub ?? "",
-          name: profile.nickname ?? profile.name,
+          id: profile.guid,
+          name: profile.nickname,
           email: profile.email,
           image: profile.picture,
         };
       },
-    } as OAuthConfig<FaceitProfile>,
+    }),
   ],
-  pages: {
-    signIn: "/sign-in",
-  },
-  callbacks: {
-    async redirect({ url, baseUrl }) {
-      // После входа редирект на главную
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
-    },
-    async jwt({ token, account, profile }) {
-      if (account && profile) {
-        token.faceitId = (profile.guid ?? profile.sub) as string;
-        token.nickname = profile.nickname as string;
-        token.accessToken = account.access_token;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.faceitId as string;
-        session.user.name = token.nickname as string;
-      }
-      return session;
-    },
-  },
-  session: {
-    strategy: "jwt",
-  },
-};
+  adapter: SupabaseAdapter({
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    secret: process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
+  }),
+});

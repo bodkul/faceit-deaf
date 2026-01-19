@@ -8,6 +8,7 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.FACEIT_CLIENT_ID!,
       clientSecret: process.env.FACEIT_CLIENT_SECRET!,
       checks: ["pkce", "state"],
+      idToken: true,
     }),
   ],
   callbacks: {

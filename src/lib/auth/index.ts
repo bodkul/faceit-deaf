@@ -1,16 +1,42 @@
 import type { NextAuthOptions } from "next-auth";
-import FaceItProvider from "next-auth/providers/faceit";
+import type { OAuthConfig } from "next-auth/providers/oauth";
+
+interface FaceitProfile {
+  guid: string;
+  sub?: string;
+  nickname?: string;
+  name?: string;
+  email?: string;
+  picture?: string;
+}
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
-    FaceItProvider({
+    {
+      id: "faceit",
+      name: "FACEIT",
+      type: "oauth",
       clientId: process.env.FACEIT_CLIENT_ID!,
       clientSecret: process.env.FACEIT_CLIENT_SECRET!,
+      authorization: {
+        url: "https://accounts.faceit.com",
+        params: { scope: "openid profile email" },
+      },
+      token: "https://api.faceit.com/auth/v1/oauth/token",
+      userinfo: "https://api.faceit.com/auth/v1/resources/userinfo",
+      issuer: "https://api.faceit.com/auth",
       checks: ["pkce", "state"],
       idToken: true,
-      wellKnown: "https://api.faceit.com/auth/v1/openid_configuration",
-    }),
+      profile(profile: FaceitProfile) {
+        return {
+          id: profile.guid ?? profile.sub ?? "",
+          name: profile.nickname ?? profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
+    } as OAuthConfig<FaceitProfile>,
   ],
   callbacks: {
     async jwt({ token, account, profile }) {

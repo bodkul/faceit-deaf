@@ -1,4 +1,4 @@
-import { format, getYear, parseISO } from "date-fns";
+import { format, isThisYear } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
@@ -36,12 +36,11 @@ export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
     >
       <TableCell>
         {match.finished_at &&
-          (() => {
-            const date = parseISO(match.finished_at);
-            return getYear(date) === new Date().getFullYear()
-              ? format(date, "d. MMM HH:mm")
-              : format(date, "d. MMM yyyy");
-          })()}
+          (() =>
+            format(
+              match.finished_at,
+              isThisYear(match.finished_at) ? "d. MMM HH:mm" : "d. MMM yyyy",
+            ))()}
       </TableCell>
       <TableCell>
         {match.win === true && (

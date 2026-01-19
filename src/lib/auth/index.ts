@@ -2,10 +2,12 @@ import type { NextAuthOptions } from "next-auth";
 import FaceItProvider from "next-auth/providers/faceit";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     FaceItProvider({
       clientId: process.env.FACEIT_CLIENT_ID!,
       clientSecret: process.env.FACEIT_CLIENT_SECRET!,
+      checks: ["pkce", "state"],
     }),
   ],
   callbacks: {

@@ -7,6 +7,7 @@ import {
   IconChevronsRight,
   IconTrophy,
 } from "@tabler/icons-react";
+import Link from "next/link";
 
 import { PlayerRow } from "@/components/leaderboard/player-row";
 import { renderLoadingRows } from "@/components/leaderboard/render-loading-rows";
@@ -63,7 +64,7 @@ function EloRanking() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Ranking</TableHead>
+              <TableHead>#</TableHead>
               <TableHead>Player</TableHead>
               <TableHead>Skill level</TableHead>
               <TableHead>ELO</TableHead>
@@ -150,9 +151,9 @@ function EventRanking() {
         <EmptyTitle>Coming soon</EmptyTitle>
         <EmptyDescription>
           Event rankings will be available here. Check out individual{" "}
-          <a href="/events" className="text-orange-500 hover:underline">
+          <Link href="/events" className="text-orange-500 hover:underline">
             events
-          </a>{" "}
+          </Link>{" "}
           for tournament results.
         </EmptyDescription>
       </EmptyHeader>

@@ -38,7 +38,16 @@ export const authOptions: NextAuthOptions = {
       },
     } as OAuthConfig<FaceitProfile>,
   ],
+  pages: {
+    signIn: "/sign-in",
+  },
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      // После входа редирект на главную
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
     async jwt({ token, account, profile }) {
       if (account && profile) {
         token.faceitId = (profile.guid ?? profile.sub) as string;

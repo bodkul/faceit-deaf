@@ -9,7 +9,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.FACEIT_CLIENT_SECRET!,
       checks: ["pkce", "state"],
       idToken: true,
-      issuer: "https://api.faceit.com/auth",
+      wellKnown: "https://api.faceit.com/auth/v1/openid_configuration",
     }),
   ],
   callbacks: {

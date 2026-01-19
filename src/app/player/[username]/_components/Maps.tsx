@@ -1,5 +1,6 @@
 "use client";
 
+import { IconMap } from "@tabler/icons-react";
 import { countBy, map, orderBy } from "lodash-es";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
@@ -16,6 +17,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { usePlayerMaps } from "@/hooks/usePlayerMaps";
 
 const chartConfig = {
@@ -31,6 +39,32 @@ export function Maps({ playerId }: { playerId: string }) {
   const mapsCount = countBy(data, "map");
   const mapsArray = map(mapsCount, (count, map) => ({ map, count }));
   const maps = orderBy(mapsArray, ["count", "map"], ["desc", "asc"]);
+
+  if (!maps.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Maps Statistics</CardTitle>
+          <CardDescription>
+            Distribution of maps played by this player
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconMap />
+              </EmptyMedia>
+              <EmptyTitle>No map data</EmptyTitle>
+              <EmptyDescription>
+                Map statistics will appear here once matches are played.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

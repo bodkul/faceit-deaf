@@ -1,5 +1,6 @@
 "use client";
 
+import { IconHistory } from "@tabler/icons-react";
 import { useMemo } from "react";
 
 import {
@@ -9,6 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import { useRecentMatches } from "@/hooks/useRecentMatches";
 
@@ -55,6 +63,30 @@ export default function RecentMatches({ playerId }: { playerId: string }) {
   }, [data]);
 
   if (isLoading) return <RecentMatchesLoading />;
+
+  if (!rows) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Matches</CardTitle>
+          <CardDescription>Last 10 played matches</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconHistory />
+              </EmptyMedia>
+              <EmptyTitle>No matches yet</EmptyTitle>
+              <EmptyDescription>
+                Recent matches will appear here once played.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return <RecentMatchesLayout>{rows}</RecentMatchesLayout>;
 }

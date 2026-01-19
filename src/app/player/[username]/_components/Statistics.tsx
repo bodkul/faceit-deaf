@@ -1,5 +1,6 @@
 "use client";
 
+import { IconChartBar } from "@tabler/icons-react";
 import { add, maxBy, meanBy, minBy, subtract, sumBy, take } from "lodash-es";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
@@ -17,6 +18,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   Select,
   SelectContent,
@@ -151,6 +159,32 @@ export default function Statistics({ playerId }: { playerId: string }) {
   }, [data]);
 
   if (isLoading) return <StatisticsLoading />;
+
+  if (!data?.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Statistics</CardTitle>
+          <CardDescription>
+            Performance metrics and ELO progression
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconChartBar />
+              </EmptyMedia>
+              <EmptyTitle>No statistics yet</EmptyTitle>
+              <EmptyDescription>
+                Statistics will appear here once matches are played.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

@@ -1,5 +1,6 @@
 "use client";
 
+import { IconDeviceGamepad2 } from "@tabler/icons-react";
 import { differenceInMinutes } from "date-fns";
 import { now } from "lodash-es";
 import { useRouter } from "next/navigation";
@@ -12,6 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
@@ -85,8 +93,19 @@ export function LiveMatches() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    No matches.
+                  <TableCell colSpan={4} className="p-0">
+                    <Empty>
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <IconDeviceGamepad2 />
+                        </EmptyMedia>
+                        <EmptyTitle>No live matches</EmptyTitle>
+                        <EmptyDescription>
+                          There are no active matches right now. Check back
+                          later!
+                        </EmptyDescription>
+                      </EmptyHeader>
+                    </Empty>
                   </TableCell>
                 </TableRow>
               )}

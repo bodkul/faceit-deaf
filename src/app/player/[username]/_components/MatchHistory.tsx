@@ -5,6 +5,7 @@ import {
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
+  IconHistory,
 } from "@tabler/icons-react";
 import { useMemo } from "react";
 
@@ -17,6 +18,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   Pagination,
   PaginationContent,
@@ -49,6 +57,32 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
       <MatchHistoryTableRow key={match.id} match={match} />
     ));
   }, [isLoading, matches]);
+
+  if (!isLoading && !rows) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Match History</CardTitle>
+          <CardDescription>
+            Complete list of all played matches with detailed statistics
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconHistory />
+              </EmptyMedia>
+              <EmptyTitle>No matches yet</EmptyTitle>
+              <EmptyDescription>
+                Match history will appear here once played.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

@@ -15,11 +15,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function UserButton() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  // TODO: Enable after testing on production
-  if (!session?.user) {
+  if (status === "loading") {
     return null;
+  }
+
+  if (!session?.user) {
+    return (
+      <Button
+        onClick={() => signIn("faceit")}
+        className="bg-orange-500 text-foreground hover:bg-orange-600"
+      >
+        <FaceitIcon className="size-4" />
+        Login with Faceit
+      </Button>
+    );
   }
 
   const { user } = session;

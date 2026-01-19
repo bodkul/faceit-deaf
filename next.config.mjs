@@ -59,7 +59,7 @@ const nextConfig = {
         pathname: "/images/**",
       },
       new URL("https://assets.faceit-cdn.net/**"),
-      new URL("https://flagcdn.com/w20/**.png"),
+      new URL("https://flagcdn.com/w*/**.png"),
     ],
   },
   logging: {

@@ -72,6 +72,7 @@ export function PlayerSearch() {
               setQuery("");
               inputRef.current?.focus();
             }}
+            disabled={!query.length}
           >
             <IconX />
           </InputGroupButton>

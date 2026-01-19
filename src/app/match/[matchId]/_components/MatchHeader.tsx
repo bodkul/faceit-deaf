@@ -3,10 +3,9 @@ import Image from "next/image";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { getCountryCode, getFlagUrl } from "@/lib/country";
 import { cn } from "@/lib/utils";
 import type { MatchType } from "@/types/match";
-
-import { getCountryCode, getFlagUrl } from "./country";
 
 export function MatchHeader({ match }: { match: MatchType }) {
   return (

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { SkillLevelIcon } from "@/components/icons";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { getCountryFlagUrl } from "@/lib/country";
 import type { PlayerWithPagination } from "@/types/player";
 
 import { EloDelta } from "./elo-delta";
@@ -30,7 +31,7 @@ export function PlayerRow({
           {player.country ? (
             <Image
               className="h-2.5 w-3.75 rounded-xs"
-              src={`https://flagcdn.com/w20/${player.country.toLowerCase()}.png`}
+              src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
               width={15}
               height={10}
               alt={`${player.country} flag`}

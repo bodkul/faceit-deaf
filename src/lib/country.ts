@@ -21,3 +21,12 @@ export function getFlagUrl(country: string, size: "sm" | "lg"): string {
 
   return `https://distribution.faceit-cdn.net/images/flags/v1/${country.toLowerCase()}.jpg?width=${sizeMap[size].width}&height=${sizeMap[size].height}`;
 }
+
+export type FlagWidth = 20 | 40 | 80 | 160 | 320 | 640 | 1280 | 2560;
+
+export function getCountryFlagUrl(
+  countryCode: string,
+  width: FlagWidth,
+): string {
+  return `https://flagcdn.com/w${width}/${countryCode.toLowerCase()}.png`;
+}

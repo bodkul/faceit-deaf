@@ -4,9 +4,9 @@ import pThrottle from "p-throttle";
 const throttle = pThrottle({ limit: 10, interval: 1000 });
 
 const faceitClient = ky.create({
-  prefixUrl: process.env.NEXT_PUBLIC_API_URL,
+  prefixUrl: "https://open.faceit.com/data/v4",
   headers: {
-    Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+    Authorization: `Bearer ${process.env.NEXT_PUBLIC_FACEIT_API_TOKEN}`,
   },
   hooks: {
     beforeRetry: [

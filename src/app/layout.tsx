@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 
 import { Header } from "@/components/header";
 import { siteConfig } from "@/config/site";
+import { AuthProvider } from "@/providers/auth";
 import { ReactQueryProvider } from "@/providers/react-query";
 
 export const metadata: Metadata = {
@@ -27,12 +28,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
-          <ReactQueryProvider>
-            <Header />
-            <main className="mx-auto max-w-6xl flex-1 space-y-4 p-4">
-              {children}
-            </main>
-          </ReactQueryProvider>
+          <AuthProvider>
+            <ReactQueryProvider>
+              <Header />
+              <main className="mx-auto max-w-6xl flex-1 space-y-4 p-4">
+                {children}
+              </main>
+            </ReactQueryProvider>
+          </AuthProvider>
         </ThemeProvider>
 
         <SpeedInsights />

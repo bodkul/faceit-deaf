@@ -1,6 +1,6 @@
 "use client";
 
-import { format, formatDistanceStrict } from "date-fns";
+import { IconClock, IconExternalLink, IconMapPin } from "@tabler/icons-react";
 import { isNumber, orderBy, sumBy } from "lodash-es";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,9 @@ import { use, useMemo } from "react";
 
 import { SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -27,89 +29,142 @@ import type { MatchType, PlayerType, TeamType } from "@/types/match";
 
 import Loading from "./loading";
 
+function formatDate(date: string): string {
+  const d = new Date(date);
+  const hours = d.getHours().toString().padStart(2, "0");
+  const minutes = d.getMinutes().toString().padStart(2, "0");
+  const day = d.getDate().toString().padStart(2, "0");
+  const month = (d.getMonth() + 1).toString().padStart(2, "0");
+  const year = d.getFullYear();
+  return `${hours}:${minutes} ${day}/${month}/${year}`;
+}
+
+function formatDuration(start: string, end: string): string {
+  const ms = new Date(end).getTime() - new Date(start).getTime();
+  const minutes = Math.floor(ms / 60000);
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+}
+
 function MatchHeader({ match }: { match: MatchType }) {
   return (
-    <Card className="gap-0 py-0">
+    <Card className="gap-0 overflow-hidden py-0">
+      {/* Map Background */}
       {match.map_pick && (
-        <Image
-          src={`/img/maps/${match.map_pick}.webp`}
-          alt="Map"
-          className="h-30 w-303 rounded-t-xl object-cover"
-          width={1212}
-          height={120}
-        />
+        <div className="relative h-48 w-full overflow-hidden">
+          <Image
+            src={`/img/maps/${match.map_pick}.webp`}
+            alt="Map"
+            fill
+            className="object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-linear-to-b from-transparent via-background/50 to-background" />
+
+          {/* Map Name Badge */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2">
+            <Badge
+              variant="secondary"
+              className="gap-2 px-4 py-2 font-semibold text-lg capitalize"
+            >
+              <IconMapPin data-icon="inline-start" />
+              {match.map_pick.replace("de_", "")}
+            </Badge>
+          </div>
+
+          {/* FACEIT Button */}
+          <div className="absolute top-4 right-4">
+            <Button variant="secondary" size="sm" asChild>
+              <Link
+                href={`https://www.faceit.com/en/cs2/room/1-${match.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on FACEIT
+                <IconExternalLink data-icon="inline-end" />
+              </Link>
+            </Button>
+          </div>
+        </div>
       )}
 
-      <div className="flex justify-between p-6">
-        <div className="flex w-1/3 items-center justify-center space-x-5 overflow-hidden">
-          <Avatar className="size-16">
-            <AvatarImage
-              src={match.teams[0].avatar ?? undefined}
-              alt="First team's avatar"
-            />
-            <AvatarFallback />
-          </Avatar>
-          <div className="flex flex-col items-start overflow-hidden">
-            <span className="w-full overflow-hidden text-ellipsis font-bold text-3xl">
-              {match.teams[0].name}
-            </span>
-            <span
-              className={cn("font-bold text-3xl", {
-                "text-green-500": match.teams[0].team_win === true,
-                "text-red-500": match.teams[0].team_win === false,
-              })}
-            >
-              {match.teams[0].final_score}
-            </span>
-          </div>
-        </div>
-        <div className="flex w-1/3 flex-col items-center justify-center space-y-4 text-center">
-          {match.started_at && (
-            <span className="text-2xl">
-              {format(match.started_at, "HH:mm dd/MM/yyyy")}
-            </span>
-          )}
-          {match.location_pick && (
-            <div className="flex items-center space-x-2 overflow-hidden rounded-4">
-              <Image
-                src={getFlagUrl(getCountryCode(match.location_pick), "sm")}
-                alt="Server location country"
-                className="rounded"
-                width={60}
-                height={30}
-              />
-              <span>{match.location_pick}</span>
+      <CardContent className="p-6">
+        <div className="grid grid-cols-3 items-center gap-6">
+          {/* Team 1 */}
+          <div className="flex items-center gap-4">
+            <Avatar className="size-16 ring-2 ring-border">
+              <AvatarImage src={match.teams[0].avatar ?? undefined} />
+              <AvatarFallback>{match.teams[0].name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate font-bold text-xl">
+                {match.teams[0].name}
+              </h3>
+              <span
+                className={cn("font-bold text-3xl", {
+                  "text-green-500": match.teams[0].team_win === true,
+                  "text-red-500": match.teams[0].team_win === false,
+                })}
+              >
+                {match.teams[0].final_score}
+              </span>
             </div>
-          )}
-          <span className="text-xl">
-            {match.finished_at && match.started_at
-              ? formatDistanceStrict(match.finished_at, match.started_at)
-              : null}
-          </span>
-        </div>
-        <div className="flex w-1/3 items-center justify-center space-x-5 overflow-hidden">
-          <div className="flex flex-col items-end overflow-hidden">
-            <span className="w-full overflow-hidden text-ellipsis font-bold text-3xl">
-              {match.teams[1].name}
-            </span>
-            <span
-              className={cn("font-bold text-3xl", {
-                "text-green-500": match.teams[1].team_win === true,
-                "text-red-500": match.teams[1].team_win === false,
-              })}
-            >
-              {match.teams[1].final_score}
-            </span>
           </div>
-          <Avatar className="size-16">
-            <AvatarImage
-              src={match.teams[1].avatar ?? undefined}
-              alt="Second team's avatar"
-            />
-            <AvatarFallback />
-          </Avatar>
+
+          {/* Match Info */}
+          <div className="flex flex-col items-center gap-3 text-center">
+            {match.started_at && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <IconClock className="size-4" />
+                <span className="text-sm">{formatDate(match.started_at)}</span>
+              </div>
+            )}
+
+            {match.location_pick && (
+              <div className="flex items-center gap-2">
+                <Image
+                  src={getFlagUrl(getCountryCode(match.location_pick), "sm")}
+                  alt="Server location"
+                  width={24}
+                  height={16}
+                  className="rounded"
+                />
+                <span className="text-muted-foreground text-sm">
+                  {match.location_pick}
+                </span>
+              </div>
+            )}
+
+            {match.finished_at && match.started_at && (
+              <Badge variant="outline" className="gap-1">
+                <IconClock className="size-3" />
+                {formatDuration(match.started_at, match.finished_at)}
+              </Badge>
+            )}
+          </div>
+
+          {/* Team 2 */}
+          <div className="flex items-center justify-end gap-4">
+            <div className="min-w-0 flex-1 text-right">
+              <h3 className="truncate font-bold text-xl">
+                {match.teams[1].name}
+              </h3>
+              <span
+                className={cn("font-bold text-3xl", {
+                  "text-green-500": match.teams[1].team_win === true,
+                  "text-red-500": match.teams[1].team_win === false,
+                })}
+              >
+                {match.teams[1].final_score}
+              </span>
+            </div>
+            <Avatar className="size-16 ring-2 ring-border">
+              <AvatarImage src={match.teams[1].avatar ?? undefined} />
+              <AvatarFallback>{match.teams[1].name.charAt(0)}</AvatarFallback>
+            </Avatar>
+          </div>
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
 }
@@ -246,13 +301,12 @@ export default function MatchPage(props: PageProps<"/match/[matchId]">) {
   return (
     <>
       <MatchHeader match={match} />
-      <div className="flex space-x-12">
-        <div className="flex w-full flex-col space-y-6">
-          <h5 className="font-bold text-3xl">Stats</h5>
-          {match.teams.map((team) => (
-            <TeamStatsTable key={team.id} team={team} totalScore={totalScore} />
-          ))}
-        </div>
+
+      <div className="flex w-full flex-col space-y-6">
+        <h2 className="font-bold text-2xl">Match Statistics</h2>
+        {match.teams.map((team) => (
+          <TeamStatsTable key={team.id} team={team} totalScore={totalScore} />
+        ))}
       </div>
     </>
   );

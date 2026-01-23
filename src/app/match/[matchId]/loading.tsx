@@ -1,6 +1,6 @@
 import { range } from "lodash-es";
 
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -11,43 +11,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+const AvatarSkeleton = () => (
+  <Skeleton className="size-16 rounded-full ring-2 ring-border" />
+);
+
 export default function Loading() {
   return (
     <>
-      <Card className="gap-0 p-0">
-        <Skeleton className="h-30 w-auto rounded-none rounded-t-xl" />
-        <div className="flex justify-between p-6">
-          <div className="flex w-1/3 items-center justify-center space-x-5">
-            <Skeleton className="size-16 rounded-full" />
-            <div className="flex flex-col items-start gap-y-2">
-              <Skeleton className="h-8 w-52" />
-              <Skeleton className="size-8" />
-            </div>
-          </div>
-          <div className="flex w-1/3 flex-col items-center justify-center space-y-4 text-center">
-            <span className="text-2xl">
-              <Skeleton className="h-8 w-52" />
-            </span>
-            <div className="flex items-center space-x-2 overflow-hidden rounded-4">
-              <Skeleton className="h-8 w-16 rounded" />
-              <Skeleton className="h-6 w-18" />
-            </div>
-            <span className="text-xl">
-              <Skeleton className="h-6 w-28" />
-            </span>
-          </div>
-          <div className="flex w-1/3 items-center justify-center space-x-5 overflow-hidden">
-            <div className="flex flex-col items-end gap-y-2">
-              <Skeleton className="h-8 w-52" />
-              <Skeleton className="size-8" />
-            </div>
-            <Skeleton className="size-16 rounded-full" />
-          </div>
-        </div>
+      <Card className="gap-0 overflow-hidden py-0">
+        <Skeleton className="h-48 w-full rounded-none rounded-t-xl" />
+
+        <CardContent className="flex justify-between p-6">
+          <AvatarSkeleton />
+          <AvatarSkeleton />
+        </CardContent>
       </Card>
       <div className="flex space-x-12">
         <div className="flex w-full flex-col space-y-6">
-          <h5 className="font-bold text-3xl">Stats</h5>
+          <h5 className="font-bold text-3xl">Match Statistics</h5>
           {range(2).map((index) => (
             <Card key={index} className="gap-0 p-0">
               <Table>

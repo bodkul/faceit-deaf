@@ -1,16 +1,9 @@
 "use client";
 
-import { IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { FaceitIcon } from "@/components/icons";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 

@@ -586,6 +586,56 @@ export type Database = {
         };
         Relationships: [];
       };
+      team_players: {
+        Row: {
+          created_at: string;
+          id: string;
+          player_id: string;
+          team_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          player_id: string;
+          team_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          player_id?: string;
+          team_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "teams_players_player_id_fkey";
+            columns: ["player_id"];
+            isOneToOne: false;
+            referencedRelation: "leaderboard_players";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "teams_players_player_id_fkey";
+            columns: ["player_id"];
+            isOneToOne: false;
+            referencedRelation: "player_card_data";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "teams_players_player_id_fkey";
+            columns: ["player_id"];
+            isOneToOne: false;
+            referencedRelation: "players";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "teams_players_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       users: {
         Row: {
           email: string | null;

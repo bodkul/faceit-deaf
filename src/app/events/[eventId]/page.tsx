@@ -60,7 +60,7 @@ function EventTeamCard({
     <Link href={`/teams/${team.id}`}>
       <Card className="transition-colors hover:bg-muted/50">
         <CardContent className="flex items-center gap-4 p-4">
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-muted">
+          <div className="relative size-12 shrink-0 overflow-hidden rounded-md bg-muted">
             {team.avatar ? (
               <Image
                 src={team.avatar}
@@ -69,7 +69,7 @@ function EventTeamCard({
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center font-bold text-muted-foreground text-xl">
+              <div className="flex size-full items-center justify-center font-bold text-muted-foreground text-xl">
                 {team.name.charAt(0).toUpperCase()}
               </div>
             )}
@@ -126,7 +126,7 @@ export default function EventPage({
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-start">
-            <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-lg">
+            <div className="relative size-32 shrink-0 overflow-hidden rounded-lg">
               <Image
                 src={event.avatar}
                 alt={event.name}

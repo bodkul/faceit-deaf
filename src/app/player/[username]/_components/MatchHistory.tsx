@@ -112,7 +112,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
               <PaginationItem>
                 <Button
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  size="icon-sm"
                   onClick={() => firstPage?.()}
                   disabled={firstPage === null}
                 >
@@ -123,7 +123,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
               <PaginationItem>
                 <Button
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  size="icon-sm"
                   onClick={() => previousPage?.()}
                   disabled={previousPage === null}
                 >
@@ -134,7 +134,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
               <PaginationItem>
                 <Button
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  size="icon-sm"
                   onClick={() => nextPage?.()}
                   disabled={nextPage === null}
                 >
@@ -145,7 +145,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
               <PaginationItem>
                 <Button
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  size="icon-sm"
                   onClick={() => lastPage?.()}
                   disabled={lastPage === null}
                 >

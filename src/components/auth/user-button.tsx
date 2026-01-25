@@ -25,7 +25,7 @@ export function UserButton() {
     return (
       <Button
         onClick={() => signIn("faceit")}
-        className="bg-orange-500 text-foreground hover:bg-orange-600"
+        className="bg-primary text-foreground hover:bg-primary/90"
       >
         <FaceitIcon className="size-4" />
         Login with Faceit

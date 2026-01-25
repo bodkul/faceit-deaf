@@ -36,7 +36,7 @@ function TeamCard({
     <Link href={`/teams/${team.id}`}>
       <Card className="transition-colors hover:bg-muted/50">
         <CardContent className="flex items-center gap-4 p-4">
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-muted">
+          <div className="relative size-12 shrink-0 overflow-hidden rounded-md bg-muted">
             {team.avatar ? (
               <Image
                 src={team.avatar}
@@ -45,7 +45,7 @@ function TeamCard({
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center font-bold text-muted-foreground text-xl">
+              <div className="flex size-full items-center justify-center font-bold text-muted-foreground text-xl">
                 {team.name.charAt(0).toUpperCase()}
               </div>
             )}

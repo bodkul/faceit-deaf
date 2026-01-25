@@ -74,7 +74,7 @@ function MapChart({
           hide
         />
         <XAxis dataKey="count" type="number" hide />
-        <Bar dataKey="count" className="fill-orange-500" radius={4}>
+        <Bar dataKey="count" className="fill-primary" radius={4}>
           <LabelList
             dataKey="map"
             position="insideLeft"

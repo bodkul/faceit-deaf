@@ -91,7 +91,7 @@ function EloRanking() {
               <PaginationItem>
                 <Button
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  size="icon-sm"
                   onClick={() => firstPage?.()}
                   disabled={!canPreviousPage}
                 >
@@ -102,7 +102,7 @@ function EloRanking() {
               <PaginationItem>
                 <Button
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  size="icon-sm"
                   onClick={() => previousPage?.()}
                   disabled={!canPreviousPage}
                 >
@@ -113,7 +113,7 @@ function EloRanking() {
               <PaginationItem>
                 <Button
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  size="icon-sm"
                   onClick={() => nextPage?.()}
                   disabled={!canNextPage}
                 >
@@ -124,7 +124,7 @@ function EloRanking() {
               <PaginationItem>
                 <Button
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  size="icon-sm"
                   onClick={() => lastPage?.()}
                   disabled={!canNextPage}
                 >
@@ -151,7 +151,7 @@ function EventRanking() {
         <EmptyTitle>Coming soon</EmptyTitle>
         <EmptyDescription>
           Event rankings will be available here. Check out individual{" "}
-          <Link href="/events" className="text-orange-500 hover:underline">
+          <Link href="/events" className="text-primary hover:underline">
             events
           </Link>{" "}
           for tournament results.

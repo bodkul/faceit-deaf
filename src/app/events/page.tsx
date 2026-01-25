@@ -46,7 +46,7 @@ function EventCard({
     <Link href={`/events/${event.id}`}>
       <Card className="transition-colors hover:bg-muted/50">
         <CardContent className="flex items-center gap-4 p-4">
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
+          <div className="relative size-16 shrink-0 overflow-hidden rounded-md">
             <Image
               src={event.avatar}
               alt={event.name}

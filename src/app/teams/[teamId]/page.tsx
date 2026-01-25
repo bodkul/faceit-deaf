@@ -47,7 +47,7 @@ export default function TeamPage({
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
-            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
+            <div className="relative size-24 shrink-0 overflow-hidden rounded-lg bg-muted">
               {team.avatar ? (
                 <Image
                   src={team.avatar}
@@ -56,7 +56,7 @@ export default function TeamPage({
                   className="object-cover"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center font-bold text-3xl text-muted-foreground">
+                <div className="flex size-full items-center justify-center font-bold text-3xl text-muted-foreground">
                   {team.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -97,11 +97,9 @@ export default function TeamPage({
                 <div className="space-y-3">
                   <Alert
                     variant="default"
-                    className="border-orange-500/50 bg-orange-500/10"
+                    className="border-primary/50 bg-primary/10"
                   >
-                    <AlertTitle className="text-orange-500">
-                      Demo Mode
-                    </AlertTitle>
+                    <AlertTitle className="text-primary">Demo Mode</AlertTitle>
                     <AlertDescription className="text-orange-600/90">
                       Player statistics are currently displayed from ELO
                       matches. In the future, these stats will reflect
@@ -115,7 +113,7 @@ export default function TeamPage({
                       className="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-center"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-muted">
+                        <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-muted">
                           {player.avatar ? (
                             <Image
                               src={player.avatar}
@@ -124,7 +122,7 @@ export default function TeamPage({
                               className="object-cover"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center font-semibold text-muted-foreground">
+                            <div className="flex size-full items-center justify-center font-semibold text-muted-foreground">
                               {player.nickname.charAt(0).toUpperCase()}
                             </div>
                           )}

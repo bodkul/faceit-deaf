@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -46,19 +47,19 @@ export function UserButton() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <div className="flex items-center gap-2 p-2">
-          <Avatar className="size-8">
+        <DropdownMenuLabel className="flex items-center gap-2">
+          <Avatar>
             <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
             <AvatarFallback>{user.name?.charAt(0) ?? "U"}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col space-y-0.5">
-            <p className="font-medium text-sm">{user.name}</p>
-            <p className="text-muted-foreground text-xs">{user.email}</p>
+          <div className="flex flex-1 flex-col">
+            <span className="text-popover-foreground">{user.name}</span>
+            <span className="text-muted-foreground text-xs">{user.email}</span>
           </div>
-        </div>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={`/player/${user.name}`}>My Profile</Link>
+          <Link href={`/player/${user.name}`}>My Statistics</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>Sign out</DropdownMenuItem>

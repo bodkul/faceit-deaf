@@ -750,6 +750,8 @@ export type Database = {
           id: string | null;
           kills: number | null;
           kr_ratio: number | null;
+          kd_ratio: number | null;
+          headshots_percent: number | null;
           map: string | null;
           player_id: string | null;
           round_score: string | null;

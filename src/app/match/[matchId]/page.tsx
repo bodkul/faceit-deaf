@@ -1,7 +1,8 @@
 "use client";
 
 import { IconClock, IconExternalLink, IconMapPin } from "@tabler/icons-react";
-import { isNumber, orderBy, sumBy } from "lodash-es";
+import { format, intervalToDuration } from "date-fns";
+import { gt, isNil, isNumber, lt, orderBy, subtract, sumBy } from "lodash-es";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -29,22 +30,49 @@ import type { MatchType, PlayerType, TeamType } from "@/types/match";
 
 import Loading from "./loading";
 
-function formatDate(date: string): string {
-  const d = new Date(date);
-  const hours = d.getHours().toString().padStart(2, "0");
-  const minutes = d.getMinutes().toString().padStart(2, "0");
-  const day = d.getDate().toString().padStart(2, "0");
-  const month = (d.getMonth() + 1).toString().padStart(2, "0");
-  const year = d.getFullYear();
-  return `${hours}:${minutes} ${day}/${month}/${year}`;
+const formatDuration = (start: string, end: string): string => {
+  const { hours = 0, minutes = 0 } = intervalToDuration({ start, end });
+
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+};
+
+function TeamAvatar({ team }: { team: TeamType }) {
+  return (
+    <Avatar className="size-16 ring-2 ring-border">
+      <AvatarImage src={team.avatar ?? undefined} />
+      <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
+    </Avatar>
+  );
 }
 
-function formatDuration(start: string, end: string): string {
-  const ms = new Date(end).getTime() - new Date(start).getTime();
-  const minutes = Math.floor(ms / 60000);
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+function TeamHeader({
+  team,
+  align = "left",
+}: {
+  team: TeamType;
+  align?: "left" | "right";
+}) {
+  return (
+    <div
+      className={cn("flex items-center gap-4", {
+        "justify-end text-right": align === "right",
+      })}
+    >
+      {align === "left" && <TeamAvatar team={team} />}
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate font-bold text-xl">{team.name}</h3>
+        <span
+          className={cn("font-bold text-3xl", {
+            "text-green-500": team.team_win === true,
+            "text-red-500": team.team_win === false,
+          })}
+        >
+          {team.final_score}
+        </span>
+      </div>
+      {align === "right" && <TeamAvatar team={team} />}
+    </div>
+  );
 }
 
 function MatchHeader({ match }: { match: MatchType }) {
@@ -91,32 +119,16 @@ function MatchHeader({ match }: { match: MatchType }) {
       <CardContent className="p-6">
         <div className="grid grid-cols-3 items-center gap-6">
           {/* Team 1 */}
-          <div className="flex items-center gap-4">
-            <Avatar className="size-16 ring-2 ring-border">
-              <AvatarImage src={match.teams[0].avatar ?? undefined} />
-              <AvatarFallback>{match.teams[0].name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <h3 className="truncate font-bold text-xl">
-                {match.teams[0].name}
-              </h3>
-              <span
-                className={cn("font-bold text-3xl", {
-                  "text-green-500": match.teams[0].team_win === true,
-                  "text-red-500": match.teams[0].team_win === false,
-                })}
-              >
-                {match.teams[0].final_score}
-              </span>
-            </div>
-          </div>
+          <TeamHeader team={match.teams[0]} align="left" />
 
           {/* Match Info */}
           <div className="flex flex-col items-center gap-3 text-center">
             {match.started_at && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <IconClock className="size-4" />
-                <span className="text-sm">{formatDate(match.started_at)}</span>
+              <span className="text-sm">
+                {format(match.started_at, "HH:mm dd/MM/yyyy")}
+              </span>
               </div>
             )}
 
@@ -144,25 +156,7 @@ function MatchHeader({ match }: { match: MatchType }) {
           </div>
 
           {/* Team 2 */}
-          <div className="flex items-center justify-end gap-4">
-            <div className="min-w-0 flex-1 text-right">
-              <h3 className="truncate font-bold text-xl">
-                {match.teams[1].name}
-              </h3>
-              <span
-                className={cn("font-bold text-3xl", {
-                  "text-green-500": match.teams[1].team_win === true,
-                  "text-red-500": match.teams[1].team_win === false,
-                })}
-              >
-                {match.teams[1].final_score}
-              </span>
-            </div>
-            <Avatar className="size-16 ring-2 ring-border">
-              <AvatarImage src={match.teams[1].avatar ?? undefined} />
-              <AvatarFallback>{match.teams[1].name.charAt(0)}</AvatarFallback>
-            </Avatar>
-          </div>
+          <TeamHeader team={match.teams[1]} align="right" />
         </div>
       </CardContent>
     </Card>
@@ -177,7 +171,7 @@ function TeamStatsTable({
   totalScore: number;
 }) {
   const sortedPlayers = useMemo(
-    () => orderBy(team.team_players, (player) => player.kills || 0, "desc"),
+    () => orderBy(team.team_players, ["kills"], ["desc"]),
     [team.team_players],
   );
 
@@ -223,33 +217,26 @@ function PlayerStatsRow({
 }) {
   const stats =
     isNumber(player.assists) &&
-    isNumber(player.kills) &&
     isNumber(player.deaths) &&
-    isNumber(player.headshots) &&
     isNumber(player.adr) &&
     isNumber(player.kr_ratio)
-      ? calculateAverageStats([
-          {
-            Rounds: totalScore,
-            Assists: player.assists ?? 0,
-            Kills: player.kills ?? 0,
-            Deaths: player.deaths ?? 0,
-            Headshots: player.headshots ?? 0,
-            ADR: player.adr ?? 0,
-            "K/R Ratio": player.kr_ratio ?? 0,
-          },
-        ])
+      ? calculateAverageStats({
+          rounds: totalScore,
+          assists: player.assists,
+          deaths: player.deaths,
+          adr: player.adr,
+          kpr: player.kr_ratio,
+        })
       : undefined;
 
   const kdString =
-    player.kills !== null && player.deaths !== null
+    !isNil(player.kills) && !isNil(player.deaths)
       ? `${player.kills} - ${player.deaths}`
       : "";
   const kdDiff =
-    player.kills !== null && player.deaths !== null
-      ? player.kills - player.deaths
+    !isNil(player.kills) && !isNil(player.deaths)
+      ? subtract(player.kills, player.deaths)
       : null;
-  const kdDiffString = kdDiff !== null ? formatNumberWithSign(kdDiff) : "";
 
   return (
     <TableRow>
@@ -267,11 +254,11 @@ function PlayerStatsRow({
       <TableCell>{kdString}</TableCell>
       <TableCell
         className={cn({
-          "text-green-500": kdDiff !== null && kdDiff > 0,
-          "text-red-500": kdDiff !== null && kdDiff < 0,
+          "text-green-500": gt(kdDiff, 0),
+          "text-red-500": lt(kdDiff, 0),
         })}
       >
-        {kdDiffString}
+        {isNumber(kdDiff) && formatNumberWithSign(kdDiff)}
       </TableCell>
       <TableCell>{player.adr?.toFixed(1)}</TableCell>
       <TableCell>{stats?.kast.toFixed(1)}</TableCell>

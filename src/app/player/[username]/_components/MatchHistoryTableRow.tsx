@@ -1,32 +1,15 @@
 import { format, isThisYear } from "date-fns";
+import { gt, inRange, isNil, isNumber, lt } from "lodash-es";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import type { RecentMatchType } from "@/types/match";
 
 export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
   const router = useRouter();
-
-  const stats = useMemo(
-    () =>
-      calculateAverageStats([
-        {
-          Rounds: 0,
-          Assists: 0,
-          Kills: match.kills ?? 0,
-          Deaths: match.deaths ?? 0,
-          Headshots: match.headshots ?? 0,
-          ADR: 0,
-          "K/R Ratio": 0,
-        },
-      ]),
-    [match],
-  );
 
   return (
     <TableRow
@@ -56,20 +39,25 @@ export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
       </TableCell>
       <TableCell>{match.round_score}</TableCell>
       <TableCell>
-        {match?.kills && match?.deaths && `${match.kills} - ${match.deaths}`}
+        {!isNil(match.kills) && !isNil(match.deaths)
+          ? `${match.kills} - ${match.deaths}`
+          : null}
       </TableCell>
       <TableCell
         className={cn({
-          "text-red-500": stats?.kd && stats.kd < 0.95,
-          "text-green-500": stats?.kd && stats.kd > 1.05,
-          "text-[#929a9e]": stats?.kd && stats.kd >= 0.95 && stats.kd <= 1.05,
+          "text-red-500": lt(match.kd_ratio, 0.95),
+          "text-green-500": gt(match.kd_ratio, 1.05),
+          "text-[#929a9e]":
+            isNumber(match.kd_ratio) && inRange(match.kd_ratio, 0.95, 1.05),
         })}
       >
-        {stats && stats.kd > 0 ? stats.kd.toFixed(2) : null}
+        {match.kd_ratio?.toFixed(2) ?? null}
       </TableCell>
       <TableCell>{match.adr?.toFixed(1)}</TableCell>
       <TableCell>
-        {stats && stats.hsp > 0 ? `${stats.hsp.toFixed(0)} %` : null}
+        {isNumber(match.headshots_percent) && gt(match.headshots_percent, 0)
+          ? `${match.headshots_percent} %`
+          : null}
       </TableCell>
       <TableCell className="text-[#87a3bf] capitalize">
         {match.map?.replace("de_", "")}

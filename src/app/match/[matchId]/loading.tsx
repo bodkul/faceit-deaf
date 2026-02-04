@@ -11,9 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const AvatarSkeleton = () => (
-  <Skeleton className="size-16 rounded-full ring-2 ring-border" />
-);
+function AvatarSkeleton() {
+  return <Skeleton className="size-16 rounded-full ring-2 ring-border" />;
+}
 
 export default function Loading() {
   return (

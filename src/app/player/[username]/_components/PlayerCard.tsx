@@ -46,12 +46,16 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
         href: `https://www.faceit.com/en/players/${player.nickname}`,
         icon: <FaceitIcon className="size-6" />,
       },
-      {
+    ];
+
+    // Only add Steam link if steam_id_64 is available
+    if (player.steam_id_64) {
+      list.push({
         key: "steam",
         href: `https://steamcommunity.com/profiles/${player.steam_id_64}`,
         icon: <IconBrandSteam className="size-6" />,
-      },
-    ];
+      });
+    }
 
     if (player.twitch_username) {
       list.push({
@@ -82,9 +86,11 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
           />
         </div>
         <CardTitle className="text-2xl">{player.nickname}</CardTitle>
-        <div className="items-center rounded-lg border bg-muted/30 p-4 py-2 font-semibold text-lg transition-colors">
-          {player.faceit_elo} ELO
-        </div>
+        {player.faceit_elo > 0 && (
+          <div className="items-center rounded-lg border bg-muted/30 p-4 py-2 font-semibold text-lg transition-colors">
+            {player.faceit_elo} ELO
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         <Separator />

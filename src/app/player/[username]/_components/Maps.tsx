@@ -33,6 +33,20 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+function MapsLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Maps Statistics</CardTitle>
+        <CardDescription>
+          Distribution of maps played by this player
+        </CardDescription>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
+  );
+}
+
 export function Maps({ playerId }: { playerId: string }) {
   const { data } = usePlayerMaps(playerId);
 
@@ -42,66 +56,46 @@ export function Maps({ playerId }: { playerId: string }) {
 
   if (!maps.length) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Maps Statistics</CardTitle>
-          <CardDescription>
-            Distribution of maps played by this player
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconMap />
-              </EmptyMedia>
-              <EmptyTitle>No map data</EmptyTitle>
-              <EmptyDescription>
-                Map statistics will appear here once matches are played.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </CardContent>
-      </Card>
+      <MapsLayout>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <IconMap />
+            </EmptyMedia>
+            <EmptyTitle>No map data</EmptyTitle>
+            <EmptyDescription>
+              Map statistics will appear here once matches are played.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </MapsLayout>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Maps Statistics</CardTitle>
-        <CardDescription>
-          Distribution of maps played by this player
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-64 w-full">
-          <BarChart accessibilityLayer data={maps}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="map"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => {
-                const short = value.slice(3);
-                return short.charAt(0).toUpperCase() + short.slice(1);
-              }}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="count" fill="var(--color-map)" radius={8}>
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-              />
-            </Bar>
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <MapsLayout>
+      <ChartContainer config={chartConfig} className="h-64 w-full">
+        <BarChart accessibilityLayer data={maps}>
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="map"
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+            tickFormatter={(value) => {
+              const short = value.slice(3);
+              return short.charAt(0).toUpperCase() + short.slice(1);
+            }}
+          />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent hideLabel />}
+          />
+          <Bar dataKey="count" fill="var(--color-map)" radius={8}>
+            <LabelList position="top" offset={12} className="fill-foreground" />
+          </Bar>
+        </BarChart>
+      </ChartContainer>
+    </MapsLayout>
   );
 }

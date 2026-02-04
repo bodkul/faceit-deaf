@@ -126,9 +126,9 @@ function MatchHeader({ match }: { match: MatchType }) {
             {match.started_at && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <IconClock className="size-4" />
-              <span className="text-sm">
-                {format(match.started_at, "HH:mm dd/MM/yyyy")}
-              </span>
+                <span className="text-sm">
+                  {format(match.started_at, "HH:mm dd/MM/yyyy")}
+                </span>
               </div>
             )}
 
@@ -245,11 +245,15 @@ function PlayerStatsRow({
           level={player.game_skill_level ?? 0}
           className="size-8"
         />
-        {player.player_id_nullable ? (
-          <Link href={`/player/${player.nickname}`}>{player.nickname}</Link>
-        ) : (
-          <span>{player.nickname}</span>
-        )}
+        <Link
+          href={
+            player.player_id_nullable
+              ? `/player/${player.nickname}`
+              : `/player/${player.player_id_mandatory}`
+          }
+        >
+          {player.nickname}
+        </Link>
       </TableCell>
       <TableCell>{kdString}</TableCell>
       <TableCell

@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
@@ -15,22 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { supabaseClient } from "@/lib/supabase";
 
 export function UserButton() {
   const { data: session, status } = useSession();
-  const { data: teamId } = useQuery({
-    queryKey: ["player", session?.user?.name],
-    queryFn: async () => {
-      const { data } = await supabaseClient
-        .from("players")
-        .select("team_players(team_id)")
-        .eq("nickname", session?.user.name!)
-        .single();
-      return data?.team_players?.[0].team_id ?? null;
-    },
-    enabled: !!session?.user?.name,
-  });
 
   if (status === "loading") {
     return null;
@@ -75,11 +61,6 @@ export function UserButton() {
         <DropdownMenuItem asChild>
           <Link href={`/player/${user.name}`}>Statistics</Link>
         </DropdownMenuItem>
-        {teamId && (
-          <DropdownMenuItem asChild>
-            <Link href={`/teams/${teamId}`}>Team</Link>
-          </DropdownMenuItem>
-        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>Sign out</DropdownMenuItem>
       </DropdownMenuContent>

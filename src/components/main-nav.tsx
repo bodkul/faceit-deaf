@@ -10,8 +10,6 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Ranking", href: "/ranking" },
-  { name: "Events", href: "/events" },
-  { name: "Teams", href: "/teams" },
 ];
 
 export default function MainNav() {

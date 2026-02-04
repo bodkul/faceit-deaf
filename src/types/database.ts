@@ -160,69 +160,6 @@ export type Database = {
   };
   public: {
     Tables: {
-      event_teams: {
-        Row: {
-          event_id: string;
-          id: string;
-          team_id: string;
-        };
-        Insert: {
-          event_id: string;
-          id?: string;
-          team_id: string;
-        };
-        Update: {
-          event_id?: string;
-          id?: string;
-          team_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "event_teams_event_id_fkey";
-            columns: ["event_id"];
-            isOneToOne: false;
-            referencedRelation: "events";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "event_teams_team_id_fkey";
-            columns: ["team_id"];
-            isOneToOne: false;
-            referencedRelation: "teams";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      events: {
-        Row: {
-          avatar: string;
-          created_at: string;
-          end_date: string;
-          id: string;
-          location: string;
-          name: string;
-          start_date: string;
-        };
-        Insert: {
-          avatar: string;
-          created_at?: string;
-          end_date: string;
-          id?: string;
-          location: string;
-          name: string;
-          start_date: string;
-        };
-        Update: {
-          avatar?: string;
-          created_at?: string;
-          end_date?: string;
-          id?: string;
-          location?: string;
-          name?: string;
-          start_date?: string;
-        };
-        Relationships: [];
-      };
       match_team_players: {
         Row: {
           "1v1count": number | null;
@@ -562,80 +499,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      teams: {
-        Row: {
-          avatar: string | null;
-          country: string | null;
-          created_at: string;
-          id: string;
-          name: string;
-        };
-        Insert: {
-          avatar?: string | null;
-          country?: string | null;
-          created_at?: string;
-          id?: string;
-          name: string;
-        };
-        Update: {
-          avatar?: string | null;
-          country?: string | null;
-          created_at?: string;
-          id?: string;
-          name?: string;
-        };
-        Relationships: [];
-      };
-      team_players: {
-        Row: {
-          created_at: string;
-          id: string;
-          player_id: string;
-          team_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          id?: string;
-          player_id: string;
-          team_id: string;
-        };
-        Update: {
-          created_at?: string;
-          id?: string;
-          player_id?: string;
-          team_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "teams_players_player_id_fkey";
-            columns: ["player_id"];
-            isOneToOne: false;
-            referencedRelation: "leaderboard_players";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "teams_players_player_id_fkey";
-            columns: ["player_id"];
-            isOneToOne: false;
-            referencedRelation: "player_card_data";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "teams_players_player_id_fkey";
-            columns: ["player_id"];
-            isOneToOne: false;
-            referencedRelation: "players";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "teams_players_team_id_fkey";
-            columns: ["team_id"];
-            isOneToOne: false;
-            referencedRelation: "teams";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       users: {
         Row: {
           email: string | null;
@@ -725,21 +588,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      player_card_data: {
-        Row: {
-          avatar: string | null;
-          country: string | null;
-          faceit_elo: number | null;
-          id: string | null;
-          match_count: number | null;
-          most_played_map: string | null;
-          nickname: string | null;
-          skill_level: number | null;
-          win_count: number | null;
-          winrate: number | null;
-        };
-        Relationships: [];
-      };
       player_matches: {
         Row: {
           adr: number | null;
@@ -761,13 +609,6 @@ export type Database = {
       };
     };
     Functions: {
-      get_map_picks_count: {
-        Args: never;
-        Returns: {
-          count: number;
-          map_pick: string;
-        }[];
-      };
       hypopg: { Args: never; Returns: Record<string, unknown>[] };
       hypopg_create_index: {
         Args: { sql_order: string };

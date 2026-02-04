@@ -9,7 +9,7 @@ export function usePlayerSearch(query: string) {
     queryKey: ["player_search", query],
     queryFn: async () => {
       const { data } = await supabaseClient
-        .from("leaderboard_players")
+        .from("players")
         .select("id, nickname, avatar, skill_level, faceit_elo, country")
         .ilike("nickname", `%${query}%`)
         .order("faceit_elo", { ascending: false })

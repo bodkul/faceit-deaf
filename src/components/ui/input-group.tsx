@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/a11y/useSemanticElements: Third-party component, maintaining original structure */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: Third-party component, maintaining original structure */
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
@@ -11,6 +13,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="input-group"
+      role="group"
       className={cn(
         "group/input-group relative flex w-full items-center rounded-md border border-input shadow-xs outline-none transition-[color,box-shadow] dark:bg-input/30",
         "h-9 min-w-0 has-[>textarea]:h-auto",
@@ -62,9 +65,16 @@ function InputGroupAddon({
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
   return (
     <div
+      role="group"
       data-slot="input-group-addon"
       data-align={align}
       className={cn(inputGroupAddonVariants({ align }), className)}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest("button")) {
+          return;
+        }
+        e.currentTarget.parentElement?.querySelector("input")?.focus();
+      }}
       {...props}
     />
   );

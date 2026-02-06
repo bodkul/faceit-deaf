@@ -171,9 +171,7 @@ export default function RankingPage() {
     <Card>
       <CardHeader>
         <CardTitle>Ranking</CardTitle>
-        <CardDescription>
-          Player rankings by FACEIT ELO and tournament performance
-        </CardDescription>
+        <CardDescription>Player rankings by FACEIT ELO</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="overflow-hidden rounded-md border">

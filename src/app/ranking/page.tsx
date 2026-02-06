@@ -7,15 +7,17 @@ import {
   IconChevronsRight,
   IconTrophy,
 } from "@tabler/icons-react";
-import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-import { PlayerRow } from "@/components/leaderboard/player-row";
-import { renderLoadingRows } from "@/components/leaderboard/render-loading-rows";
+import { SkillLevelIcon } from "@/components/icons";
+import { renderRankingLoadingRows } from "@/components/render-loading-rows";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -34,16 +36,122 @@ import {
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePlayersWithPagination } from "@/hooks/usePlayers";
+import { getCountryFlagUrl } from "@/lib/country";
+import { formatNumberWithSign } from "@/lib/faceit/utils";
+import type { PlayerWithPagination } from "@/types/player";
 
 const PAGE_SIZE = 20;
 
-function EloRanking() {
+function EloDelta({ player }: { player: PlayerWithPagination }) {
+  if (player.elo_before == null || player.faceit_elo == null) {
+    return null;
+  }
+
+  const difference = player.faceit_elo - player.elo_before;
+  if (difference === 0) return null;
+
+  const color = difference > 0 ? "text-green-500" : "text-red-500";
+
+  return (
+    <>
+      {" "}
+      <sup className={color}>{formatNumberWithSign(difference)}</sup>
+    </>
+  );
+}
+
+function PlayerRow({
+  player,
+  index,
+}: {
+  player: PlayerWithPagination;
+  index: number;
+}) {
+  const router = useRouter();
+
+  return (
+    <TableRow
+      key={player.id}
+      className="cursor-pointer"
+      onClick={() => router.push(`/player/${player.nickname}`)}
+    >
+      <TableCell>{index + 1}</TableCell>
+      <TableCell>
+        <div className="flex items-center space-x-2">
+          {player.country ? (
+            <Image
+              className="h-2.5 w-3.75 rounded-xs"
+              src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
+              width={15}
+              height={10}
+              alt={`${player.country} flag`}
+            />
+          ) : (
+            <div className="h-2.5 w-3.75 rounded-xs bg-neutral-700" />
+          )}
+          <div className="font-medium">{player.nickname}</div>
+        </div>
+      </TableCell>
+      <TableCell>
+        <SkillLevelIcon level={player.skill_level} className="size-6" />
+      </TableCell>
+      <TableCell>
+        {player.faceit_elo}
+        <EloDelta player={player} />
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function TableContent({
+  data,
+  offset,
+  isLoading,
+}: {
+  data: PlayerWithPagination[] | null | undefined;
+  offset: number;
+  isLoading: boolean;
+}) {
+  if (isLoading) {
+    return renderRankingLoadingRows(PAGE_SIZE, offset);
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <TableRow>
+        <TableCell colSpan={4} className="h-100">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconTrophy />
+              </EmptyMedia>
+              <EmptyTitle>No players found</EmptyTitle>
+              <EmptyDescription>
+                There are no players in the ranking yet
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  return (
+    <>
+      {data?.map((player, index) => (
+        <PlayerRow key={player.id} player={player} index={offset + index} />
+      ))}
+    </>
+  );
+}
+
+export default function RankingPage() {
   const {
     data,
     totalPages,
@@ -54,34 +162,37 @@ function EloRanking() {
     previousPage,
     firstPage,
     lastPage,
+    isLoading,
   } = usePlayersWithPagination();
 
   const offset = (pageIndex - 1) * PAGE_SIZE;
 
   return (
-    <>
-      <div className="flex rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>#</TableHead>
-              <TableHead>Player</TableHead>
-              <TableHead>Skill level</TableHead>
-              <TableHead>ELO</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data?.map((player, index) => (
-              <PlayerRow
-                key={player.id}
-                player={player}
-                index={offset + index}
-              />
-            )) ?? renderLoadingRows(PAGE_SIZE, offset)}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="mt-4">
+    <Card>
+      <CardHeader>
+        <CardTitle>Ranking</CardTitle>
+        <CardDescription>
+          Player rankings by FACEIT ELO and tournament performance
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-hidden rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>#</TableHead>
+                <TableHead>Player</TableHead>
+                <TableHead>Skill level</TableHead>
+                <TableHead>ELO</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableContent data={data} offset={offset} isLoading={isLoading} />
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+      <CardFooter>
         <Pagination>
           <div className="flex items-center space-x-6 lg:space-x-8">
             <div className="flex w-25 items-center justify-center font-medium text-sm">
@@ -96,7 +207,7 @@ function EloRanking() {
                   disabled={!canPreviousPage}
                 >
                   <span className="sr-only">Go to first page</span>
-                  <IconChevronsLeft />
+                  <IconChevronsLeft data-icon="inline-end" />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -107,7 +218,7 @@ function EloRanking() {
                   disabled={!canPreviousPage}
                 >
                   <span className="sr-only">Go to previous page</span>
-                  <IconChevronLeft />
+                  <IconChevronLeft data-icon="inline-end" />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -118,7 +229,7 @@ function EloRanking() {
                   disabled={!canNextPage}
                 >
                   <span className="sr-only">Go to next page</span>
-                  <IconChevronRight />
+                  <IconChevronRight data-icon="inline-end" />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -129,63 +240,13 @@ function EloRanking() {
                   disabled={!canNextPage}
                 >
                   <span className="sr-only">Go to last page</span>
-                  <IconChevronsRight />
+                  <IconChevronsRight data-icon="inline-end" />
                 </Button>
               </PaginationItem>
             </PaginationContent>
           </div>
         </Pagination>
-      </div>
-    </>
-  );
-}
-
-function EventRanking() {
-  // TODO: Implement event-based ranking when data is available
-  return (
-    <Empty>
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <IconTrophy />
-        </EmptyMedia>
-        <EmptyTitle>Coming soon</EmptyTitle>
-        <EmptyDescription>
-          Event rankings will be available here. Check out individual{" "}
-          <Link href="/events" className="text-primary hover:underline">
-            events
-          </Link>{" "}
-          for tournament results.
-        </EmptyDescription>
-      </EmptyHeader>
-    </Empty>
-  );
-}
-
-export default function RankingPage() {
-  return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Ranking</CardTitle>
-        <CardDescription>
-          Player rankings by FACEIT ELO and tournament performance
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="elo">
-          <TabsList className="mb-4">
-            <TabsTrigger value="elo">ELO</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="elo">
-            <EloRanking />
-          </TabsContent>
-
-          <TabsContent value="events">
-            <EventRanking />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }

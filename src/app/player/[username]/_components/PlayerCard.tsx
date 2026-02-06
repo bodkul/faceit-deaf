@@ -27,10 +27,7 @@ export function PlayerCardSceleton() {
         <Separator />
         <div className="flex justify-center gap-4">
           {["faceit", "steam", "twitch"].map((key) => (
-            <Skeleton
-              key={`skeleton-${key}`}
-              className="size-10 rounded-md border"
-            />
+            <Skeleton key={`skeleton-${key}`} className="size-10 border" />
           ))}
         </div>
       </CardContent>

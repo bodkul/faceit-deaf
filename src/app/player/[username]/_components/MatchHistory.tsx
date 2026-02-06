@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { useMemo } from "react";
 
+import { renderMatchHistoryLoadingRows } from "@/components/render-loading-rows";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,9 +34,8 @@ import {
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import { useMatchHistory } from "@/hooks/useMatchHistory";
 
-import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
-import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
-import renderLoadingRows from "./renderLoadingRows";
+import { MatchesTableHead } from "./MatchesTableHead";
+import { MatchesTableRow } from "./MatchesTableRow";
 
 export default function MatchHistory({ playerId }: { playerId: string }) {
   const {
@@ -50,11 +50,11 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
   } = useMatchHistory(playerId);
 
   const rows = useMemo(() => {
-    if (isLoading) return renderLoadingRows(20);
+    if (isLoading) return renderMatchHistoryLoadingRows(20);
     if (!matches?.length) return null;
 
     return matches.map((match) => (
-      <MatchHistoryTableRow key={match.id} match={match} />
+      <MatchesTableRow key={match.id} match={match} />
     ));
   }, [isLoading, matches]);
 
@@ -93,10 +93,10 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex rounded-md border">
+        <div className="overflow-hidden rounded-md border">
           <Table>
             <TableHeader>
-              <MatchHistoryTableHead />
+              <MatchesTableHead />
             </TableHeader>
             <TableBody>{rows}</TableBody>
           </Table>
@@ -117,7 +117,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                   disabled={firstPage === null}
                 >
                   <span className="sr-only">Go to first page</span>
-                  <IconChevronsLeft />
+                  <IconChevronsLeft data-icon="inline-end" />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -128,7 +128,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                   disabled={previousPage === null}
                 >
                   <span className="sr-only">Go to previous page</span>
-                  <IconChevronLeft />
+                  <IconChevronLeft data-icon="inline-end" />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -139,7 +139,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                   disabled={nextPage === null}
                 >
                   <span className="sr-only">Go to next page</span>
-                  <IconChevronRight />
+                  <IconChevronRight data-icon="inline-end" />
                 </Button>
               </PaginationItem>
               <PaginationItem>
@@ -150,7 +150,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
                   disabled={lastPage === null}
                 >
                   <span className="sr-only">Go to last page</span>
-                  <IconChevronsRight />
+                  <IconChevronsRight data-icon="inline-end" />
                 </Button>
               </PaginationItem>
             </PaginationContent>

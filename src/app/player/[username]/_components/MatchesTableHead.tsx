@@ -1,6 +1,6 @@
 import { TableHead, TableRow } from "@/components/ui/table";
 
-export function MatchHistoryTableHead() {
+export function MatchesTableHead() {
   return (
     <TableRow>
       <TableHead className="w-1/9 text-center">Date</TableHead>

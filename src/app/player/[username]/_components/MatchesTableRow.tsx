@@ -8,7 +8,7 @@ import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import type { RecentMatchType } from "@/types/match";
 
-export function MatchHistoryTableRow({ match }: { match: RecentMatchType }) {
+export function MatchesTableRow({ match }: { match: RecentMatchType }) {
   const router = useRouter();
 
   return (

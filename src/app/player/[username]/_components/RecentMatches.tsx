@@ -1,6 +1,7 @@
 "use client";
 
 import { IconHistory } from "@tabler/icons-react";
+import { range } from "lodash-es";
 import { useMemo } from "react";
 
 import {
@@ -17,12 +18,18 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Table, TableBody, TableHeader } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useRecentMatches } from "@/hooks/useRecentMatches";
 
-import { MatchHistoryTableHead } from "./MatchHistoryTableHead";
-import { MatchHistoryTableRow } from "./MatchHistoryTableRow";
-import renderLoadingRows from "./renderLoadingRows";
+import { MatchesTableHead } from "./MatchesTableHead";
+import { MatchesTableRow } from "./MatchesTableRow";
 
 function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,10 +39,10 @@ function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
         <CardDescription>Last 10 played matches</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex rounded-md border">
+        <div className="overflow-hidden rounded-md border">
           <Table>
             <TableHeader>
-              <MatchHistoryTableHead />
+              <MatchesTableHead />
             </TableHeader>
             <TableBody>{children}</TableBody>
           </Table>
@@ -46,9 +53,32 @@ function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
 }
 
 export function RecentMatchesLoading() {
-  const rows = renderLoadingRows(10);
-
-  return <RecentMatchesLayout>{rows}</RecentMatchesLayout>;
+  return (
+    <RecentMatchesLayout>
+      {range(10).map((index) => (
+        <TableRow key={index}>
+          <TableCell>
+            <Skeleton className="mx-auto h-5 w-24" />
+          </TableCell>
+          <TableCell>
+            <Skeleton className="mx-auto h-5 w-12" />
+          </TableCell>
+          <TableCell>
+            <Skeleton className="mx-auto h-5 w-10" />
+          </TableCell>
+          <TableCell>
+            <Skeleton className="mx-auto h-5 w-12" />
+          </TableCell>
+          <TableCell>
+            <Skeleton className="mx-auto h-5 w-8" />
+          </TableCell>
+          <TableCell>
+            <Skeleton className="mx-auto h-5 w-8" />
+          </TableCell>
+        </TableRow>
+      ))}
+    </RecentMatchesLayout>
+  );
 }
 
 export default function RecentMatches({ playerId }: { playerId: string }) {
@@ -58,7 +88,7 @@ export default function RecentMatches({ playerId }: { playerId: string }) {
     if (!data?.length) return null;
 
     return data.map((match) => (
-      <MatchHistoryTableRow key={match.id} match={match} />
+      <MatchesTableRow key={match.id} match={match} />
     ));
   }, [data]);
 

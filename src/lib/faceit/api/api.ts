@@ -87,8 +87,6 @@ const ORGANIZER_ID = "faceit";
 const COMPETITION_ID = "f4148ddd-bce8-41b8-9131-ee83afcdd6dd";
 
 export async function fetchFullPlayerHistory(playerId: string) {
-  console.log(`    🔄 Загрузка истории матчей для игрока: ${playerId}`);
-
   let to = 0;
   let requestCount = 0;
   const allMatches: MatchHistory[] = [];
@@ -102,12 +100,8 @@ export async function fetchFullPlayerHistory(playerId: string) {
 
     if (allMatches.length < 1000) {
       searchParams.append("offset", allMatches.length.toString());
-      console.log(
-        `      📥 Запрос ${requestCount}: offset=${allMatches.length}`,
-      );
     } else {
       searchParams.append("to", to.toString());
-      console.log(`      📥 Запрос ${requestCount}: timestamp=${to}`);
     }
 
     try {
@@ -116,14 +110,9 @@ export async function fetchFullPlayerHistory(playerId: string) {
         { searchParams },
       ).json();
 
-      console.log(
-        `      ✅ Получено ${items.length} матчей (всего: ${allMatches.length + items.length})`,
-      );
-
       allMatches.push(...items);
 
       if (items.length !== 100) {
-        console.log(`      🏁 Достигнут конец истории матчей`);
         break;
       }
 
@@ -133,10 +122,6 @@ export async function fetchFullPlayerHistory(playerId: string) {
       throw error;
     }
   }
-
-  console.log(
-    `    🔍 Фильтрация матчей (всего загружено: ${allMatches.length})`,
-  );
 
   const filteredUniqueMatches = uniqBy(allMatches, "match_id").filter(
     (m) =>

@@ -36,12 +36,10 @@ export async function POST(request: NextRequest) {
 
     case "match_status_finished": {
       const handle = await syncFinishedMatchTask.trigger(payload);
-      console.log("✅ Task triggered successfully:", handle.id);
       return NextResponse.json(handle);
     }
 
     default:
-      console.log("⚠️ Unhandled event type:", event);
       break;
   }
 

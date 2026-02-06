@@ -141,15 +141,10 @@ export async function getMatchesIds(matchesIds: string[]) {
   }
 
   const chunks = chunk(matchesIds, 200);
-  console.log(`    📦 Разбито на ${chunks.length} чанков по 200 матчей`);
 
   const results = await pMap(
     chunks,
     async (matchesChunk, index) => {
-      console.log(
-        `      🔍 Обработка чанка ${index + 1}/${chunks.length} (${matchesChunk.length} матчей)`,
-      );
-
       const { data, error } = await supabaseClient
         .from("matches")
         .select("id")
@@ -169,10 +164,6 @@ export async function getMatchesIds(matchesIds: string[]) {
   );
 
   const allResults = results.flat();
-
-  console.log(
-    `    ✅ Найдено существующих матчей: ${allResults.length}/${matchesIds.length}`,
-  );
 
   return allResults;
 }

@@ -7,8 +7,11 @@ import {
   IconChevronsRight,
   IconHistory,
 } from "@tabler/icons-react";
-import { useMemo } from "react";
 
+import {
+  MatchesTableHead,
+  MatchesTableRow,
+} from "@/app/player/[username]/@tabs/_components/matches";
 import { renderMatchHistoryLoadingRows } from "@/components/render-loading-rows";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,8 +37,36 @@ import {
 import { Table, TableBody, TableHeader } from "@/components/ui/table";
 import { useMatchHistory } from "@/hooks/useMatchHistory";
 
-import { MatchesTableHead } from "./MatchesTableHead";
-import { MatchesTableRow } from "./MatchesTableRow";
+function MatchHistoryLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Match History</CardTitle>
+        <CardDescription>
+          Complete list of all played matches with detailed statistics
+        </CardDescription>
+      </CardHeader>
+      {children}
+    </Card>
+  );
+}
+
+export function MatchHistorySkeleton() {
+  return (
+    <MatchHistoryLayout>
+      <CardContent>
+        <div className="overflow-hidden rounded-md border">
+          <Table>
+            <TableHeader>
+              <MatchesTableHead />
+            </TableHeader>
+            <TableBody>{renderMatchHistoryLoadingRows(20)}</TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </MatchHistoryLayout>
+  );
+}
 
 export default function MatchHistory({ playerId }: { playerId: string }) {
   const {
@@ -49,24 +80,11 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
     lastPage,
   } = useMatchHistory(playerId);
 
-  const rows = useMemo(() => {
-    if (isLoading) return renderMatchHistoryLoadingRows(20);
-    if (!matches?.length) return null;
+  if (isLoading) return <MatchHistorySkeleton />;
 
-    return matches.map((match) => (
-      <MatchesTableRow key={match.id} match={match} />
-    ));
-  }, [isLoading, matches]);
-
-  if (!isLoading && !rows) {
+  if (!matches) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Match History</CardTitle>
-          <CardDescription>
-            Complete list of all played matches with detailed statistics
-          </CardDescription>
-        </CardHeader>
+      <MatchHistoryLayout>
         <CardContent>
           <Empty>
             <EmptyHeader>
@@ -80,25 +98,23 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
             </EmptyHeader>
           </Empty>
         </CardContent>
-      </Card>
+      </MatchHistoryLayout>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Match History</CardTitle>
-        <CardDescription>
-          Complete list of all played matches with detailed statistics
-        </CardDescription>
-      </CardHeader>
+    <MatchHistoryLayout>
       <CardContent>
         <div className="overflow-hidden rounded-md border">
           <Table>
             <TableHeader>
               <MatchesTableHead />
             </TableHeader>
-            <TableBody>{rows}</TableBody>
+            <TableBody>
+              {matches?.map((match) => (
+                <MatchesTableRow key={match.id} match={match} />
+              ))}
+            </TableBody>
           </Table>
         </div>
       </CardContent>
@@ -157,6 +173,6 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
           </div>
         </Pagination>
       </CardFooter>
-    </Card>
+    </MatchHistoryLayout>
   );
 }

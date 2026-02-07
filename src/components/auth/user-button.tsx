@@ -22,7 +22,7 @@ export function UserButton() {
     return null;
   }
 
-  if (!session?.user) {
+  if (status === "unauthenticated" || !session?.user) {
     return (
       <Button
         onClick={() => signIn("faceit")}

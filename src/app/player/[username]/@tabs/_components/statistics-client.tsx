@@ -218,7 +218,7 @@ function useStatisticsCalculation(data: PlayerMatch[] | undefined) {
   }, [data]);
 }
 
-export function StatisticsLoading() {
+export function StatisticsSkeleton() {
   return (
     <Card>
       <StatisticsHeader
@@ -244,7 +244,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
   const { data, isLoading } = usePlayerStatistics(playerId, statisticsRange);
   const stats = useStatisticsCalculation(data);
 
-  if (isLoading) return <StatisticsLoading />;
+  if (isLoading) return <StatisticsSkeleton />;
 
   if (!stats) {
     return (

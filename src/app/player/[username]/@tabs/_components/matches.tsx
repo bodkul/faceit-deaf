@@ -3,10 +3,26 @@ import { gt, inRange, isNil, isNumber, lt } from "lodash-es";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
-import { TableCell, TableRow } from "@/components/ui/table";
+import { TableCell, TableHead, TableRow } from "@/components/ui/table";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 import type { RecentMatchType } from "@/types/match";
+
+export function MatchesTableHead() {
+  return (
+    <TableRow>
+      <TableHead className="w-1/9 text-center">Date</TableHead>
+      <TableHead className="w-1/9 text-center">Result</TableHead>
+      <TableHead className="w-1/9 text-center">Score</TableHead>
+      <TableHead className="w-1/9 text-center">K - D</TableHead>
+      <TableHead className="w-1/9 text-center">K/D</TableHead>
+      <TableHead className="w-1/9 text-center">ADR</TableHead>
+      <TableHead className="w-1/9 text-center">HS%</TableHead>
+      <TableHead className="w-1/9 text-center">Map</TableHead>
+      <TableHead className="w-1/9 text-center">Elo +/-</TableHead>
+    </TableRow>
+  );
+}
 
 export function MatchesTableRow({ match }: { match: RecentMatchType }) {
   const router = useRouter();

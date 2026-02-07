@@ -1,7 +1,6 @@
 "use client";
 
 import { IconMap } from "@tabler/icons-react";
-import { countBy, map, orderBy } from "lodash-es";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import {
@@ -33,7 +32,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-function MapsLayout({ children }: { children: React.ReactNode }) {
+export function MapsLayout({ children }: { children: React.ReactNode }) {
   return (
     <Card>
       <CardHeader>
@@ -47,31 +46,15 @@ function MapsLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Maps({ playerId }: { playerId: string }) {
-  const { data } = usePlayerMaps(playerId);
+export function MapsSkeleton() {
+  return <MapsContent maps={[]} />;
+}
 
-  const mapsCount = countBy(data, "map");
-  const mapsArray = map(mapsCount, (count, map) => ({ map, count }));
-  const maps = orderBy(mapsArray, ["count", "map"], ["desc", "asc"]);
-
-  if (!maps.length) {
-    return (
-      <MapsLayout>
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <IconMap />
-            </EmptyMedia>
-            <EmptyTitle>No map data</EmptyTitle>
-            <EmptyDescription>
-              Map statistics will appear here once matches are played.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      </MapsLayout>
-    );
-  }
-
+function MapsContent({
+  maps,
+}: {
+  maps: NonNullable<ReturnType<typeof usePlayerMaps>["data"]>;
+}) {
   return (
     <MapsLayout>
       <ChartContainer config={chartConfig} className="h-64 w-full">
@@ -98,4 +81,30 @@ export function Maps({ playerId }: { playerId: string }) {
       </ChartContainer>
     </MapsLayout>
   );
+}
+
+export function Maps({ playerId }: { playerId: string }) {
+  const { data: maps, isLoading } = usePlayerMaps(playerId);
+
+  if (isLoading) return <MapsSkeleton />;
+
+  if (!maps) {
+    return (
+      <MapsLayout>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <IconMap />
+            </EmptyMedia>
+            <EmptyTitle>No map data</EmptyTitle>
+            <EmptyDescription>
+              Map statistics will appear here once matches are played.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </MapsLayout>
+    );
+  }
+
+  return <MapsContent maps={maps} />;
 }

@@ -28,8 +28,7 @@ import {
 } from "@/components/ui/table";
 import { useRecentMatches } from "@/hooks/useRecentMatches";
 
-import { MatchesTableHead } from "./MatchesTableHead";
-import { MatchesTableRow } from "./MatchesTableRow";
+import { MatchesTableHead, MatchesTableRow } from "./matches";
 
 function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -52,7 +51,7 @@ function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function RecentMatchesLoading() {
+export function RecentMatchesSkeleton() {
   return (
     <RecentMatchesLayout>
       {range(10).map((index) => (
@@ -92,7 +91,7 @@ export default function RecentMatches({ playerId }: { playerId: string }) {
     ));
   }, [data]);
 
-  if (isLoading) return <RecentMatchesLoading />;
+  if (isLoading) return <RecentMatchesSkeleton />;
 
   if (!rows) {
     return (

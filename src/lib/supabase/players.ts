@@ -21,9 +21,14 @@ export async function getPlayerByUsername(nickname: string) {
   // If not found in players table, try to get from match_team_players
   const { data: matchPlayerData } = await supabaseClient
     .from("match_team_players")
-    .select("player_id_mandatory, nickname, game_skill_level")
+    .select(
+      "player_id_mandatory, nickname, game_skill_level, match_teams!inner(matches!inner(started_at))",
+    )
     .eq("player_id_mandatory", nickname)
-    .order("id", { ascending: false })
+    .order("started_at", {
+      ascending: false,
+      referencedTable: "match_teams.matches",
+    })
     .limit(1)
     .single();
 

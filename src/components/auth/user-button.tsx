@@ -24,10 +24,7 @@ export function UserButton() {
 
   if (status === "unauthenticated" || !session?.user) {
     return (
-      <Button
-        onClick={() => signIn("faceit")}
-        className="bg-primary text-foreground hover:bg-primary/90"
-      >
+      <Button onClick={() => signIn("faceit")}>
         <FaceitIcon className="size-4" data-icon="inline-start" />
         Login with Faceit
       </Button>

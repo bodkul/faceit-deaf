@@ -348,13 +348,6 @@ export type Database = {
             foreignKeyName: "match_team_players_player_id_nullable_fkey";
             columns: ["player_id_nullable"];
             isOneToOne: false;
-            referencedRelation: "player_card_data";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "match_team_players_player_id_nullable_fkey";
-            columns: ["player_id_nullable"];
-            isOneToOne: false;
             referencedRelation: "players";
             referencedColumns: ["id"];
           },
@@ -505,21 +498,18 @@ export type Database = {
           id: string;
           image: string | null;
           name: string | null;
-          player_id: string | null;
         };
         Insert: {
           email?: string | null;
           id: string;
           image?: string | null;
           name?: string | null;
-          player_id?: string | null;
         };
         Update: {
           email?: string | null;
           id?: string;
           image?: string | null;
           name?: string | null;
-          player_id?: string | null;
         };
         Relationships: [];
       };
@@ -595,11 +585,11 @@ export type Database = {
           elo_diff: number | null;
           finished_at: string | null;
           headshots: number | null;
+          headshots_percent: number | null;
           id: string | null;
+          kd_ratio: number | null;
           kills: number | null;
           kr_ratio: number | null;
-          kd_ratio: number | null;
-          headshots_percent: number | null;
           map: string | null;
           player_id: string | null;
           round_score: string | null;

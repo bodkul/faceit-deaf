@@ -37,7 +37,7 @@ export async function getPlayerByUsername(nickname: string) {
   }
 
   // Return a player object compatible with the expected type
-  // Some fields are fallback placeholders because match_team_players lacks full player profile data
+  // Some fields will be null since match_team_players doesn't have all player info
   return {
     id: matchPlayerData.player_id_mandatory,
     nickname: matchPlayerData.nickname,

@@ -11,7 +11,7 @@ export default function Page() {
           Welcome to <span className="text-primary">{siteConfig.name}</span>
         </h1>
         <p className="max-w-3xl text-balance text-base sm:text-lg">
-          FaceitDeaf is a platform for tracking, analyzing, and watching FACEIT
+          csdeaf is a platform for tracking, analyzing, and watching FACEIT
           matches for deaf and hard-of-hearing players. Enjoy a modern
           interface, live match updates, detailed statistics, and a friendly
           environment for everyone who loves CS2.

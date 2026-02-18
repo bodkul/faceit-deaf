@@ -9,7 +9,6 @@ export default function Page() {
       <div className="container flex flex-col items-center gap-2 py-8 text-center md:py-16 lg:py-20 xl:gap-4">
         <h1 className="max-w-2xl text-balance font-semibold text-4xl leading-tighter tracking-tight lg:font-semibold lg:leading-[1.1] xl:text-5xl xl:tracking-tighter">
           Welcome to <span className="text-primary">{siteConfig.name}</span>
-          .pro
         </h1>
         <p className="max-w-3xl text-balance text-base sm:text-lg">
           FaceitDeaf is a platform for tracking, analyzing, and watching FACEIT

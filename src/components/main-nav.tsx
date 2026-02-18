@@ -12,6 +12,14 @@ const navigation = [
   { name: "Ranking", href: "/ranking" },
 ];
 
+function isActiveRoute(pathname: string, href: string) {
+  if (href === "/") {
+    return pathname === "/";
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export default function MainNav() {
   const pathname = usePathname();
 
@@ -28,7 +36,7 @@ export default function MainNav() {
             href={item.href}
             className={cn(
               "transition-colors hover:text-foreground/80",
-              pathname.startsWith(item.href)
+              isActiveRoute(pathname, item.href)
                 ? "text-foreground"
                 : "text-foreground/80",
             )}

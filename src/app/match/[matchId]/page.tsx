@@ -166,14 +166,16 @@ function MatchHeader({ match }: { match: MatchType }) {
 function TeamStatsTable({
   team,
   totalScore,
+  isMatchFinished,
 }: {
   team: TeamType;
   totalScore: number;
+  isMatchFinished: boolean;
 }) {
-  const sortedPlayers = useMemo(
-    () => orderBy(team.team_players, ["kills"], ["desc"]),
-    [team.team_players],
-  );
+  const sortedPlayers = useMemo(() => {
+    const sortFields = isMatchFinished ? ["kills"] : ["game_skill_level"];
+    return orderBy(team.team_players, sortFields, ["desc"]);
+  }, [isMatchFinished, team.team_players]);
 
   return (
     <Card key={team.id} className="py-0">
@@ -296,7 +298,12 @@ export default function MatchPage(props: PageProps<"/match/[matchId]">) {
       <div className="flex w-full flex-col space-y-6">
         <h2 className="font-bold text-2xl">Match Statistics</h2>
         {match.teams.map((team) => (
-          <TeamStatsTable key={team.id} team={team} totalScore={totalScore} />
+          <TeamStatsTable
+            key={team.id}
+            team={team}
+            totalScore={totalScore}
+            isMatchFinished={Boolean(match.finished_at)}
+          />
         ))}
       </div>
     </>

@@ -29,10 +29,11 @@ type StatsItem = {
   value: string;
 };
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ username: string }> },
-) {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}) {
   const { username: rawUsername } = await params;
   const username = decodeURIComponent(rawUsername);
 

@@ -48,7 +48,9 @@ export function ShareButton() {
         <div className="fixed right-4 bottom-4 z-50 rounded-lg border border-emerald-400/30 bg-emerald-500/15 px-4 py-2 text-emerald-200 shadow-md backdrop-blur-sm">
           <div className="flex items-center gap-2 text-sm">
             <IconCheck className="size-4" />
-            {"\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e!"}
+            {
+              "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e!"
+            }
           </div>
         </div>
       )}

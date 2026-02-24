@@ -1,4 +1,5 @@
-import { clamp, divide } from "lodash-es";
+import { divide } from "es-toolkit/compat";
+import { clamp } from "es-toolkit/math";
 
 export function calculateAverageStats({
   rounds,

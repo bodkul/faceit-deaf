@@ -1,5 +1,7 @@
 import { format, isThisYear } from "date-fns";
-import { gt, inRange, isNil, isNumber, lt } from "lodash-es";
+import { isNumber } from "es-toolkit";
+import { gt, inRange, lt } from "es-toolkit/compat";
+import { isNil } from "es-toolkit/predicate";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";

@@ -2,7 +2,7 @@
 
 import { IconDeviceGamepad2 } from "@tabler/icons-react";
 import { differenceInMinutes } from "date-fns";
-import { now } from "lodash-es";
+import { now } from "es-toolkit/compat";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";

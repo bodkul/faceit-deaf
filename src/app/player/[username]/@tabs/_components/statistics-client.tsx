@@ -1,7 +1,8 @@
 "use client";
 
 import { IconChartBar } from "@tabler/icons-react";
-import { add, maxBy, meanBy, minBy, subtract, sumBy, take } from "lodash-es";
+import { take } from "es-toolkit/array";
+import { add, maxBy, meanBy, minBy, subtract, sumBy } from "es-toolkit/compat";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 

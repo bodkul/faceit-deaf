@@ -1,4 +1,4 @@
-import { chunk } from "lodash-es";
+import { chunk } from "es-toolkit/array";
 import pMap from "p-map";
 
 import type { TablesInsert, TablesUpdate } from "@/types/database";

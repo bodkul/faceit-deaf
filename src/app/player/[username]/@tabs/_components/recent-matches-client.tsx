@@ -1,7 +1,7 @@
 "use client";
 
 import { IconHistory } from "@tabler/icons-react";
-import { range } from "lodash-es";
+import { range } from "es-toolkit/math";
 import { useMemo } from "react";
 
 import {

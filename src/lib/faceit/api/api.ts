@@ -1,4 +1,4 @@
-import { uniqBy } from "lodash-es";
+import { uniqBy } from "es-toolkit/compat";
 import pMap from "p-map";
 
 import faceitClient from "@/lib/faceit/client";

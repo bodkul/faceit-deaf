@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { countBy, map, orderBy } from "lodash-es";
+import { countBy, map, orderBy } from "es-toolkit/compat";
 
 import { supabaseClient } from "@/lib/supabase";
 

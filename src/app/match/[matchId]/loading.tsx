@@ -1,4 +1,4 @@
-import { range } from "lodash-es";
+import { range } from "es-toolkit/math";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

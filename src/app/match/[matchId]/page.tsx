@@ -2,7 +2,10 @@
 
 import { IconClock, IconExternalLink, IconMapPin } from "@tabler/icons-react";
 import { format, intervalToDuration } from "date-fns";
-import { gt, isNil, isNumber, lt, orderBy, subtract, sumBy } from "lodash-es";
+import { isNumber } from "es-toolkit";
+import { orderBy } from "es-toolkit/array";
+import { gt, lt, subtract, sumBy } from "es-toolkit/compat";
+import { isNil } from "es-toolkit/predicate";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -173,8 +176,11 @@ function TeamStatsTable({
   isMatchFinished: boolean;
 }) {
   const sortedPlayers = useMemo(() => {
-    const sortFields = isMatchFinished ? ["kills"] : ["game_skill_level"];
-    return orderBy(team.team_players, sortFields, ["desc"]);
+    if (isMatchFinished) {
+      return orderBy(team.team_players, ["kills"], ["desc"]);
+    }
+
+    return orderBy(team.team_players, ["game_skill_level"], ["desc"]);
   }, [isMatchFinished, team.team_players]);
 
   return (

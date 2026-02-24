@@ -5,7 +5,7 @@ import {
   startOfToday,
   subDays,
 } from "date-fns";
-import { first, nth } from "lodash-es";
+import { first, nth } from "es-toolkit/compat";
 
 import { supabaseClient } from "@/lib/supabase";
 

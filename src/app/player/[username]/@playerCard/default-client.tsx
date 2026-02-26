@@ -5,8 +5,8 @@ import { useMemo } from "react";
 
 import { FaceitIcon, SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SecondaryFlowButton } from "@/components/ui/flow-button";
 import { Separator } from "@/components/ui/separator";
 import type { PlayerByUsername } from "@/types/player";
 
@@ -68,17 +68,11 @@ export function PlayerCard({ player }: { player: PlayerByUsername }) {
         <Separator />
         <div className="flex justify-center gap-4">
           {socials.map((s) => (
-            <Button
-              key={s.key}
-              className="duration-200 hover:scale-110"
-              variant="outline"
-              size="icon-lg"
-              asChild
-            >
+            <SecondaryFlowButton key={s.key} size="icon-lg" asChild>
               <a href={s.href} target="_blank">
                 {s.icon}
               </a>
-            </Button>
+            </SecondaryFlowButton>
           ))}
         </div>
       </CardContent>

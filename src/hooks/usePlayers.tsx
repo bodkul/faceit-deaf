@@ -17,52 +17,35 @@ type LeaderboardPlayer = Tables<"leaderboard_players"> & {
   faceit_elo: number;
 };
 
-function usePlayersCount() {
-  const { data: count, ...query } = useQuery({
-    queryKey: ["leaderboard_players_count"],
-    queryFn: async () => {
-      const { count } = await supabaseClient
-        .from("leaderboard_players")
-        .select("id", { count: "exact", head: true });
-      return count;
-    },
-  });
-  return { count, ...query };
-}
+export function usePlayersWithPagination() {
+  const [totalCount, setTotalCount] = useState(0);
+  const pagination = usePagination(totalCount, PAGE_SIZE);
 
-function usePlayers(pageOffset: number) {
-  return useQuery({
-    queryKey: ["leaderboard_players", pageOffset],
+  const { data, isLoading, ...rest } = useQuery({
+    queryKey: ["leaderboard_players", pagination.pageOffset],
     queryFn: async () => {
-      const start = pageOffset * PAGE_SIZE;
-      const end = (pageOffset + 1) * PAGE_SIZE - 1;
-      const { data } = await supabaseClient
+      const start = pagination.pageOffset * PAGE_SIZE;
+      const end = (pagination.pageOffset + 1) * PAGE_SIZE - 1;
+      const { data, count } = await supabaseClient
         .from("leaderboard_players")
         .select(
           "id, nickname, avatar, skill_level, faceit_elo, elo_before, country",
+          { count: "exact" },
         )
         .order("faceit_elo", { ascending: false })
         .range(start, end)
         .overrideTypes<LeaderboardPlayer[]>();
+
+      if (typeof count === "number") setTotalCount(count);
       return data;
     },
   });
-}
-
-export function usePlayersWithPagination() {
-  const [totalCount, setTotalCount] = useState(0);
-  const pagination = usePagination(totalCount, PAGE_SIZE);
-  const { count } = usePlayersCount();
-  const { isLoading, ...rest } = usePlayers(pagination.pageOffset);
-
-  if (typeof count === "number" && count !== totalCount) {
-    setTotalCount(count);
-  }
 
   return {
-    ...rest,
+    data,
     isLoading,
-    count,
+    count: totalCount,
     ...pagination,
+    ...rest,
   };
 }

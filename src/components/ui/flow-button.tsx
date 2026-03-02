@@ -36,7 +36,7 @@ function PrimaryFlowButton({
           size === "lg" && "text-base has-[>svg]:px-6",
 
           // After - Border gradient effect with rotation
-          "after:mask-exclude after:absolute after:-inset-30 after:-z-1 after:rounded-[inherit] after:border after:border-[inherit] after:bg-origin-border after:transition-transform after:duration-500",
+          "after:mask-exclude after:absolute after:-inset-30 after:-z-1 after:rounded-[inherit] after:border after:border-inherit after:bg-origin-border after:transition-transform after:duration-500",
 
           "after:bg-[conic-gradient(from_90deg_at_50%_50%,var(--primary),var(--primary)_50%,rgba(0,0,0,15%)_51%_99%,var(--primary))] hover:after:rotate-180 dark:after:bg-[conic-gradient(from_90deg_at_50%_50%,var(--primary),var(--primary)_50%,rgba(0,0,0,30%)_51%_99%,var(--primary))]",
         )}
@@ -71,7 +71,7 @@ function SecondaryFlowButton({
           size === "lg" && "text-base has-[>svg]:px-6",
 
           // After - Border gradient effect with rotation
-          "after:mask-exclude after:mask-clip-content after:absolute after:-inset-30 after:-z-1 after:rounded-[inherit] after:border after:border-[inherit] after:bg-origin-border after:transition-transform after:duration-500 after:[mask:linear-gradient(black,black),linear-gradient(black,black)]",
+          "after:mask-exclude after:mask-clip-content after:absolute after:-inset-30 after:-z-1 after:rounded-[inherit] after:border after:border-inherit after:bg-origin-border after:transition-transform after:duration-500 after:[mask:linear-gradient(black,black),linear-gradient(black,black)]",
 
           "after:bg-[conic-gradient(from_90deg_at_50%_50%,var(--secondary),var(--secondary)_50%,rgba(0,0,0,15%)_51%_99%,var(--secondary))] hover:after:rotate-180 dark:after:bg-[conic-gradient(from_90deg_at_50%_50%,var(--secondary),var(--secondary)_50%,rgba(255,255,255,60%)_51%_99%,var(--secondary))]",
         )}

@@ -13,10 +13,7 @@ const navigation = [
 ];
 
 function isActiveRoute(pathname: string, href: string) {
-  if (href === "/") {
-    return pathname === "/";
-  }
-
+  if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -25,20 +22,23 @@ export default function MainNav() {
 
   return (
     <div className="mr-4 flex">
-      <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6">
+      <Link href="/" className="mr-6 flex items-center gap-2">
         <FaceitIcon className="size-6 fill-[#ff5500] text-[#ff5500]" />
-        <span className="inline-block font-bold">{siteConfig.name}</span>
+        <span className="font-black text-white tracking-tight">
+          {siteConfig.name}
+          <span className="text-neutral-600">.pro</span>
+        </span>
       </Link>
-      <nav className="flex items-center gap-4 text-sm xl:gap-6">
+      <nav className="flex items-center gap-1 text-sm">
         {navigation.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "transition-colors hover:text-foreground/80",
+              "rounded-md px-3 py-1.5 font-medium transition-all duration-200",
               isActiveRoute(pathname, item.href)
-                ? "text-foreground"
-                : "text-foreground/80",
+                ? "bg-neutral-800 text-white"
+                : "text-neutral-500 hover:bg-neutral-800/50 hover:text-neutral-300",
             )}
           >
             {item.name}

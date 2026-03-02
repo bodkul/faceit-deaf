@@ -221,7 +221,9 @@ function useStatisticsCalculation(data: PlayerMatch[] | undefined) {
 
 export function StatisticsSkeleton() {
   return (
-    <Card>
+    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
+      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/3 blur-3xl" />
       <StatisticsHeader
         statisticsRange="last20Matches"
         onRangeChange={() => {}}
@@ -249,7 +251,9 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
   if (!stats) {
     return (
-      <Card>
+      <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
+        <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/3 blur-3xl" />
         <StatisticsHeader
           statisticsRange={statisticsRange}
           onRangeChange={setStatisticsRange}
@@ -285,7 +289,9 @@ export default function Statistics({ playerId }: { playerId: string }) {
   ];
 
   return (
-    <Card>
+    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
+      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/3 blur-3xl" />
       <StatisticsHeader
         statisticsRange={statisticsRange}
         onRangeChange={setStatisticsRange}

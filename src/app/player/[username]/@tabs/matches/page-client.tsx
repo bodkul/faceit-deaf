@@ -39,7 +39,9 @@ import { useMatchHistory } from "@/hooks/useMatchHistory";
 
 function MatchHistoryLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Card>
+    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
+      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/3 blur-3xl" />
       <CardHeader>
         <CardTitle>Match History</CardTitle>
         <CardDescription>

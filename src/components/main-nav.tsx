@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { FaceitIcon } from "@/components/icons";
+import Logo from "@/app/icon.svg";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +23,7 @@ export default function MainNav() {
   return (
     <div className="mr-4 flex">
       <Link href="/" className="mr-6 flex items-center gap-2">
-        <FaceitIcon className="size-6 fill-[#ff5500] text-[#ff5500]" />
+        <Logo className="size-6" />
         <span className="font-black text-white tracking-tight">
           {siteConfig.name}
           <span className="text-neutral-600">.pro</span>

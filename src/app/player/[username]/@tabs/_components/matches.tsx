@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableHead, TableRow } from "@/components/ui/table";
+import type { useRecentMatches } from "@/hooks/useRecentMatches";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
-import type { RecentMatchType } from "@/types/match";
 
 export function MatchesTableHead() {
   return (
@@ -26,7 +26,11 @@ export function MatchesTableHead() {
   );
 }
 
-export function MatchesTableRow({ match }: { match: RecentMatchType }) {
+export function MatchesTableRow({
+  match,
+}: {
+  match: NonNullable<ReturnType<typeof useRecentMatches>["data"]>[number];
+}) {
   const router = useRouter();
 
   return (

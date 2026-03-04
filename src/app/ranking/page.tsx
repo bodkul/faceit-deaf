@@ -25,7 +25,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePlayersWithPagination } from "@/hooks/usePlayers";
 import { getCountryFlagUrl } from "@/lib/country";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
-import type { PlayerWithPagination } from "@/types/player";
+
+type PlayerWithPagination = NonNullable<
+  ReturnType<typeof usePlayersWithPagination>["data"]
+>[number];
 
 const PAGE_SIZE = 20;
 

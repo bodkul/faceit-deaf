@@ -19,7 +19,12 @@ import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { getCountryCode, getFlagUrl } from "@/lib/country";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
-import type { MatchType, PlayerType, TeamType } from "@/types/match";
+
+type MatchType = NonNullable<ReturnType<typeof useMatch>["data"]>;
+
+type TeamType = MatchType["teams"][number];
+
+type PlayerType = TeamType["team_players"][number];
 
 import Loading from "./loading";
 
@@ -302,11 +307,81 @@ function PlayerStatsRow({
       {/* ADR */}
       <StatCell value={player.adr?.toFixed(1)} />
 
-      {/* KAST */}
-      <StatCell value={stats?.kast.toFixed(1)} />
-
       {/* Rating */}
       <StatCell value={stats?.rating.toFixed(2)} />
+    </tr>
+  );
+}
+
+function TeamTotalsRow({
+  players,
+  totalScore,
+}: {
+  players: PlayerType[];
+  totalScore: number;
+}) {
+  const totalKills = sumBy(players, (p) => p.kills ?? 0);
+  const totalDeaths = sumBy(players, (p) => p.deaths ?? 0);
+  const kdDiff = totalKills - totalDeaths;
+  const avgAdr =
+    players.length > 0 ? sumBy(players, (p) => p.adr ?? 0) / players.length : 0;
+
+  const validStats = players.filter(
+    (
+      p,
+    ): p is PlayerType & {
+      assists: number;
+      deaths: number;
+      adr: number;
+      kr_ratio: number;
+    } =>
+      isNumber(p.assists) &&
+      isNumber(p.deaths) &&
+      isNumber(p.adr) &&
+      isNumber(p.kr_ratio),
+  );
+
+  const avgRating =
+    validStats.length > 0
+      ? sumBy(
+          validStats,
+          (p) =>
+            calculateAverageStats({
+              rounds: totalScore,
+              assists: p.assists,
+              deaths: p.deaths,
+              adr: p.adr,
+              kpr: p.kr_ratio,
+            }).rating,
+        ) / validStats.length
+      : null;
+
+  return (
+    <tr className="border-neutral-800/50 border-t bg-neutral-900/40">
+      <td className="px-4 py-2 text-left font-mono text-neutral-600 text-sm uppercase tracking-widest">
+        Total
+      </td>
+      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
+        {totalKills} - {totalDeaths}
+      </td>
+      <td
+        className={cn(
+          "px-4 py-2 text-right font-mono text-sm tabular-nums",
+          kdDiff > 0
+            ? "text-emerald-400"
+            : kdDiff < 0
+              ? "text-red-400"
+              : "text-neutral-400",
+        )}
+      >
+        {formatNumberWithSign(kdDiff)}
+      </td>
+      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
+        {avgAdr.toFixed(1)}
+      </td>
+      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
+        {avgRating?.toFixed(2) ?? "—"}
+      </td>
     </tr>
   );
 }
@@ -370,9 +445,6 @@ function TeamStatsTable({
                 ADR
               </th>
               <th className="px-4 py-2 text-right font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                KAST
-              </th>
-              <th className="px-4 py-2 text-right font-mono text-neutral-600 text-xs uppercase tracking-widest">
                 Rating
               </th>
             </tr>
@@ -386,6 +458,12 @@ function TeamStatsTable({
               />
             ))}
           </tbody>
+          <tfoot>
+            <TeamTotalsRow
+              players={team.team_players}
+              totalScore={totalScore}
+            />
+          </tfoot>
         </table>
       </div>
     </div>

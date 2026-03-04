@@ -40,7 +40,6 @@ export function calculateAverageStats({
   );
 
   return {
-    kast,
     rating,
   };
 }

@@ -8,9 +8,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SecondaryFlowButton } from "@/components/ui/flow-button";
 import { Separator } from "@/components/ui/separator";
-import type { PlayerByUsername } from "@/types/player";
+import type { getPlayerByUsername } from "@/lib/supabase";
 
-export function PlayerCard({ player }: { player: PlayerByUsername }) {
+export function PlayerCard({
+  player,
+}: {
+  player: NonNullable<Awaited<ReturnType<typeof getPlayerByUsername>>>;
+}) {
   const socials = useMemo(() => {
     const list = [
       {

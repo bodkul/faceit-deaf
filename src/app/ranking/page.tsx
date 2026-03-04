@@ -20,10 +20,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination";
+import { PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePlayersWithPagination } from "@/hooks/usePlayers";
 import { getCountryFlagUrl } from "@/lib/country";
@@ -140,22 +137,24 @@ function PlayerRow({
 function LoadingSkeleton() {
   return (
     <>
-      {Array.from({ length: PAGE_SIZE }).map((_, i) => (
-        <div
-          key={i}
-          className="grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-neutral-800/50 border-b px-4 py-2.5 last:border-0"
-        >
-          <Skeleton className="ml-auto h-4 w-6 rounded bg-neutral-800/80" />
-          <div className="flex items-center gap-3">
-            <Skeleton className="size-8 shrink-0 rounded-lg bg-neutral-800/80" />
-            <Skeleton className="h-4 w-28 rounded bg-neutral-800/80" />
+      {Array.from({ length: PAGE_SIZE }, (_, i) => `skeleton-row-${i}`).map(
+        (key) => (
+          <div
+            key={key}
+            className="grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-neutral-800/50 border-b px-4 py-2.5 last:border-0"
+          >
+            <Skeleton className="ml-auto h-4 w-6 rounded bg-neutral-800/80" />
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-8 shrink-0 rounded-lg bg-neutral-800/80" />
+              <Skeleton className="h-4 w-28 rounded bg-neutral-800/80" />
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-5 rounded bg-neutral-800/80" />
+              <Skeleton className="h-4 w-12 rounded bg-neutral-800/80" />
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Skeleton className="size-5 rounded bg-neutral-800/80" />
-            <Skeleton className="h-4 w-12 rounded bg-neutral-800/80" />
-          </div>
-        </div>
-      ))}
+        ),
+      )}
     </>
   );
 }

@@ -52,7 +52,10 @@ function MatchCard({
   const [scoreA, scoreB] = (match.round_score ?? "0 / 0")
     .split("/")
     .map((s) => s.trim());
-  const minutes = isLive ? differenceInMinutes(now(), match.started_at!) : null;
+  const minutes =
+    isLive && match.started_at
+      ? differenceInMinutes(now(), match.started_at)
+      : null;
 
   return (
     <Link

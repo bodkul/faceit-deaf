@@ -108,7 +108,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
     <MatchHistoryLayout>
       <CardContent>
         <div className="overflow-hidden rounded-md border">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <MatchesTableHead />
             </TableHeader>

@@ -2,9 +2,9 @@
 
 import { IconClock, IconExternalLink, IconMapPin } from "@tabler/icons-react";
 import { format, intervalToDuration } from "date-fns";
-import { isNumber } from "es-toolkit";
+import { isNumber, meanBy } from "es-toolkit";
 import { orderBy } from "es-toolkit/array";
-import { gt, lt, subtract, sumBy } from "es-toolkit/compat";
+import { divide, gt, lt, multiply, subtract, sumBy } from "es-toolkit/compat";
 import { isNil } from "es-toolkit/predicate";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +14,7 @@ import { use, useMemo } from "react";
 import { SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useMatch } from "@/hooks/useMatch";
 import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { getCountryCode, getFlagUrl } from "@/lib/country";
@@ -21,17 +22,81 @@ import { formatNumberWithSign } from "@/lib/faceit/utils";
 import { cn } from "@/lib/utils";
 
 type MatchType = NonNullable<ReturnType<typeof useMatch>["data"]>;
-
 type TeamType = MatchType["teams"][number];
-
 type PlayerType = TeamType["team_players"][number];
-
-import Loading from "./loading";
 
 const formatDuration = (start: string, end: string): string => {
   const { hours = 0, minutes = 0 } = intervalToDuration({ start, end });
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
+
+function Loading() {
+  return (
+    <div className="flex flex-col gap-4">
+      {/* header skeleton */}
+      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
+        <Skeleton className="h-40 w-full rounded-none" />
+        <div className="grid grid-cols-3 items-center gap-4 px-6 py-6">
+          <div className="flex items-center gap-4">
+            <Skeleton className="size-14 rounded-xl" />
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-8 w-12" />
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <Skeleton className="h-6 w-8" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+          <div className="flex items-center justify-end gap-4">
+            <div className="flex flex-col items-end gap-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-8 w-12" />
+            </div>
+            <Skeleton className="size-14 rounded-xl" />
+          </div>
+        </div>
+      </div>
+
+      {/* stats skeleton */}
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-4 w-32" />
+        {[0, 1].map((t) => (
+          <div
+            key={t}
+            className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950"
+          >
+            {/* team header */}
+            <div className="flex items-center gap-3 border-neutral-800 border-b px-4 py-3">
+              <Skeleton className="size-7 rounded-lg" />
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="ml-auto h-4 w-10" />
+            </div>
+            {/* table rows */}
+            <div className="px-4">
+              {[0, 1, 2, 3, 4].map((r) => (
+                <div
+                  key={r}
+                  className="flex items-center justify-between border-neutral-800/50 border-b py-3 last:border-0"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Skeleton className="size-6 rounded" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <div className="flex gap-6">
+                    {[0, 1, 2, 3, 4, 5, 6, 7].map((c) => (
+                      <Skeleton key={c} className="h-4 w-8" />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function MatchHeader({ match }: { match: MatchType }) {
   const team1 = match.teams[0];
@@ -39,7 +104,6 @@ function MatchHeader({ match }: { match: MatchType }) {
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-      {/* map background */}
       {match.map_pick && (
         <div className="absolute inset-0">
           <Image
@@ -51,12 +115,10 @@ function MatchHeader({ match }: { match: MatchType }) {
           <div className="absolute inset-0 bg-linear-to-b from-neutral-950/60 via-neutral-950/80 to-neutral-950" />
         </div>
       )}
-
-      {/* glow top line */}
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-600/50 to-transparent" />
 
       <div className="relative px-6 pt-5 pb-6">
-        {/* top bar: map + faceit link */}
+        {/* top bar */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900/80 px-3 py-1.5 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
             <IconMapPin size={13} className="text-neutral-500" />
@@ -64,10 +126,7 @@ function MatchHeader({ match }: { match: MatchType }) {
               {match.map_pick?.replace("de_", "") ?? "—"}
             </span>
           </div>
-
-          {/* spacer for PC so the right side stays on the right */}
           <div className="hidden sm:block" />
-
           <div className="flex items-center gap-3">
             {match.started_at && (
               <span className="font-mono text-neutral-600 text-xs">
@@ -100,7 +159,6 @@ function MatchHeader({ match }: { match: MatchType }) {
 
         {/* teams + score */}
         <div className="grid grid-cols-3 items-center gap-4">
-          {/* team 1 */}
           <div className="flex items-center gap-4">
             <Avatar className="size-14 rounded-xl border border-neutral-800">
               <AvatarImage src={team1.avatar ?? undefined} />
@@ -122,13 +180,10 @@ function MatchHeader({ match }: { match: MatchType }) {
             </div>
           </div>
 
-          {/* center */}
           <div className="flex flex-col items-center gap-2">
             <span className="font-bold font-mono text-2xl text-neutral-700">
               VS
             </span>
-
-            {/* half scores */}
             {(team1.first_half_score != null ||
               team1.second_half_score != null) && (
               <div className="flex items-center gap-1 text-center">
@@ -166,7 +221,6 @@ function MatchHeader({ match }: { match: MatchType }) {
                 )}
               </div>
             )}
-
             {match.location_pick && (
               <div className="flex items-center gap-1.5">
                 <Image
@@ -183,7 +237,6 @@ function MatchHeader({ match }: { match: MatchType }) {
             )}
           </div>
 
-          {/* team 2 */}
           <div className="flex items-center justify-end gap-4 text-right">
             <div>
               <p className="font-bold text-white">{team2.name}</p>
@@ -258,10 +311,17 @@ function PlayerStatsRow({
     !isNil(player.kills) && !isNil(player.deaths)
       ? subtract(player.kills, player.deaths)
       : null;
+  const kd =
+    !isNil(player.kills) && !isNil(player.deaths)
+      ? divide(player.kills, player.deaths)
+      : null;
+  const hpr =
+    isNumber(player.headshots) && isNumber(player.kills)
+      ? multiply(divide(player.headshots, player.kills), 100)
+      : null;
 
   return (
     <tr className="group border-neutral-800/50 border-b transition-colors last:border-0 hover:bg-neutral-800/20">
-      {/* player */}
       <td className="px-4 py-2.5">
         <div className="flex items-center gap-2.5">
           <SkillLevelIcon
@@ -280,17 +340,9 @@ function PlayerStatsRow({
           </Link>
         </div>
       </td>
-
-      {/* K - D */}
-      <StatCell
-        value={
-          !isNil(player.kills) && !isNil(player.deaths)
-            ? `${player.kills} - ${player.deaths}`
-            : null
-        }
-      />
-
-      {/* +/- */}
+      <StatCell value={player.kills} />
+      <StatCell value={player.deaths} />
+      <StatCell value={player.assists} />
       <StatCell
         value={isNumber(kdDiff) ? formatNumberWithSign(kdDiff) : null}
         highlight={
@@ -303,11 +355,9 @@ function PlayerStatsRow({
             : null
         }
       />
-
-      {/* ADR */}
+      <StatCell value={kd?.toFixed(2)} />
       <StatCell value={player.adr?.toFixed(1)} />
-
-      {/* Rating */}
+      <StatCell value={hpr != null ? `${hpr.toFixed(1)}%` : null} />
       <StatCell value={stats?.rating.toFixed(2)} />
     </tr>
   );
@@ -322,39 +372,23 @@ function TeamTotalsRow({
 }) {
   const totalKills = sumBy(players, (p) => p.kills ?? 0);
   const totalDeaths = sumBy(players, (p) => p.deaths ?? 0);
-  const kdDiff = totalKills - totalDeaths;
-  const avgAdr =
-    players.length > 0 ? sumBy(players, (p) => p.adr ?? 0) / players.length : 0;
-
-  const validStats = players.filter(
-    (
-      p,
-    ): p is PlayerType & {
-      assists: number;
-      deaths: number;
-      adr: number;
-      kr_ratio: number;
-    } =>
-      isNumber(p.assists) &&
-      isNumber(p.deaths) &&
-      isNumber(p.adr) &&
-      isNumber(p.kr_ratio),
+  const totalAssists = sumBy(players, (p) => p.assists ?? 0);
+  const totalHeadshots = sumBy(players, (p) => p.headshots ?? 0);
+  const kdDiff = subtract(totalKills, totalDeaths);
+  const avgKD = divide(totalKills, totalDeaths);
+  const avgADR = meanBy(players, (p) => p.adr ?? 0);
+  const avgHPR = multiply(divide(totalHeadshots, totalKills), 100);
+  const avgRating = meanBy(
+    players,
+    (p) =>
+      calculateAverageStats({
+        rounds: totalScore,
+        assists: p.assists ?? 0,
+        deaths: p.deaths ?? 0,
+        adr: p.adr ?? 0,
+        kpr: p.kr_ratio ?? 0,
+      }).rating,
   );
-
-  const avgRating =
-    validStats.length > 0
-      ? sumBy(
-          validStats,
-          (p) =>
-            calculateAverageStats({
-              rounds: totalScore,
-              assists: p.assists,
-              deaths: p.deaths,
-              adr: p.adr,
-              kpr: p.kr_ratio,
-            }).rating,
-        ) / validStats.length
-      : null;
 
   return (
     <tr className="border-neutral-800/50 border-t bg-neutral-900/40">
@@ -362,7 +396,13 @@ function TeamTotalsRow({
         Total
       </td>
       <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {totalKills} - {totalDeaths}
+        {totalKills}
+      </td>
+      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
+        {totalDeaths}
+      </td>
+      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
+        {totalAssists}
       </td>
       <td
         className={cn(
@@ -377,10 +417,16 @@ function TeamTotalsRow({
         {formatNumberWithSign(kdDiff)}
       </td>
       <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {avgAdr.toFixed(1)}
+        {avgKD.toFixed(2)}
       </td>
       <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {avgRating?.toFixed(2) ?? "—"}
+        {avgADR.toFixed(1)}
+      </td>
+      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
+        {avgHPR.toFixed(1)}%
+      </td>
+      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
+        {avgRating.toFixed(2)}
       </td>
     </tr>
   );
@@ -403,7 +449,6 @@ function TeamStatsTable({
 
   return (
     <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
-      {/* team header */}
       <div className="flex items-center gap-3 border-neutral-800 border-b px-4 py-3">
         <Avatar className="size-7 rounded-lg border border-neutral-800">
           <AvatarImage src={team.avatar ?? undefined} />
@@ -427,26 +472,31 @@ function TeamStatsTable({
         </span>
       </div>
 
-      {/* stats table */}
       <div className="w-full overflow-x-auto">
         <table className="w-max min-w-full">
           <thead>
             <tr className="border-neutral-800/50 border-b">
-              <th className="px-4 py-2 text-left font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                Player
-              </th>
-              <th className="px-4 py-2 text-right font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                K - D
-              </th>
-              <th className="px-4 py-2 text-right font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                +/-
-              </th>
-              <th className="px-4 py-2 text-right font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                ADR
-              </th>
-              <th className="px-4 py-2 text-right font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                Rating
-              </th>
+              {[
+                "Player",
+                "K",
+                "D",
+                "A",
+                "+/-",
+                "KD",
+                "ADR",
+                "HS%",
+                "Rating",
+              ].map((h, i) => (
+                <th
+                  key={h}
+                  className={cn(
+                    "px-4 py-2 font-mono text-neutral-600 text-xs uppercase tracking-widest",
+                    i === 0 ? "text-left" : "text-right",
+                  )}
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -483,7 +533,6 @@ export default function MatchPage(props: PageProps<"/match/[matchId]">) {
   return (
     <div className="flex flex-col gap-4">
       <MatchHeader match={match} />
-
       <div className="flex flex-col gap-3">
         <h2 className="font-bold text-neutral-600 text-sm uppercase tracking-widest">
           Match Statistics

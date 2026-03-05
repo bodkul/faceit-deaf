@@ -12,16 +12,15 @@ import { cn } from "@/lib/utils";
 
 export function MatchesTableHead() {
   return (
-    <TableRow>
-      <TableHead className="w-1/9 text-center">Date</TableHead>
-      <TableHead className="w-1/9 text-center">Result</TableHead>
-      <TableHead className="w-1/9 text-center">Score</TableHead>
-      <TableHead className="w-1/9 text-center">K - D</TableHead>
-      <TableHead className="w-1/9 text-center">K/D</TableHead>
-      <TableHead className="w-1/9 text-center">ADR</TableHead>
-      <TableHead className="w-1/9 text-center">HS%</TableHead>
-      <TableHead className="w-1/9 text-center">Map</TableHead>
-      <TableHead className="w-1/9 text-center">Elo +/-</TableHead>
+    <TableRow className="[&>th]:text-center">
+      <TableHead>Date</TableHead>
+      <TableHead>Map</TableHead>
+      <TableHead>Score</TableHead>
+      <TableHead>K - D</TableHead>
+      <TableHead>K / D</TableHead>
+      <TableHead>ADR</TableHead>
+      <TableHead>HS%</TableHead>
+      <TableHead>Elo +/-</TableHead>
     </TableRow>
   );
 }
@@ -47,19 +46,21 @@ export function MatchesTableRow({
               isThisYear(match.finished_at) ? "d. MMM HH:mm" : "d. MMM yyyy",
             ))()}
       </TableCell>
-      <TableCell>
-        {match.win === true && (
-          <Badge className="rounded-sm border-none bg-green-600/10 text-green-600 focus-visible:outline-none focus-visible:ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:focus-visible:ring-green-400/40 [a&]:hover:bg-green-600/5 dark:[a&]:hover:bg-green-400/5">
-            W
-          </Badge>
-        )}
-        {match.win === false && (
-          <Badge className="rounded-sm border-none bg-destructive/10 text-destructive focus-visible:outline-none focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/5">
-            L
-          </Badge>
-        )}
+      <TableCell className="text-[#87a3bf] capitalize">
+        {match.map?.replace("de_", "")}
       </TableCell>
-      <TableCell>{match.round_score}</TableCell>
+      <TableCell>
+        <Badge
+          className={cn("rounded-sm border-none focus-visible:outline-none", {
+            "bg-green-600/10 text-green-600 focus-visible:ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:focus-visible:ring-green-400/40 [a&]:hover:bg-green-600/5 dark:[a&]:hover:bg-green-400/5":
+              match.win === true,
+            "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/5":
+              match.win === false,
+          })}
+        >
+          {match.round_score}
+        </Badge>
+      </TableCell>
       <TableCell>
         {!isNil(match.kills) && !isNil(match.deaths)
           ? `${match.kills} - ${match.deaths}`
@@ -80,9 +81,6 @@ export function MatchesTableRow({
         {isNumber(match.headshots_percent) && gt(match.headshots_percent, 0)
           ? `${match.headshots_percent} %`
           : null}
-      </TableCell>
-      <TableCell className="text-[#87a3bf] capitalize">
-        {match.map?.replace("de_", "")}
       </TableCell>
       <TableCell>
         {match.elo_diff && (

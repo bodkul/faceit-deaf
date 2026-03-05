@@ -155,11 +155,11 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
         ].map(({ icon, action, label }) => (
           <PaginationItem key={label}>
             <Button
-              variant="ghost"
+              variant="dark"
               size="icon-sm"
               onClick={() => action?.()}
               disabled={action === null}
-              className="border border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:bg-neutral-800 hover:text-white disabled:opacity-30"
+              className="disabled:opacity-30"
             >
               <span className="sr-only">{label}</span>
               {icon}

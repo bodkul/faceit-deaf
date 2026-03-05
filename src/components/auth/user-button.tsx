@@ -22,11 +22,7 @@ export function UserButton() {
 
   if (status === "unauthenticated" || !session?.user) {
     return (
-      <Button
-        onClick={() => signIn("faceit")}
-        className="border border-[#ff5500]/30 bg-[#ff5500]/10 text-[#ff5500] hover:bg-[#ff5500]/20 hover:text-[#ff5500]"
-        variant="ghost"
-      >
+      <Button onClick={() => signIn("faceit")} variant="faceit">
         <FaceitIcon className="size-4" data-icon="inline-start" />
         Login with Faceit
       </Button>
@@ -43,9 +39,9 @@ export function UserButton() {
           size="icon"
           className="rounded-full hover:bg-neutral-800"
         >
-          <Avatar className="size-8 border border-neutral-800">
+          <Avatar>
             <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
-            <AvatarFallback className="bg-neutral-800 text-neutral-400 text-xs">
+            <AvatarFallback className="text-neutral-400 text-xs">
               {user.name?.charAt(0) ?? "U"}
             </AvatarFallback>
           </Avatar>
@@ -56,7 +52,7 @@ export function UserButton() {
         className="w-56 border-neutral-800 bg-neutral-950"
       >
         <DropdownMenuLabel className="flex items-center gap-2">
-          <Avatar className="border border-neutral-800">
+          <Avatar>
             <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
             <AvatarFallback className="bg-neutral-800 text-neutral-400 text-xs">
               {user.name?.charAt(0) ?? "U"}

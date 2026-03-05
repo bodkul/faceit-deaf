@@ -52,13 +52,13 @@ export function PlayerCard({
       <div className="relative -mt-8 flex flex-col items-center px-6 pb-6">
         {/* avatar + skill */}
         <div className="relative mb-3">
-          <Avatar className="size-20 rounded-2xl border-2 border-neutral-800 shadow-xl">
+          <Avatar className="size-20 rounded-2xl border-2 shadow-xl">
             <AvatarImage
               className="object-cover"
               src={player.avatar}
               alt={player.nickname}
             />
-            <AvatarFallback className="rounded-2xl bg-neutral-800 text-neutral-400">
+            <AvatarFallback className="rounded-2xl text-neutral-400">
               {player.nickname.charAt(0)}
             </AvatarFallback>
           </Avatar>

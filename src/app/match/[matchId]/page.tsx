@@ -139,12 +139,7 @@ function MatchHeader({ match }: { match: MatchType }) {
                 {formatDuration(match.started_at, match.finished_at)}
               </span>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="border border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:bg-neutral-800 hover:text-white"
-            >
+            <Button variant="dark" size="sm" asChild>
               <Link
                 href={`https://www.faceit.com/en/cs2/room/1-${match.id}`}
                 target="_blank"
@@ -160,9 +155,9 @@ function MatchHeader({ match }: { match: MatchType }) {
         {/* teams + score */}
         <div className="grid grid-cols-3 items-center gap-4">
           <div className="flex items-center gap-4">
-            <Avatar className="size-14 rounded-xl border border-neutral-800">
+            <Avatar className="size-14 rounded-xl">
               <AvatarImage src={team1.avatar ?? undefined} />
-              <AvatarFallback className="rounded-xl bg-neutral-800 text-neutral-400">
+              <AvatarFallback className="rounded-xl text-neutral-400">
                 {team1.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
@@ -250,9 +245,9 @@ function MatchHeader({ match }: { match: MatchType }) {
                 {team2.final_score ?? "—"}
               </span>
             </div>
-            <Avatar className="size-14 rounded-xl border border-neutral-800">
+            <Avatar className="size-14 rounded-xl">
               <AvatarImage src={team2.avatar ?? undefined} />
-              <AvatarFallback className="rounded-xl bg-neutral-800 text-neutral-400">
+              <AvatarFallback className="rounded-xl text-neutral-400">
                 {team2.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
@@ -450,9 +445,9 @@ function TeamStatsTable({
   return (
     <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
       <div className="flex items-center gap-3 border-neutral-800 border-b px-4 py-3">
-        <Avatar className="size-7 rounded-lg border border-neutral-800">
+        <Avatar className="size-7 rounded-lg">
           <AvatarImage src={team.avatar ?? undefined} />
-          <AvatarFallback className="rounded-lg bg-neutral-800 text-neutral-500 text-xs">
+          <AvatarFallback className="rounded-lg text-neutral-500 text-xs">
             {team.name.charAt(0)}
           </AvatarFallback>
         </Avatar>

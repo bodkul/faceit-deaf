@@ -77,7 +77,7 @@ export function PlayerSearch() {
 
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
-              <Spinner className="size-5" />
+              <Spinner />
             </div>
           ) : players && players.length > 0 ? (
             <ul className="max-h-80 overflow-auto">
@@ -88,12 +88,12 @@ export function PlayerSearch() {
                     className="flex w-full items-center gap-3 px-3 py-2.5 transition-colors hover:bg-neutral-900"
                     onClick={() => setIsOpen(false)}
                   >
-                    <Avatar className="size-8 rounded-lg border border-neutral-800">
+                    <Avatar className="rounded-lg">
                       <AvatarImage
                         src={player.avatar ?? undefined}
                         alt={player.nickname ?? ""}
                       />
-                      <AvatarFallback className="rounded-lg bg-neutral-800 text-neutral-400 text-xs">
+                      <AvatarFallback className="rounded-lg text-neutral-400 text-xs">
                         {player.nickname?.charAt(0) ?? "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -130,7 +130,7 @@ export function PlayerSearch() {
               ))}
             </ul>
           ) : (
-            <Empty className="p-6">
+            <Empty>
               <EmptyHeader>
                 <EmptyTitle className="text-neutral-400 text-sm">
                   No players found

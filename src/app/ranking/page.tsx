@@ -79,12 +79,12 @@ function PlayerRow({
 
         {/* avatar + info */}
         <div className="flex min-w-0 items-center gap-3">
-          <Avatar className="size-8 shrink-0 rounded-lg border border-neutral-800">
+          <Avatar className="rounded-lg">
             <AvatarImage
               src={player.avatar ?? undefined}
               alt={player.nickname ?? ""}
             />
-            <AvatarFallback className="rounded-lg bg-neutral-800 text-neutral-500 text-xs">
+            <AvatarFallback className="rounded-lg text-neutral-500 text-xs">
               {player.nickname?.charAt(0)}
             </AvatarFallback>
           </Avatar>
@@ -258,7 +258,7 @@ export default function RankingPage() {
                 size="icon-sm"
                 onClick={() => action?.()}
                 disabled={disabled}
-                className="border border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:bg-neutral-800 hover:text-white disabled:opacity-30"
+                className="disabled:opacity-30"
               >
                 <span className="sr-only">{label}</span>
                 {icon}

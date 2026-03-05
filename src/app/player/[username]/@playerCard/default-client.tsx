@@ -6,6 +6,7 @@ import { useMemo } from "react";
 
 import { FaceitIcon, SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SecondaryFlowButton } from "@/components/ui/flow-button";
 import { getCountryFlagUrl } from "@/lib/country";
 import type { getPlayerByUsername } from "@/lib/supabase";
 
@@ -98,15 +99,11 @@ export function PlayerCard({
         {/* socials */}
         <div className="flex gap-2">
           {socials.map((s) => (
-            <a
-              key={s.key}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex size-9 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-400 transition-colors hover:border-neutral-700 hover:bg-neutral-800 hover:text-white"
-            >
-              {s.icon}
-            </a>
+            <SecondaryFlowButton key={s.key} size="icon-lg" asChild>
+              <a href={s.href} target="_blank" rel="noopener noreferrer">
+                {s.icon}
+              </a>
+            </SecondaryFlowButton>
           ))}
         </div>
       </div>

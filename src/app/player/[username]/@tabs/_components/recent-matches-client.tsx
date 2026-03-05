@@ -5,13 +5,6 @@ import { range } from "es-toolkit/math";
 import { useMemo } from "react";
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Empty,
   EmptyDescription,
   EmptyHeader,
@@ -19,66 +12,54 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useRecentMatches } from "@/hooks/useRecentMatches";
 
 import { MatchesTableHead, MatchesTableRow } from "./matches";
 
-function RecentMatchesLayout({ children }: { children: React.ReactNode }) {
+function RecentMatchesWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
+    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
       <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/3 blur-3xl" />
-      <CardHeader>
-        <CardTitle>Recent Matches</CardTitle>
-        <CardDescription>Last 10 played matches</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-hidden rounded-md border">
-          <Table>
-            <TableHeader>
-              <MatchesTableHead />
-            </TableHeader>
-            <TableBody>{children}</TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="border-neutral-800 border-b px-5 py-4">
+        <h3 className="font-bold text-white">Recent Matches</h3>
+        <p className="text-neutral-500 text-sm">Last 10 played matches</p>
+      </div>
+      <div className="w-full overflow-x-auto">
+        <table className="w-max min-w-full">
+          <thead>
+            <MatchesTableHead />
+          </thead>
+          <tbody>{children}</tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 
 export function RecentMatchesSkeleton() {
+  const SKELETON_COLS = [
+    { key: "date", w: 24 },
+    { key: "map", w: 12 },
+    { key: "score", w: 10 },
+    { key: "kd", w: 12 },
+    { key: "kdr", w: 8 },
+    { key: "adr", w: 8 },
+  ];
   return (
-    <RecentMatchesLayout>
+    <RecentMatchesWrapper>
       {range(10).map((index) => (
-        <TableRow key={index}>
-          <TableCell>
-            <Skeleton className="mx-auto h-5 w-24" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="mx-auto h-5 w-12" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="mx-auto h-5 w-10" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="mx-auto h-5 w-12" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="mx-auto h-5 w-8" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="mx-auto h-5 w-8" />
-          </TableCell>
-        </TableRow>
+        <tr
+          key={index}
+          className="border-neutral-800/50 border-b last:border-0"
+        >
+          {SKELETON_COLS.map(({ key, w }) => (
+            <td key={key} className="px-4 py-3">
+              <Skeleton className={`mx-auto h-4 w-${w} bg-neutral-800`} />
+            </td>
+          ))}
+        </tr>
       ))}
-    </RecentMatchesLayout>
+    </RecentMatchesWrapper>
   );
 }
 
@@ -87,7 +68,6 @@ export default function RecentMatches({ playerId }: { playerId: string }) {
 
   const rows = useMemo(() => {
     if (!data?.length) return null;
-
     return data.map((match) => (
       <MatchesTableRow key={match.id} match={match} />
     ));
@@ -97,29 +77,25 @@ export default function RecentMatches({ playerId }: { playerId: string }) {
 
   if (!rows) {
     return (
-      <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-        <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/3 blur-3xl" />
-        <CardHeader>
-          <CardTitle>Recent Matches</CardTitle>
-          <CardDescription>Last 10 played matches</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconHistory />
-              </EmptyMedia>
-              <EmptyTitle>No matches yet</EmptyTitle>
-              <EmptyDescription>
-                Recent matches will appear here once played.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </CardContent>
-      </Card>
+      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+        <div className="mb-4">
+          <h3 className="font-bold text-white">Recent Matches</h3>
+          <p className="text-neutral-500 text-sm">Last 10 played matches</p>
+        </div>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <IconHistory />
+            </EmptyMedia>
+            <EmptyTitle>No matches yet</EmptyTitle>
+            <EmptyDescription>
+              Recent matches will appear here once played.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </div>
     );
   }
 
-  return <RecentMatchesLayout>{rows}</RecentMatchesLayout>;
+  return <RecentMatchesWrapper>{rows}</RecentMatchesWrapper>;
 }

@@ -4,15 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { use } from "react";
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 export default function PlayerLayout({
   playerCard,
   tabs,
   params,
 }: LayoutProps<"/player/[username]">) {
   const { username } = use(params);
-
   const pathname = usePathname();
 
   const getTabValue = () => {
@@ -22,24 +19,39 @@ export default function PlayerLayout({
     return "";
   };
 
+  const tabValue = getTabValue();
+
+  const tabs_nav = [
+    { value: "overview", label: "Overview", href: `/player/${username}` },
+    { value: "matches", label: "Matches", href: `/player/${username}/matches` },
+    { value: "maps", label: "Maps", href: `/player/${username}/maps` },
+  ];
+
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       {playerCard}
 
-      <Tabs className="gap-4 lg:col-span-2" value={getTabValue()}>
-        <TabsList className="w-full">
-          <TabsTrigger value="overview" asChild>
-            <Link href={`/player/${username}`}>Overview</Link>
-          </TabsTrigger>
-          <TabsTrigger value="matches" asChild>
-            <Link href={`/player/${username}/matches`}>Matches</Link>
-          </TabsTrigger>
-          <TabsTrigger value="maps" asChild>
-            <Link href={`/player/${username}/maps`}>Maps</Link>
-          </TabsTrigger>
-        </TabsList>
-        <div className="flex-1 space-y-4">{tabs}</div>
-      </Tabs>
+      <div className="flex flex-col gap-4 lg:col-span-2">
+        {/* custom tab bar */}
+        <div className="flex gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1">
+          {tabs_nav.map((tab) => (
+            <Link
+              key={tab.value}
+              href={tab.href}
+              className={[
+                "flex-1 rounded-lg px-4 py-2 text-center font-medium text-sm transition-all duration-200",
+                tabValue === tab.value
+                  ? "bg-neutral-800 text-white"
+                  : "text-neutral-500 hover:bg-neutral-800/50 hover:text-neutral-300",
+              ].join(" ")}
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-4">{tabs}</div>
+      </div>
     </div>
   );
 }

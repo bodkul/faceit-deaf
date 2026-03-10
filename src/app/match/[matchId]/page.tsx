@@ -105,7 +105,7 @@ function MatchHeader({ match }: { match: MatchType }) {
             src={`/img/maps/${match.map_pick}.webp`}
             alt="Map"
             fill
-            className="object-cover opacity-10"
+            className="object-cover opacity-50"
           />
           <div className="absolute inset-0 bg-linear-to-b from-neutral-950/60 via-neutral-950/80 to-neutral-950" />
         </div>
@@ -163,7 +163,7 @@ function MatchHeader({ match }: { match: MatchType }) {
                   "text-white": team1.team_win === null,
                 })}
               >
-                {team1.final_score ?? "—"}
+                {team1.final_score ?? 0}
               </span>
             </div>
           </div>
@@ -235,7 +235,7 @@ function MatchHeader({ match }: { match: MatchType }) {
                   "text-white": team2.team_win === null,
                 })}
               >
-                {team2.final_score ?? "—"}
+                {team2.final_score ?? 0}
               </span>
             </div>
             <Avatar className="size-14 rounded-xl">

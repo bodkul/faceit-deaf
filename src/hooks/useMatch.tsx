@@ -15,7 +15,7 @@ export function useMatch(id: string) {
       const { data } = await supabaseClient
         .from("matches")
         .select(
-          "id, map_pick, location_pick, started_at, finished_at, teams:match_teams(id, avatar, name, team_win, final_score, team_players:match_team_players(id, player_id_nullable, player_id_mandatory, nickname, game_skill_level, kills, deaths, assists, adr, kr_ratio, kd_ratio))",
+          "id, map_pick, location_pick, started_at, finished_at, teams:match_teams(id, avatar, name, team_win, first_half_score, second_half_score, overtime_score, final_score, team_players:match_team_players(id, player_id_nullable, player_id_mandatory, nickname, game_skill_level, kills, deaths, assists, adr, kr_ratio, kd_ratio, headshots))",
         )
         .match({ id })
         .order("faction", { referencedTable: "teams", ascending: true })

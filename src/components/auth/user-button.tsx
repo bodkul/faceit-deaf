@@ -18,13 +18,11 @@ import {
 export function UserButton() {
   const { data: session, status } = useSession();
 
-  if (status === "loading") {
-    return null;
-  }
+  if (status === "loading") return null;
 
   if (status === "unauthenticated" || !session?.user) {
     return (
-      <Button onClick={() => signIn("faceit")}>
+      <Button onClick={() => signIn("faceit")} variant="faceit">
         <FaceitIcon className="size-4" data-icon="inline-start" />
         Login with Faceit
       </Button>
@@ -36,30 +34,49 @@ export function UserButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <Avatar className="size-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full hover:bg-neutral-800"
+        >
+          <Avatar>
             <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
-            <AvatarFallback>{user.name?.charAt(0) ?? "U"}</AvatarFallback>
+            <AvatarFallback className="text-neutral-400 text-xs">
+              {user.name?.charAt(0) ?? "U"}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent
+        align="end"
+        className="w-56 border-neutral-800 bg-neutral-950"
+      >
         <DropdownMenuLabel className="flex items-center gap-2">
           <Avatar>
             <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
-            <AvatarFallback>{user.name?.charAt(0) ?? "U"}</AvatarFallback>
+            <AvatarFallback className="bg-neutral-800 text-neutral-400 text-xs">
+              {user.name?.charAt(0) ?? "U"}
+            </AvatarFallback>
           </Avatar>
           <div className="flex flex-1 flex-col">
-            <span className="text-popover-foreground">{user.name}</span>
-            <span className="text-muted-foreground text-xs">{user.email}</span>
+            <span className="font-medium text-sm text-white">{user.name}</span>
+            <span className="text-neutral-500 text-xs">{user.email}</span>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
+        <DropdownMenuSeparator className="bg-neutral-800" />
+        <DropdownMenuItem
+          asChild
+          className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"
+        >
           <Link href={`/player/${user.name}`}>Statistics</Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>Sign out</DropdownMenuItem>
+        <DropdownMenuSeparator className="bg-neutral-800" />
+        <DropdownMenuItem
+          onClick={() => signOut()}
+          className="text-neutral-500 hover:bg-neutral-900 hover:text-red-400 focus:bg-neutral-900 focus:text-red-400"
+        >
+          Sign out
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

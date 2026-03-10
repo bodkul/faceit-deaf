@@ -4,13 +4,6 @@ import { IconMap } from "@tabler/icons-react";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
@@ -32,22 +25,20 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function MapsLayout({ children }: { children: React.ReactNode }) {
+function MapsWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Maps Statistics</CardTitle>
-        <CardDescription>
+    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
+      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/4 blur-3xl" />
+      <div className="border-neutral-800 border-b px-5 py-4">
+        <h3 className="font-bold text-white">Maps Statistics</h3>
+        <p className="text-neutral-500 text-sm">
           Distribution of maps played by this player
-        </CardDescription>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
+        </p>
+      </div>
+      <div className="p-5">{children}</div>
+    </div>
   );
-}
-
-export function MapsSkeleton() {
-  return <MapsContent maps={[]} />;
 }
 
 function MapsContent({
@@ -56,15 +47,16 @@ function MapsContent({
   maps: NonNullable<ReturnType<typeof usePlayerMaps>["data"]>;
 }) {
   return (
-    <MapsLayout>
+    <MapsWrapper>
       <ChartContainer config={chartConfig} className="h-64 w-full">
         <BarChart accessibilityLayer data={maps}>
-          <CartesianGrid vertical={false} />
+          <CartesianGrid vertical={false} stroke="#262626" />
           <XAxis
             dataKey="map"
             tickLine={false}
             tickMargin={10}
             axisLine={false}
+            tick={{ fill: "#525252", fontSize: 11, fontFamily: "monospace" }}
             tickFormatter={(value) => {
               const short = value.slice(3);
               return short.charAt(0).toUpperCase() + short.slice(1);
@@ -74,12 +66,44 @@ function MapsContent({
             cursor={false}
             content={<ChartTooltipContent hideLabel />}
           />
-          <Bar dataKey="count" fill="var(--color-map)" radius={8}>
-            <LabelList position="top" offset={12} className="fill-foreground" />
+          <Bar dataKey="count" fill="var(--color-map)" radius={6}>
+            <LabelList
+              position="top"
+              offset={10}
+              style={{ fill: "#737373", fontSize: 11, fontFamily: "monospace" }}
+            />
           </Bar>
         </BarChart>
       </ChartContainer>
-    </MapsLayout>
+    </MapsWrapper>
+  );
+}
+
+export function MapsSkeleton() {
+  const SKELETON_BARS = [
+    { key: "mirage", h: 40 },
+    { key: "inferno", h: 70 },
+    { key: "dust2", h: 55 },
+    { key: "nuke", h: 90 },
+    { key: "anubis", h: 35 },
+    { key: "ancient", h: 60 },
+    { key: "vertigo", h: 45 },
+  ];
+
+  return (
+    <MapsWrapper>
+      <div className="flex h-64 items-end gap-3 px-4">
+        {SKELETON_BARS.map(({ key, h }) => (
+          <div key={key} className="flex flex-1 flex-col items-center gap-2">
+            <div
+              className="w-full animate-pulse rounded-md bg-neutral-800"
+              style={{ height: `${h}%` }}
+            />
+            <div className="h-3 w-8 animate-pulse rounded bg-neutral-800" />
+          </div>
+        ))}
+      </div>
+    </MapsWrapper>
   );
 }
 
@@ -90,7 +114,7 @@ export function Maps({ playerId }: { playerId: string }) {
 
   if (!maps) {
     return (
-      <MapsLayout>
+      <MapsWrapper>
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -102,7 +126,7 @@ export function Maps({ playerId }: { playerId: string }) {
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-      </MapsLayout>
+      </MapsWrapper>
     );
   }
 

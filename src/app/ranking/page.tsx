@@ -8,19 +8,11 @@ import {
   IconTrophy,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { SkillLevelIcon } from "@/components/icons";
-import { renderRankingLoadingRows } from "@/components/render-loading-rows";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -28,42 +20,36 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { PaginationContent, PaginationItem } from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePlayersWithPagination } from "@/hooks/usePlayers";
 import { getCountryFlagUrl } from "@/lib/country";
-import { formatNumberWithSign } from "@/lib/faceit/utils";
-import type { PlayerWithPagination } from "@/types/player";
+import { formatNumberWithSign, getSkillLevelFromElo } from "@/lib/faceit/utils";
+
+type PlayerWithPagination = NonNullable<
+  ReturnType<typeof usePlayersWithPagination>["data"]
+>[number];
 
 const PAGE_SIZE = 20;
 
 function EloDelta({ player }: { player: PlayerWithPagination }) {
-  if (player.elo_before == null || player.faceit_elo == null) {
-    return null;
-  }
-
+  if (player.elo_before == null || player.faceit_elo == null) return null;
   const difference = player.faceit_elo - player.elo_before;
   if (difference === 0) return null;
-
-  const color = difference > 0 ? "text-green-500" : "text-red-500";
-
   return (
-    <>
-      {" "}
-      <sup className={color}>{formatNumberWithSign(difference)}</sup>
-    </>
+    <span
+      className={`font-mono text-xs tabular-nums ${difference > 0 ? "text-emerald-400" : "text-red-400"}`}
+    >
+      {formatNumberWithSign(difference)}
+    </span>
   );
+}
+
+function getRankColor(index: number) {
+  if (index === 0) return "text-yellow-400";
+  if (index === 1) return "text-neutral-300";
+  if (index === 2) return "text-orange-500";
+  return "text-neutral-600";
 }
 
 function PlayerRow({
@@ -73,80 +59,102 @@ function PlayerRow({
   player: PlayerWithPagination;
   index: number;
 }) {
-  const router = useRouter();
+  const isTop3 = index < 3;
 
   return (
-    <TableRow
-      key={player.id}
-      className="cursor-pointer"
-      onClick={() => router.push(`/player/${player.nickname}`)}
-    >
-      <TableCell>{index + 1}</TableCell>
-      <TableCell>
-        <div className="flex items-center space-x-2">
-          {player.country ? (
-            <Image
-              className="h-2.5 w-3.75 rounded-xs"
-              src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
-              width={15}
-              height={10}
-              alt={`${player.country} flag`}
+    <Link href={`/player/${player.nickname}`}>
+      <div
+        className={[
+          "group grid grid-cols-[2rem_1fr_auto] items-center gap-4 px-4 py-2.5 transition-colors",
+          "border-neutral-800/50 border-b last:border-0",
+          "hover:bg-neutral-800/30",
+        ].join(" ")}
+      >
+        <span
+          className={`text-right font-bold font-mono text-sm tabular-nums ${getRankColor(index)}`}
+        >
+          {index + 1}
+        </span>
+
+        <div className="flex min-w-0 items-center gap-3">
+          <Avatar className="rounded-lg">
+            <AvatarImage
+              src={player.avatar ?? undefined}
+              alt={player.nickname ?? ""}
             />
-          ) : (
-            <div className="h-2.5 w-3.75 rounded-xs bg-neutral-700" />
-          )}
-          <div className="font-medium">{player.nickname}</div>
+            <AvatarFallback className="rounded-lg text-neutral-500 text-xs">
+              {player.nickname?.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <div className="flex items-center gap-1.5">
+              {player.country ? (
+                <Image
+                  className="h-2.5 w-3.75 shrink-0 rounded-xs"
+                  src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
+                  width={15}
+                  height={10}
+                  alt={player.country}
+                />
+              ) : (
+                <div className="h-2.5 w-3.75 shrink-0 rounded-xs bg-neutral-800" />
+              )}
+              <span
+                className={[
+                  "truncate font-medium text-sm transition-colors group-hover:text-white",
+                  isTop3 ? "text-white" : "text-neutral-300",
+                ].join(" ")}
+              >
+                {player.nickname}
+              </span>
+            </div>
+          </div>
         </div>
-      </TableCell>
-      <TableCell>
-        <SkillLevelIcon level={player.skill_level} className="size-6" />
-      </TableCell>
-      <TableCell>
-        {player.faceit_elo}
-        <EloDelta player={player} />
-      </TableCell>
-    </TableRow>
+
+        <div className="flex items-center gap-3">
+          <SkillLevelIcon
+            level={getSkillLevelFromElo(player.faceit_elo)}
+            className="size-5 shrink-0"
+          />
+          <div className="flex w-20 items-center justify-end gap-1.5">
+            <EloDelta player={player} />
+            <span
+              className={[
+                "font-bold font-mono text-sm tabular-nums",
+                isTop3 ? "text-white" : "text-neutral-300",
+              ].join(" ")}
+            >
+              {player.faceit_elo}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
 
-function TableContent({
-  data,
-  offset,
-  isLoading,
-}: {
-  data: PlayerWithPagination[] | null | undefined;
-  offset: number;
-  isLoading: boolean;
-}) {
-  if (isLoading) {
-    return renderRankingLoadingRows(PAGE_SIZE, offset);
-  }
-
-  if (!data || data.length === 0) {
-    return (
-      <TableRow>
-        <TableCell colSpan={4} className="h-100">
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconTrophy />
-              </EmptyMedia>
-              <EmptyTitle>No players found</EmptyTitle>
-              <EmptyDescription>
-                There are no players in the ranking yet
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </TableCell>
-      </TableRow>
-    );
-  }
-
+function LoadingSkeleton() {
   return (
     <>
-      {data?.map((player, index) => (
-        <PlayerRow key={player.id} player={player} index={offset + index} />
-      ))}
+      {Array.from({ length: PAGE_SIZE }, (_, i) => `skeleton-row-${i}`).map(
+        (key) => (
+          <div
+            key={key}
+            className="grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-neutral-800/50 border-b px-4 py-2.5 last:border-0"
+          >
+            <Skeleton className="ml-auto h-4 w-6 rounded bg-neutral-800/80" />
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-8 shrink-0 rounded-lg bg-neutral-800/80" />
+              <Skeleton className="h-4 w-28 rounded bg-neutral-800/80" />
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-5 rounded bg-neutral-800/80" />
+              <Skeleton className="h-4 w-12 rounded bg-neutral-800/80" />
+            </div>
+          </div>
+        ),
+      )}
     </>
   );
 }
@@ -168,83 +176,90 @@ export default function RankingPage() {
   const offset = (pageIndex - 1) * PAGE_SIZE;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Ranking</CardTitle>
-        <CardDescription>Player rankings by FACEIT ELO</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-hidden rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>#</TableHead>
-                <TableHead>Player</TableHead>
-                <TableHead>Skill level</TableHead>
-                <TableHead>ELO</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableContent data={data} offset={offset} isLoading={isLoading} />
-            </TableBody>
-          </Table>
+    <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
+      <div className="flex items-center justify-between border-neutral-800 border-b px-4 py-4">
+        <div>
+          <h2 className="font-bold text-white">Ranking</h2>
+          <p className="text-neutral-500 text-sm">
+            Player rankings by FACEIT ELO
+          </p>
         </div>
-      </CardContent>
-      <CardFooter>
-        <Pagination>
-          <div className="flex items-center space-x-6 lg:space-x-8">
-            <div className="flex w-25 items-center justify-center font-medium text-sm">
-              Page {pageIndex} of {totalPages}
-            </div>
-            <PaginationContent className="gap-2">
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => firstPage?.()}
-                  disabled={!canPreviousPage}
-                >
-                  <span className="sr-only">Go to first page</span>
-                  <IconChevronsLeft data-icon="inline-end" />
-                </Button>
-              </PaginationItem>
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => previousPage?.()}
-                  disabled={!canPreviousPage}
-                >
-                  <span className="sr-only">Go to previous page</span>
-                  <IconChevronLeft data-icon="inline-end" />
-                </Button>
-              </PaginationItem>
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => nextPage?.()}
-                  disabled={!canNextPage}
-                >
-                  <span className="sr-only">Go to next page</span>
-                  <IconChevronRight data-icon="inline-end" />
-                </Button>
-              </PaginationItem>
-              <PaginationItem>
-                <Button
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => lastPage?.()}
-                  disabled={!canNextPage}
-                >
-                  <span className="sr-only">Go to last page</span>
-                  <IconChevronsRight data-icon="inline-end" />
-                </Button>
-              </PaginationItem>
-            </PaginationContent>
-          </div>
-        </Pagination>
-      </CardFooter>
-    </Card>
+        <div className="flex items-center gap-3 pr-1">
+          <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
+            Lvl
+          </span>
+          <span className="w-20 text-right font-mono text-neutral-600 text-xs uppercase tracking-widest">
+            ELO
+          </span>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : !data || data.length === 0 ? (
+        <Empty className="py-16">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <IconTrophy />
+            </EmptyMedia>
+            <EmptyTitle>No players found</EmptyTitle>
+            <EmptyDescription>
+              There are no players in the ranking yet
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        data.map((player, index) => (
+          <PlayerRow key={player.id} player={player} index={offset + index} />
+        ))
+      )}
+
+      <div className="flex items-center justify-between border-neutral-800 border-t px-4 py-3">
+        <span className="font-mono text-neutral-600 text-xs">
+          Page {pageIndex} of {totalPages}
+        </span>
+        <PaginationContent className="gap-1">
+          {[
+            {
+              icon: <IconChevronsLeft size={14} />,
+              action: firstPage,
+              disabled: !canPreviousPage,
+              label: "First",
+            },
+            {
+              icon: <IconChevronLeft size={14} />,
+              action: previousPage,
+              disabled: !canPreviousPage,
+              label: "Prev",
+            },
+            {
+              icon: <IconChevronRight size={14} />,
+              action: nextPage,
+              disabled: !canNextPage,
+              label: "Next",
+            },
+            {
+              icon: <IconChevronsRight size={14} />,
+              action: lastPage,
+              disabled: !canNextPage,
+              label: "Last",
+            },
+          ].map(({ icon, action, disabled, label }) => (
+            <PaginationItem key={label}>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => action?.()}
+                disabled={disabled}
+                className="disabled:opacity-30"
+              >
+                <span className="sr-only">{label}</span>
+                {icon}
+              </Button>
+            </PaginationItem>
+          ))}
+        </PaginationContent>
+      </div>
+    </div>
   );
 }

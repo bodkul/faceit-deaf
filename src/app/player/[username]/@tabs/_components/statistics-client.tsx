@@ -7,14 +7,6 @@ import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
@@ -35,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   type PlayerStatisticsRange,
@@ -44,9 +35,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const chartConfig = {
-  elo: {
-    color: "oklch(70.5% 0.213 47.604)",
-  },
+  elo: { color: "oklch(70.5% 0.213 47.604)" },
 } satisfies ChartConfig;
 
 const STAT_LABELS = [
@@ -72,65 +61,36 @@ export type PlayerMatch = NonNullable<
   Awaited<ReturnType<typeof usePlayerStatistics>>["data"]
 >[number];
 
-interface StatisticsCardProps {
+function StatCard({
+  label,
+  value,
+  children,
+}: {
   label: string;
+  value?: React.ReactNode;
   children?: React.ReactNode;
-  isLoading?: boolean;
-}
-
-function StatisticsCard({ label, children, isLoading }: StatisticsCardProps) {
-  const baseClasses =
-    "flex flex-col items-center space-y-1 rounded-lg border p-4 transition-colors";
-
-  if (isLoading) {
-    return (
-      <Skeleton
-        className={cn(baseClasses, "bg-muted/30 pb-13 hover:bg-muted/50")}
-      >
-        <span className="flex font-medium text-muted-foreground text-sm">
-          {label}
-        </span>
-      </Skeleton>
-    );
-  }
-
+}) {
   return (
-    <div className={cn(baseClasses, "bg-muted/30 hover:bg-muted/50")}>
-      <span className="flex font-medium text-muted-foreground text-sm">
+    <div className="flex flex-col items-center gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-4 transition-colors hover:bg-neutral-800/50">
+      <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
         {label}
       </span>
+      {value && (
+        <span className="font-bold font-mono text-white text-xl">{value}</span>
+      )}
       {children}
     </div>
   );
 }
 
-function StatisticsHeader({
-  statisticsRange,
-  onRangeChange,
-}: {
-  statisticsRange: PlayerStatisticsRange;
-  onRangeChange: (value: PlayerStatisticsRange) => void;
-}) {
+function StatCardSkeleton({ label }: { label: string }) {
   return (
-    <CardHeader>
-      <CardTitle>Statistics</CardTitle>
-      <CardDescription>Performance metrics and ELO progression</CardDescription>
-      <CardAction>
-        <Select value={statisticsRange} onValueChange={onRangeChange}>
-          <SelectTrigger className="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {TIME_RANGES.map((range, index) => (
-              <div key={range.value}>
-                {(index === 1 || index === 4) && <SelectSeparator />}
-                <SelectItem value={range.value}>{range.label}</SelectItem>
-              </div>
-            ))}
-          </SelectContent>
-        </Select>
-      </CardAction>
-    </CardHeader>
+    <div className="flex flex-col items-center gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-4">
+      <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
+        {label}
+      </span>
+      <Skeleton className="mt-1 h-6 w-16 bg-neutral-800" />
+    </div>
   );
 }
 
@@ -142,7 +102,7 @@ function EloChart({
   return (
     <ChartContainer config={chartConfig} className="h-40 w-full">
       <AreaChart accessibilityLayer data={data}>
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} stroke="#262626" />
         <YAxis
           dataKey="match"
           domain={[
@@ -151,6 +111,7 @@ function EloChart({
           ]}
           tickLine={false}
           axisLine={false}
+          tick={{ fill: "#525252", fontSize: 11 }}
         />
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
         <defs>
@@ -178,30 +139,25 @@ function useStatisticsCalculation(data: PlayerMatch[] | undefined) {
     const totalKills = sumBy(data, (p) => p.kills ?? 0);
     const totalDeaths = sumBy(data, (p) => p.deaths ?? 0);
     const kd = totalDeaths > 0 ? totalKills / totalDeaths : totalKills;
-
     const totalHS = sumBy(data, (p) => p.headshots ?? 0);
     const hsPercent = totalKills > 0 ? (totalHS / totalKills) * 100 : 0;
-
     const matches = data.length;
     const wins = data.filter((p) => p.win === true).length;
     const winrate = (wins / matches) * 100;
-
     const history = take(data, 5)
       .map((m) => (m.win ? "W" : "L"))
       .reverse();
-
-    const eloChartData =
-      data
-        .filter(
-          (m): m is PlayerMatch & { eloAfter: number; eloBefore: number } =>
-            typeof m.eloAfter === "number" && typeof m.eloBefore === "number",
-        )
-        .map((m, index) => ({
-          match: `#${index + 1}`,
-          elo: m.eloAfter,
-          eloDiff: m.eloAfter - m.eloBefore,
-        }))
-        .reverse() || [];
+    const eloChartData = data
+      .filter(
+        (m): m is PlayerMatch & { eloAfter: number; eloBefore: number } =>
+          typeof m.eloAfter === "number" && typeof m.eloBefore === "number",
+      )
+      .map((m, index) => ({
+        match: `#${index + 1}`,
+        elo: m.eloAfter,
+        eloDiff: m.eloAfter - m.eloBefore,
+      }))
+      .reverse();
 
     return {
       kd: kd.toFixed(2),
@@ -219,23 +175,64 @@ function useStatisticsCalculation(data: PlayerMatch[] | undefined) {
   }, [data]);
 }
 
+function StatisticsHeader({
+  statisticsRange,
+  onRangeChange,
+}: {
+  statisticsRange: PlayerStatisticsRange;
+  onRangeChange: (value: PlayerStatisticsRange) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <h3 className="font-bold text-white">Statistics</h3>
+        <p className="text-neutral-500 text-sm">
+          Performance metrics and ELO progression
+        </p>
+      </div>
+      <Select value={statisticsRange} onValueChange={onRangeChange}>
+        <SelectTrigger className="w-40 border-neutral-800 bg-neutral-900 text-neutral-300">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="border-neutral-800 bg-neutral-950">
+          {TIME_RANGES.map((range, index) => (
+            <div key={range.value}>
+              {(index === 1 || index === 4) && (
+                <SelectSeparator className="bg-neutral-800" />
+              )}
+              <SelectItem
+                value={range.value}
+                className="text-neutral-300 focus:bg-neutral-800 focus:text-white"
+              >
+                {range.label}
+              </SelectItem>
+            </div>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 export function StatisticsSkeleton() {
   return (
-    <Card>
-      <StatisticsHeader
-        statisticsRange="last20Matches"
-        onRangeChange={() => {}}
-      />
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {STAT_LABELS.map((label) => (
-            <StatisticsCard key={label} label={label} isLoading />
-          ))}
+    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex flex-col gap-1.5">
+          <Skeleton className="h-5 w-24 bg-neutral-800" />
+          <Skeleton className="h-4 w-48 bg-neutral-800" />
         </div>
-        <Separator />
-        <div className="h-40 w-full" />
-      </CardContent>
-    </Card>
+        <Skeleton className="h-9 w-40 bg-neutral-800" />
+      </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {STAT_LABELS.map((label) => (
+          <StatCardSkeleton key={label} label={label} />
+        ))}
+      </div>
+      <div className="my-5 h-px bg-neutral-800" />
+      <Skeleton className="h-40 w-full bg-neutral-900" />
+    </div>
   );
 }
 
@@ -249,25 +246,26 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
   if (!stats) {
     return (
-      <Card>
-        <StatisticsHeader
-          statisticsRange={statisticsRange}
-          onRangeChange={setStatisticsRange}
-        />
-        <CardContent>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconChartBar />
-              </EmptyMedia>
-              <EmptyTitle>No statistics yet</EmptyTitle>
-              <EmptyDescription>
-                Statistics will appear here once matches are played.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </CardContent>
-      </Card>
+      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+        <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+        <div className="mb-5">
+          <StatisticsHeader
+            statisticsRange={statisticsRange}
+            onRangeChange={setStatisticsRange}
+          />
+        </div>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <IconChartBar />
+            </EmptyMedia>
+            <EmptyTitle>No statistics yet</EmptyTitle>
+            <EmptyDescription>
+              Statistics will appear here once matches are played.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </div>
     );
   }
 
@@ -285,39 +283,40 @@ export default function Statistics({ playerId }: { playerId: string }) {
   ];
 
   return (
-    <Card>
-      <StatisticsHeader
-        statisticsRange={statisticsRange}
-        onRangeChange={setStatisticsRange}
-      />
+    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
+      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/4 blur-3xl" />
 
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {statisticsData.map(({ label, value }) => (
-            <StatisticsCard key={label} label={label}>
-              <span className="font-bold text-2xl">{value}</span>
-            </StatisticsCard>
-          ))}
-          <StatisticsCard label="W/L History">
-            <div className="flex items-center gap-1.5">
-              {stats.history.map((result, index) => (
-                <span
-                  key={`${result}-${stats.eloChartData[index]?.match ?? index}`}
-                  className={cn("font-bold text-xl", {
-                    "text-rose-500": result === "L",
-                    "text-emerald-500": result === "W",
-                  })}
-                >
-                  {result}
-                </span>
-              ))}
-            </div>
-          </StatisticsCard>
-        </div>
+      <div className="mb-5">
+        <StatisticsHeader
+          statisticsRange={statisticsRange}
+          onRangeChange={setStatisticsRange}
+        />
+      </div>
 
-        <Separator />
-        <EloChart data={stats.eloChartData} />
-      </CardContent>
-    </Card>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {statisticsData.map(({ label, value }) => (
+          <StatCard key={label} label={label} value={value} />
+        ))}
+        <StatCard label="W/L History">
+          <div className="flex items-center gap-1.5">
+            {stats.history.map((result, index) => (
+              <span
+                key={`${result}-${stats.eloChartData[index]?.match ?? index}`}
+                className={cn("font-bold font-mono text-lg", {
+                  "text-rose-400": result === "L",
+                  "text-emerald-400": result === "W",
+                })}
+              >
+                {result}
+              </span>
+            ))}
+          </div>
+        </StatCard>
+      </div>
+
+      <div className="my-5 h-px bg-neutral-800" />
+      <EloChart data={stats.eloChartData} />
+    </div>
   );
 }

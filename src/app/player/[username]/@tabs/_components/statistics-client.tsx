@@ -147,6 +147,7 @@ function useStatisticsCalculation(data: PlayerMatch[] | undefined) {
     const history = take(data, 5)
       .map((m) => (m.win ? "W" : "L"))
       .reverse();
+
     const eloChartData = data
       .filter(
         (m): m is PlayerMatch & { eloAfter: number; eloBefore: number } =>
@@ -158,6 +159,23 @@ function useStatisticsCalculation(data: PlayerMatch[] | undefined) {
         eloDiff: m.eloAfter - m.eloBefore,
       }))
       .reverse();
+
+    if (eloChartData.length > 0) {
+      const firstMatch = data
+        .filter(
+          (m): m is PlayerMatch & { eloBefore: number } =>
+            typeof m.eloBefore === "number",
+        )
+        .at(-1);
+
+      if (firstMatch) {
+        eloChartData.unshift({
+          match: "#0",
+          elo: firstMatch.eloBefore,
+          eloDiff: 0,
+        });
+      }
+    }
 
     return {
       kd: kd.toFixed(2),

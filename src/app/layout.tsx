@@ -16,6 +16,10 @@ export const metadata: Metadata = {
     default: siteConfig.name,
   },
   description: siteConfig.description,
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+  },
 };
 
 export default function RootLayout({

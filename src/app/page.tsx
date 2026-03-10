@@ -20,8 +20,7 @@ export default function Page() {
         </h1>
 
         <p className="max-w-2xl text-balance text-neutral-500 text-sm sm:text-base">
-          Track, analyze, and watch FACEIT matches for deaf and hard-of-hearing
-          players. Live updates, detailed stats, friendly environment.
+          {siteConfig.description}
         </p>
       </div>
 

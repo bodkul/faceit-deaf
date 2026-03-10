@@ -477,7 +477,7 @@ function TeamStatsTable({
             ? "WIN"
             : team.team_win === false
               ? "LOSS"
-              : "—"}
+              : null}
         </span>
       </div>
 

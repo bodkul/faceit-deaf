@@ -24,7 +24,7 @@ import { PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePlayersWithPagination } from "@/hooks/usePlayers";
 import { getCountryFlagUrl } from "@/lib/country";
-import { formatNumberWithSign } from "@/lib/faceit/utils";
+import { formatNumberWithSign, getSkillLevelFromElo } from "@/lib/faceit/utils";
 
 type PlayerWithPagination = NonNullable<
   ReturnType<typeof usePlayersWithPagination>["data"]
@@ -70,14 +70,12 @@ function PlayerRow({
           "hover:bg-neutral-800/30",
         ].join(" ")}
       >
-        {/* rank */}
         <span
           className={`text-right font-bold font-mono text-sm tabular-nums ${getRankColor(index)}`}
         >
           {index + 1}
         </span>
 
-        {/* avatar + info */}
         <div className="flex min-w-0 items-center gap-3">
           <Avatar className="rounded-lg">
             <AvatarImage
@@ -114,10 +112,9 @@ function PlayerRow({
           </div>
         </div>
 
-        {/* elo + skill */}
         <div className="flex items-center gap-3">
           <SkillLevelIcon
-            level={player.skill_level}
+            level={getSkillLevelFromElo(player.faceit_elo)}
             className="size-5 shrink-0"
           />
           <div className="flex w-20 items-center justify-end gap-1.5">
@@ -180,7 +177,6 @@ export default function RankingPage() {
 
   return (
     <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
-      {/* header */}
       <div className="flex items-center justify-between border-neutral-800 border-b px-4 py-4">
         <div>
           <h2 className="font-bold text-white">Ranking</h2>
@@ -188,7 +184,6 @@ export default function RankingPage() {
             Player rankings by FACEIT ELO
           </p>
         </div>
-        {/* column labels */}
         <div className="flex items-center gap-3 pr-1">
           <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
             Lvl
@@ -199,7 +194,6 @@ export default function RankingPage() {
         </div>
       </div>
 
-      {/* rows */}
       {isLoading ? (
         <LoadingSkeleton />
       ) : !data || data.length === 0 ? (
@@ -220,7 +214,6 @@ export default function RankingPage() {
         ))
       )}
 
-      {/* footer pagination */}
       <div className="flex items-center justify-between border-neutral-800 border-t px-4 py-3">
         <span className="font-mono text-neutral-600 text-xs">
           Page {pageIndex} of {totalPages}

@@ -32,7 +32,6 @@ export default function PlayerLayout({
       {playerCard}
 
       <div className="flex flex-col gap-4 lg:col-span-2">
-        {/* custom tab bar */}
         <div className="flex gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1">
           {tabs_nav.map((tab) => (
             <Link

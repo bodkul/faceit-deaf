@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { getPlayerByUsername } from "@/lib/supabase";
+import { getPlayerIdByNickname } from "@/lib/supabase";
 
 import { Maps } from "./page-client";
 
@@ -9,9 +9,9 @@ export default async function PlayerPage({
 }: PageProps<"/player/[username]">) {
   const { username } = await params;
 
-  const player = await getPlayerByUsername(username);
+  const playerId = await getPlayerIdByNickname(username);
 
-  if (!player) notFound();
+  if (!playerId) notFound();
 
-  return <Maps playerId={player.id} />;
+  return <Maps playerId={playerId} />;
 }

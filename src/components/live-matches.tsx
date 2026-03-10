@@ -70,7 +70,6 @@ function MatchCard({
             : "border-neutral-800 bg-neutral-900",
       ].join(" ")}
     >
-      {/* glow top line */}
       <div
         className={[
           "absolute inset-x-0 top-0 h-px",
@@ -83,9 +82,7 @@ function MatchCard({
       />
 
       <div className="p-4">
-        {/* header: status + map */}
         <div className="mb-3 flex items-center justify-between">
-          {/* status */}
           {isLive ? (
             <div className="flex items-center gap-1.5">
               <span className="relative flex h-2 w-2">
@@ -112,13 +109,11 @@ function MatchCard({
             </div>
           )}
 
-          {/* map name */}
           <span className="rounded-md border border-neutral-700/50 bg-neutral-800/60 px-2 py-0.5 font-mono text-neutral-400 text-xs capitalize">
             {mapName}
           </span>
         </div>
 
-        {/* score */}
         <div className="mb-4 flex items-center justify-center gap-3">
           <span className="font-black font-mono text-3xl text-white tabular-nums">
             {scoreA}
@@ -129,7 +124,6 @@ function MatchCard({
           </span>
         </div>
 
-        {/* players */}
         {match.players && match.players.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {match.players.map((nickname) => (

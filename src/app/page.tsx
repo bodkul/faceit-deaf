@@ -7,7 +7,6 @@ export default function Page() {
   return (
     <>
       <div className="container flex flex-col items-center gap-4 py-8 text-center md:py-16 lg:py-20">
-        {/* pill badge */}
         <div className="rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 font-bold font-mono text-red-400 text-xs uppercase tracking-widest">
           CS2 · Deaf Community
         </div>

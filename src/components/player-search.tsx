@@ -21,6 +21,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { usePlayerSearch } from "@/hooks/usePlayerSearch";
 import { getCountryFlagUrl } from "@/lib/country";
+import { getSkillLevelFromElo } from "@/lib/faceit/utils";
 
 export function PlayerSearch() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +29,7 @@ export function PlayerSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { players, isLoading } = usePlayerSearch(query);
+  const { data: players, isLoading } = usePlayerSearch(query);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -72,7 +73,6 @@ export function PlayerSearch() {
 
       {isOpen && query.length >= 2 && (
         <div className="absolute top-full right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-2xl shadow-black/50">
-          {/* glow top line */}
           <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/40 to-transparent" />
 
           {isLoading ? (
@@ -121,7 +121,7 @@ export function PlayerSearch() {
                         {player.faceit_elo}
                       </span>
                       <SkillLevelIcon
-                        level={player.skill_level ?? 1}
+                        level={getSkillLevelFromElo(player.faceit_elo)}
                         className="size-5"
                       />
                     </div>

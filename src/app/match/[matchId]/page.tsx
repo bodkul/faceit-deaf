@@ -33,7 +33,6 @@ const formatDuration = (start: string, end: string): string => {
 function Loading() {
   return (
     <div className="flex flex-col gap-4">
-      {/* header skeleton */}
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <Skeleton className="h-40 w-full rounded-none" />
         <div className="grid grid-cols-3 items-center gap-4 px-6 py-6">
@@ -58,7 +57,6 @@ function Loading() {
         </div>
       </div>
 
-      {/* stats skeleton */}
       <div className="flex flex-col gap-3">
         <Skeleton className="h-4 w-32" />
         {[0, 1].map((t) => (
@@ -66,13 +64,11 @@ function Loading() {
             key={t}
             className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950"
           >
-            {/* team header */}
             <div className="flex items-center gap-3 border-neutral-800 border-b px-4 py-3">
               <Skeleton className="size-7 rounded-lg" />
               <Skeleton className="h-4 w-28" />
               <Skeleton className="ml-auto h-4 w-10" />
             </div>
-            {/* table rows */}
             <div className="px-4">
               {[0, 1, 2, 3, 4].map((r) => (
                 <div
@@ -99,8 +95,7 @@ function Loading() {
 }
 
 function MatchHeader({ match }: { match: MatchType }) {
-  const team1 = match.teams[0];
-  const team2 = match.teams[1];
+  const [team1, team2] = match.teams;
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
@@ -118,7 +113,6 @@ function MatchHeader({ match }: { match: MatchType }) {
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-600/50 to-transparent" />
 
       <div className="relative px-6 pt-5 pb-6">
-        {/* top bar */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900/80 px-3 py-1.5 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
             <IconMapPin size={13} className="text-neutral-500" />
@@ -152,7 +146,6 @@ function MatchHeader({ match }: { match: MatchType }) {
           </div>
         </div>
 
-        {/* teams + score */}
         <div className="grid grid-cols-3 items-center gap-4">
           <div className="flex items-center gap-4">
             <Avatar className="size-14 rounded-xl">
@@ -365,64 +358,85 @@ function TeamTotalsRow({
   players: PlayerType[];
   totalScore: number;
 }) {
-  const totalKills = sumBy(players, (p) => p.kills ?? 0);
-  const totalDeaths = sumBy(players, (p) => p.deaths ?? 0);
-  const totalAssists = sumBy(players, (p) => p.assists ?? 0);
-  const totalHeadshots = sumBy(players, (p) => p.headshots ?? 0);
-  const kdDiff = subtract(totalKills, totalDeaths);
-  const avgKD = divide(totalKills, totalDeaths);
-  const avgADR = meanBy(players, (p) => p.adr ?? 0);
-  const avgHPR = multiply(divide(totalHeadshots, totalKills), 100);
-  const avgRating = meanBy(
-    players,
-    (p) =>
-      calculateAverageStats({
-        rounds: totalScore,
-        assists: p.assists ?? 0,
-        deaths: p.deaths ?? 0,
-        adr: p.adr ?? 0,
-        kpr: p.kr_ratio ?? 0,
-      }).rating,
-  );
+  const hasKills = players.some((p) => p.kills != null);
+  const hasDeaths = players.some((p) => p.deaths != null);
+  const hasAssists = players.some((p) => p.assists != null);
+  const hasHeadshots = players.some((p) => p.headshots != null);
+  const hasAdr = players.some((p) => p.adr != null);
+  const hasKrRatio = players.some((p) => p.kr_ratio != null);
+
+  const totalKills = hasKills ? sumBy(players, (p) => p.kills ?? 0) : undefined;
+  const totalDeaths = hasDeaths
+    ? sumBy(players, (p) => p.deaths ?? 0)
+    : undefined;
+  const totalAssists = hasAssists
+    ? sumBy(players, (p) => p.assists ?? 0)
+    : undefined;
+  const totalHeadshots = hasHeadshots
+    ? sumBy(players, (p) => p.headshots ?? 0)
+    : undefined;
+
+  const kdDiff =
+    isNumber(totalKills) && isNumber(totalDeaths)
+      ? subtract(totalKills, totalDeaths)
+      : undefined;
+
+  const avgKD =
+    isNumber(totalKills) && isNumber(totalDeaths) && totalDeaths > 0
+      ? divide(totalKills, totalDeaths)
+      : undefined;
+
+  const avgADR = hasAdr
+    ? meanBy(
+        players.filter((p) => p.adr != null),
+        (p) => p.adr ?? 0,
+      )
+    : undefined;
+
+  const avgHPR =
+    isNumber(totalHeadshots) && isNumber(totalKills) && totalKills > 0
+      ? multiply(divide(totalHeadshots, totalKills), 100)
+      : undefined;
+
+  const avgRating =
+    hasKrRatio && hasAdr
+      ? meanBy(
+          players,
+          (p) =>
+            calculateAverageStats({
+              rounds: totalScore,
+              assists: p.assists ?? 0,
+              deaths: p.deaths ?? 0,
+              adr: p.adr ?? 0,
+              kpr: p.kr_ratio ?? 0,
+            }).rating,
+        )
+      : undefined;
 
   return (
     <tr className="border-neutral-800/50 border-t bg-neutral-900/40">
       <td className="px-4 py-2 text-left font-mono text-neutral-600 text-sm uppercase tracking-widest">
         Total
       </td>
-      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {totalKills}
-      </td>
-      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {totalDeaths}
-      </td>
-      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {totalAssists}
-      </td>
-      <td
-        className={cn(
-          "px-4 py-2 text-right font-mono text-sm tabular-nums",
-          kdDiff > 0
-            ? "text-emerald-400"
-            : kdDiff < 0
-              ? "text-red-400"
-              : "text-neutral-400",
-        )}
-      >
-        {formatNumberWithSign(kdDiff)}
-      </td>
-      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {avgKD.toFixed(2)}
-      </td>
-      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {avgADR.toFixed(1)}
-      </td>
-      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {avgHPR.toFixed(1)}%
-      </td>
-      <td className="px-4 py-2 text-right font-mono text-neutral-400 text-sm tabular-nums">
-        {avgRating.toFixed(2)}
-      </td>
+      <StatCell value={totalKills} />
+      <StatCell value={totalDeaths} />
+      <StatCell value={totalAssists} />
+      <StatCell
+        value={isNumber(kdDiff) ? formatNumberWithSign(kdDiff) : null}
+        highlight={
+          isNumber(kdDiff)
+            ? gt(kdDiff, 0)
+              ? "green"
+              : lt(kdDiff, 0)
+                ? "red"
+                : null
+            : null
+        }
+      />
+      <StatCell value={avgKD?.toFixed(2)} />
+      <StatCell value={avgADR?.toFixed(1)} />
+      <StatCell value={avgHPR != null ? `${avgHPR.toFixed(1)}%` : null} />
+      <StatCell value={avgRating?.toFixed(2)} />
     </tr>
   );
 }

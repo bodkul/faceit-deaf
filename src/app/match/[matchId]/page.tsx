@@ -483,6 +483,17 @@ function TeamStatsTable({
 
       <div className="w-full overflow-x-auto">
         <table className="w-max min-w-full">
+          <colgroup>
+            <col className="w-48" />
+            <col className="w-16" />
+            <col className="w-16" />
+            <col className="w-16" />
+            <col className="w-16" />
+            <col className="w-20" />
+            <col className="w-20" />
+            <col className="w-20" />
+            <col className="w-20" />
+          </colgroup>
           <thead>
             <tr className="border-neutral-800/50 border-b">
               {[

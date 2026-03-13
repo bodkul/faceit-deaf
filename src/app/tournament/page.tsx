@@ -173,10 +173,29 @@ function MatchCard({
   );
 }
 
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-950 px-5 py-16 text-center">
+      <IconTrophy size={32} className="text-yellow-400/60" />
+      <div>
+        <p className="font-bold text-neutral-300 text-sm">
+          Tournament starts soon
+        </p>
+        <p className="mt-1 text-neutral-500 text-sm">
+          14 March · 13:00 <span className="text-neutral-600">GMT+1</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function MatchesTab({ matches }: { matches: TournamentMatch[] }) {
-  const live = matches.filter((m) => m.status === "LIVE");
+  const live = matches.filter((m) => m.status === "ONGOING");
   const scheduled = matches.filter((m) => m.status === "SCHEDULED");
   const finished = matches.filter((m) => m.status === "FINISHED");
+
+  if (!live.length && !scheduled.length && !finished.length)
+    return <EmptyState />;
 
   return (
     <div className="flex flex-col gap-6">
@@ -252,12 +271,7 @@ function StandingsTab({ matches }: { matches: Match[] }) {
 
   const sorted = orderBy(Object.values(teams), ["w", "l"], ["desc", "asc"]);
 
-  if (!sorted.length)
-    return (
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-950 px-5 py-12 text-center text-neutral-600 text-sm">
-        No finished matches yet
-      </div>
-    );
+  if (!sorted.length) return <EmptyState />;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
@@ -315,6 +329,7 @@ function StandingsTab({ matches }: { matches: Match[] }) {
     </div>
   );
 }
+
 function MVPTab({ matches }: { matches: TournamentMatch[] }) {
   const players: Record<string, PlayerAgg> = {};
   const avatarMap: Record<string, string> = {};
@@ -370,12 +385,7 @@ function MVPTab({ matches }: { matches: TournamentMatch[] }) {
     ["desc"],
   );
 
-  if (!sorted.length)
-    return (
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-950 px-5 py-12 text-center text-neutral-600 text-sm">
-        No stats yet
-      </div>
-    );
+  if (!sorted.length) return <EmptyState />;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">

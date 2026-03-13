@@ -1,27 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { GAME } from "@/lib/faceit/api";
 import {
   handleMatchStatusCancelled,
   handleMatchStatusReady,
 } from "@/lib/faceit/handlers";
 import { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
 
-const VALID_MATCH = {
-  game: "cs2",
-  region: "EU",
-  organizer_id: "faceit",
-  entity_id: "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-};
-
 export async function POST(request: NextRequest) {
   const { payload, event } = await request.json();
 
-  if (
-    payload?.game !== VALID_MATCH.game ||
-    payload?.region !== VALID_MATCH.region ||
-    payload?.organizer_id !== VALID_MATCH.organizer_id ||
-    payload?.entity?.id !== VALID_MATCH.entity_id
-  ) {
+  if (payload?.game !== GAME) {
     return NextResponse.json({ message: "Ignored: not a valid match" });
   }
 

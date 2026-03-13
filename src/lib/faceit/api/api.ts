@@ -5,6 +5,12 @@ import faceitClient from "@/lib/faceit/client";
 
 import type { Match, MatchStats, Player } from "./types";
 
+export const GAME = "cs2";
+export const COMPETITION_IDS = [
+  "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
+  "f950356c-8080-414a-bdc0-b8cd94974356",
+];
+
 export const fetchPlayer = async (playerId: string) => {
   try {
     return await faceitClient<Player>(`players/${playerId}`).json();
@@ -81,11 +87,6 @@ interface MatchHistory {
   faceit_url: string;
 }
 
-const GAME = "cs2";
-const REGION = "EU";
-const ORGANIZER_ID = "faceit";
-const COMPETITION_ID = "f4148ddd-bce8-41b8-9131-ee83afcdd6dd";
-
 export async function fetchFullPlayerHistory(playerId: string) {
   let to = 0;
   let requestCount = 0;
@@ -123,11 +124,8 @@ export async function fetchFullPlayerHistory(playerId: string) {
     }
   }
 
-  const filteredUniqueMatches = uniqBy(allMatches, "match_id").filter(
-    (m) =>
-      m.region === REGION &&
-      m.organizer_id === ORGANIZER_ID &&
-      m.competition_id === COMPETITION_ID,
+  const filteredUniqueMatches = uniqBy(allMatches, "match_id").filter((m) =>
+    COMPETITION_IDS.includes(m.competition_id),
   );
 
   return filteredUniqueMatches;

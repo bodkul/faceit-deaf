@@ -5,8 +5,11 @@ import type { MatchStats } from "faceit-sdk/matches";
 import { faceitSdk } from "@/lib/faceit";
 
 export const HUB_IDS = [
-  "ea94cb7c-7b9f-49fc-9746-64916567e538",
-  "05049049-fdf3-4d5b-afc9-a6818f86064a",
+  // "05049049-fdf3-4d5b-afc9-a6818f86064a", // Hub
+  // "a08c8b46-b418-47c3-8c25-d5831cd09f55",
+  // "9508886f-759a-4389-bd84-deaf02a77928",
+  // "74912e42-b2ba-44b6-b851-70f5fc48508d",
+  // "e15b0fdc-892b-4b10-bee0-7177a52f5e40", 
 ];
 
 export type TournamentMatch = Match & { matchStats: MatchStats | null };

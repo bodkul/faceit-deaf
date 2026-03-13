@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Ranking", href: "/ranking" },
+  { name: "Tournament", href: "/tournament" },
 ];
 
 function isActiveRoute(pathname: string, href: string) {

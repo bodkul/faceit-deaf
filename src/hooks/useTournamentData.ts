@@ -9,7 +9,7 @@ export const HUB_IDS = [
   // "a08c8b46-b418-47c3-8c25-d5831cd09f55",
   // "9508886f-759a-4389-bd84-deaf02a77928",
   // "74912e42-b2ba-44b6-b851-70f5fc48508d",
-  // "e15b0fdc-892b-4b10-bee0-7177a52f5e40", 
+  // "e15b0fdc-892b-4b10-bee0-7177a52f5e40",
 ];
 
 export type TournamentMatch = Match & { matchStats: MatchStats | null };

@@ -1,27 +1,26 @@
 "use client";
 
 import { IconRefresh, IconTrophy } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { orderBy } from "es-toolkit/compat";
 import type { Match } from "faceit-sdk/hubs";
 import type { MatchStats } from "faceit-sdk/matches";
+import Link from "next/link";
 import { useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { faceitSdk } from "@/lib/faceit";
+import {
+  type TournamentMatch,
+  useTournamentData,
+} from "@/hooks/useTournamentData";
 import { cn } from "@/lib/utils";
-
-const HUB_IDS = [
-  "ea94cb7c-7b9f-49fc-9746-64916567e538",
-  "05049049-fdf3-4d5b-afc9-a6818f86064a",
-];
 
 type Tab = "matches" | "standings" | "mvp";
 
 type PlayerAgg = {
+  player_id: string;
   nickname: string;
   avatar: string;
   matches: number;
@@ -30,50 +29,8 @@ type PlayerAgg = {
   assists: number;
   headshots: number;
   mvp: number;
+  adr: number;
 };
-
-function useTournament() {
-  return useQuery({
-    queryKey: ["tournament"],
-    queryFn: async () => {
-      const allItems: Match[] = [];
-
-      await Promise.all(
-        HUB_IDS.map(async (hubId) => {
-          const limit = 100;
-          let offset = 0;
-          let hasMore = true;
-
-          while (hasMore) {
-            const { items } = await faceitSdk.hubs.getHubMatches(hubId, {
-              type: "all",
-              offset,
-              limit,
-            });
-            allItems.push(...items);
-            if (items.length < limit) hasMore = false;
-            else offset += limit;
-          }
-        }),
-      );
-
-      const finished = allItems.filter((m) => m.status === "FINISHED");
-
-      const statsResults = await Promise.all(
-        finished.map(
-          (m) =>
-            faceitSdk.matches
-              .getMatchStats(m.match_id)
-              .catch(() => null) as Promise<MatchStats | null>,
-        ),
-      );
-
-      return { matches: allItems, stats: statsResults };
-    },
-    staleTime: 0,
-    refetchOnWindowFocus: false,
-  });
-}
 
 function LiveBadge() {
   return (
@@ -84,119 +41,143 @@ function LiveBadge() {
   );
 }
 
-function MatchCard({ match }: { match: Match }) {
+function MatchCard({
+  match,
+  matchStats,
+}: {
+  match: Match;
+  matchStats: MatchStats | null;
+}) {
   const isLive = match.status === "LIVE";
   const isFinished = match.status === "FINISHED";
   const f1 = match.teams.faction1;
   const f2 = match.teams.faction2;
-  const score1 = match.results?.score?.faction1;
-  const score2 = match.results?.score?.faction2;
   const winner = match.results?.winner;
   const map = match.voting?.map?.pick?.[0]?.replace("de_", "");
+
+  let score1: string | number = "—";
+  let score2: string | number = "—";
+
+  if (matchStats?.rounds?.[0]) {
+    const round = matchStats.rounds[0];
+    const t1 = round.teams.find((t) => t.team_id === f1.faction_id);
+    const t2 = round.teams.find((t) => t.team_id === f2.faction_id);
+    if (t1 && t2) {
+      score1 = String(t1.team_stats["Final Score"]);
+      score2 = String(t2.team_stats["Final Score"]);
+    }
+  } else if (match.results?.score) {
+    score1 = match.results.score.faction1;
+    score2 = match.results.score.faction2;
+  }
+
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-xl border bg-neutral-950 transition-colors",
-        isLive ? "border-red-500/30" : "border-neutral-800",
-      )}
-    >
-      {isLive && (
-        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-red-500/50 to-transparent" />
-      )}
-      <div className="flex items-center justify-between border-neutral-800 border-b px-4 py-2">
-        <div className="flex items-center gap-2">
-          {isLive && <LiveBadge />}
-          {isFinished && (
-            <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-              Finished
-            </span>
-          )}
-          {!isLive && !isFinished && (
-            <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-              Scheduled
-            </span>
-          )}
+    <Link href={`/tournament/match/${match.match_id}`} className="block">
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-xl border bg-neutral-950 transition-colors",
+          isLive ? "border-red-500/30" : "border-neutral-800",
+        )}
+      >
+        {isLive && (
+          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-red-500/50 to-transparent" />
+        )}
+        <div className="flex items-center justify-between border-neutral-800 border-b px-4 py-2">
+          <div className="flex items-center gap-2">
+            {isLive && <LiveBadge />}
+            {isFinished && (
+              <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
+                Finished
+              </span>
+            )}
+            {!isLive && !isFinished && (
+              <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
+                Scheduled
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {map && (
+              <span className="font-mono text-neutral-500 text-xs capitalize">
+                {map}
+              </span>
+            )}
+            {match.started_at && (
+              <span className="font-mono text-neutral-600 text-xs">
+                {format(match.started_at * 1000, "HH:mm")}
+              </span>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          {map && (
-            <span className="font-mono text-neutral-500 text-xs capitalize">
-              {map}
+        <div className="grid grid-cols-3 items-center gap-2 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <Avatar className="size-8 rounded-lg">
+              <AvatarImage src={f1.avatar} />
+              <AvatarFallback className="rounded-lg text-xs">
+                {f1.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <span
+              className={cn("truncate font-medium text-sm", {
+                "text-emerald-400": isFinished && winner === "faction1",
+                "text-red-400": isFinished && winner === "faction2",
+                "text-white": !isFinished && winner === "faction1",
+                "text-neutral-500": isFinished && winner === "faction2",
+              })}
+            >
+              {f1.name}
             </span>
-          )}
-          {match.started_at && (
-            <span className="font-mono text-neutral-600 text-xs">
-              {format(match.started_at * 1000, "HH:mm")}
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <span
+              className={cn("font-black font-mono text-2xl tabular-nums", {
+                "text-emerald-400": isFinished && winner === "faction1",
+                "text-red-400": isFinished && winner === "faction2",
+                "text-neutral-400": !isFinished,
+              })}
+            >
+              {score1 ?? "—"}
             </span>
-          )}
+            <span className="font-mono text-neutral-700 text-sm">:</span>
+            <span
+              className={cn("font-black font-mono text-2xl tabular-nums", {
+                "text-emerald-400": isFinished && winner === "faction2",
+                "text-red-400": isFinished && winner === "faction1",
+                "text-neutral-400": !isFinished,
+              })}
+            >
+              {score2 ?? "—"}
+            </span>
+          </div>
+          <div className="flex items-center justify-end gap-2">
+            <span
+              className={cn("truncate text-right font-medium text-sm", {
+                "text-emerald-400": isFinished && winner === "faction2",
+                "text-red-400": isFinished && winner === "faction1",
+                "text-white": !isFinished && winner === "faction2",
+                "text-neutral-500": isFinished && winner === "faction1",
+              })}
+            >
+              {f2.name}
+            </span>
+            <Avatar className="size-8 rounded-lg">
+              <AvatarImage src={f2.avatar} />
+              <AvatarFallback className="rounded-lg text-xs">
+                {f2.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+          </div>
         </div>
       </div>
-      <div className="grid grid-cols-3 items-center gap-2 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <Avatar className="size-8 rounded-lg">
-            <AvatarImage src={f1.avatar} />
-            <AvatarFallback className="rounded-lg text-xs">
-              {f1.name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <span
-            className={cn("truncate font-medium text-sm", {
-              "text-emerald-400": isFinished && winner === "faction1",
-              "text-red-400": isFinished && winner === "faction2",
-              "text-white": !isFinished && winner === "faction1",
-              "text-neutral-500": isFinished && winner === "faction2",
-            })}
-          >
-            {f1.name}
-          </span>
-        </div>
-        <div className="flex items-center justify-center gap-3">
-          <span
-            className={cn("font-black font-mono text-2xl tabular-nums", {
-              "text-emerald-400": isFinished && winner === "faction1",
-              "text-red-400": isFinished && winner === "faction2",
-              "text-neutral-400": !isFinished,
-            })}
-          >
-            {score1 ?? "—"}
-          </span>
-          <span className="font-mono text-neutral-700 text-sm">:</span>
-          <span
-            className={cn("font-black font-mono text-2xl tabular-nums", {
-              "text-emerald-400": isFinished && winner === "faction2",
-              "text-red-400": isFinished && winner === "faction1",
-              "text-neutral-400": !isFinished,
-            })}
-          >
-            {score2 ?? "—"}
-          </span>
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          <span
-            className={cn("truncate text-right font-medium text-sm", {
-              "text-emerald-400": isFinished && winner === "faction2",
-              "text-red-400": isFinished && winner === "faction1",
-              "text-white": !isFinished && winner === "faction2",
-              "text-neutral-500": isFinished && winner === "faction1",
-            })}
-          >
-            {f2.name}
-          </span>
-          <Avatar className="size-8 rounded-lg">
-            <AvatarImage src={f2.avatar} />
-            <AvatarFallback className="rounded-lg text-xs">
-              {f2.name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </div>
-    </div>
+    </Link>
   );
 }
 
-function MatchesTab({ matches }: { matches: Match[] }) {
+function MatchesTab({ matches }: { matches: TournamentMatch[] }) {
   const live = matches.filter((m) => m.status === "LIVE");
   const scheduled = matches.filter((m) => m.status === "SCHEDULED");
   const finished = matches.filter((m) => m.status === "FINISHED");
+
   return (
     <div className="flex flex-col gap-6">
       {live.length > 0 && (
@@ -205,7 +186,7 @@ function MatchesTab({ matches }: { matches: Match[] }) {
             🔴 Live ({live.length})
           </h2>
           {live.map((m) => (
-            <MatchCard key={m.match_id} match={m} />
+            <MatchCard key={m.match_id} match={m} matchStats={null} />
           ))}
         </div>
       )}
@@ -215,7 +196,7 @@ function MatchesTab({ matches }: { matches: Match[] }) {
             Upcoming ({scheduled.length})
           </h2>
           {scheduled.map((m) => (
-            <MatchCard key={m.match_id} match={m} />
+            <MatchCard key={m.match_id} match={m} matchStats={null} />
           ))}
         </div>
       )}
@@ -225,7 +206,7 @@ function MatchesTab({ matches }: { matches: Match[] }) {
             Finished ({finished.length})
           </h2>
           {finished.map((m) => (
-            <MatchCard key={m.match_id} match={m} />
+            <MatchCard key={m.match_id} match={m} matchStats={m.matchStats} />
           ))}
         </div>
       )}
@@ -237,7 +218,7 @@ function StandingsTab({ matches }: { matches: Match[] }) {
   const finished = matches.filter((m) => m.status === "FINISHED" && m.results);
   const teams: Record<
     string,
-    { name: string; avatar: string; w: number; l: number }
+    { name: string; avatar: string; faction_id: string; w: number; l: number }
   > = {};
 
   for (const match of finished) {
@@ -245,9 +226,21 @@ function StandingsTab({ matches }: { matches: Match[] }) {
     const f2 = match.teams.faction2;
     const winner = match.results?.winner;
     if (!teams[f1.name])
-      teams[f1.name] = { name: f1.name, avatar: f1.avatar, w: 0, l: 0 };
+      teams[f1.name] = {
+        name: f1.name,
+        avatar: f1.avatar,
+        faction_id: f1.faction_id,
+        w: 0,
+        l: 0,
+      };
     if (!teams[f2.name])
-      teams[f2.name] = { name: f2.name, avatar: f2.avatar, w: 0, l: 0 };
+      teams[f2.name] = {
+        name: f2.name,
+        avatar: f2.avatar,
+        faction_id: f2.faction_id,
+        w: 0,
+        l: 0,
+      };
     if (winner === "faction1") {
       teams[f1.name].w++;
       teams[f2.name].l++;
@@ -301,9 +294,12 @@ function StandingsTab({ matches }: { matches: Match[] }) {
                       {team.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="font-medium text-neutral-200 text-sm">
+                  <Link
+                    href={`/tournament/team/${team.faction_id}`}
+                    className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
+                  >
                     {team.name}
-                  </span>
+                  </Link>
                 </div>
               </td>
               <td className="px-4 py-3 text-center font-mono text-emerald-400 text-sm">
@@ -319,18 +315,11 @@ function StandingsTab({ matches }: { matches: Match[] }) {
     </div>
   );
 }
-function MVPTab({
-  matches,
-  stats,
-}: {
-  matches: Match[];
-  stats: (MatchStats | null)[];
-}) {
+function MVPTab({ matches }: { matches: TournamentMatch[] }) {
   const players: Record<string, PlayerAgg> = {};
-  const finished = matches.filter((m) => m.status === "FINISHED");
-
   const avatarMap: Record<string, string> = {};
-  for (const match of finished) {
+
+  for (const match of matches.filter((m) => m.status === "FINISHED")) {
     for (const p of [
       ...match.teams.faction1.roster,
       ...match.teams.faction2.roster,
@@ -339,14 +328,18 @@ function MVPTab({
     }
   }
 
-  for (const matchStats of stats) {
+  for (const match of matches.filter((m) => m.status === "FINISHED")) {
+    const matchStats = match.matchStats;
     if (!matchStats) continue;
+
+    console.log(matchStats);
 
     for (const round of matchStats.rounds) {
       for (const team of round.teams) {
         for (const p of team.players) {
           if (!players[p.player_id]) {
             players[p.player_id] = {
+              player_id: p.player_id,
               nickname: p.nickname,
               avatar: avatarMap[p.nickname] ?? "",
               matches: 0,
@@ -355,6 +348,7 @@ function MVPTab({
               assists: 0,
               headshots: 0,
               mvp: 0,
+              adr: 0,
             };
           }
           const s = p.player_stats as unknown as Record<string, string>;
@@ -364,6 +358,7 @@ function MVPTab({
           players[p.player_id].assists += Number(s.Assists);
           players[p.player_id].headshots += Number(s.Headshots);
           players[p.player_id].mvp += Number(s.MVPs);
+          players[p.player_id].adr += Number(s.ADR);
         }
       }
     }
@@ -371,8 +366,8 @@ function MVPTab({
 
   const sorted = orderBy(
     Object.values(players),
-    [(p) => p.mvp, (p) => p.kills / Math.max(p.matches, 1)],
-    ["desc", "desc"],
+    [(p) => p.kills / Math.max(p.deaths, 1)],
+    ["desc"],
   );
 
   if (!sorted.length)
@@ -386,7 +381,7 @@ function MVPTab({
     <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
       <div className="border-neutral-800 border-b px-5 py-4">
         <h3 className="font-bold text-white">Player Statistics</h3>
-        <p className="text-neutral-500 text-sm">Sorted by MVP count</p>
+        <p className="text-neutral-500 text-sm">Sorted by KD ratio</p>
       </div>
       <div className="w-full overflow-x-auto">
         <table className="w-max min-w-full">
@@ -399,22 +394,31 @@ function MVPTab({
             <col className="w-16" />
             <col className="w-20" />
             <col className="w-20" />
+            <col className="w-20" />
           </colgroup>
           <thead>
             <tr className="border-neutral-800/50 border-b">
-              {["#", "Player", "M", "MVP", "Avg K", "Avg D", "KD", "HS%"].map(
-                (h, i) => (
-                  <th
-                    key={h}
-                    className={cn(
-                      "px-4 py-2 font-mono text-neutral-600 text-xs uppercase tracking-widest",
-                      i <= 1 ? "text-left" : "text-right",
-                    )}
-                  >
-                    {h}
-                  </th>
-                ),
-              )}
+              {[
+                "#",
+                "Player",
+                "M",
+                "MVP",
+                "Avg K",
+                "Avg D",
+                "KD",
+                "+/-",
+                "HS%",
+              ].map((h, i) => (
+                <th
+                  key={h}
+                  className={cn(
+                    "px-4 py-2 font-mono text-neutral-600 text-xs uppercase tracking-widest",
+                    i <= 1 ? "text-left" : "text-right",
+                  )}
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -422,7 +426,9 @@ function MVPTab({
               const avgK = p.kills / Math.max(p.matches, 1);
               const avgD = p.deaths / Math.max(p.matches, 1);
               const kd = p.kills / Math.max(p.deaths, 1);
+              const kdDiff = p.kills - p.deaths;
               const hs = (p.headshots / Math.max(p.kills, 1)) * 100;
+
               return (
                 <tr
                   key={p.nickname}
@@ -439,9 +445,12 @@ function MVPTab({
                           {p.nickname.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-medium text-neutral-200 text-sm">
+                      <Link
+                        href={`/tournament/player/${p.player_id}`}
+                        className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
+                      >
                         {p.nickname}
-                      </span>
+                      </Link>
                     </div>
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
@@ -453,7 +462,7 @@ function MVPTab({
                         p.mvp > 0 ? "text-yellow-400" : "text-neutral-600",
                       )}
                     >
-                      {p.mvp > 0 ? `⭐️ ${p.mvp}` : "—"}
+                      {p.mvp > 0 ? p.mvp : "—"}
                     </span>
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-200 text-sm">
@@ -469,6 +478,15 @@ function MVPTab({
                       )}
                     >
                       {kd.toFixed(2)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 text-right font-mono text-sm tabular-nums">
+                    <span
+                      className={cn(
+                        kdDiff >= 0 ? "text-emerald-400" : "text-red-400",
+                      )}
+                    >
+                      {kdDiff >= 0 ? `+${kdDiff}` : kdDiff}
                     </span>
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
@@ -494,11 +512,11 @@ export default function TournamentPage() {
   const [activeTab, setActiveTab] = useState<Tab>("matches");
 
   const {
-    data: { matches, stats } = { matches: [], stats: [] },
+    data: matches = [],
     isLoading,
     refetch,
     isFetching,
-  } = useTournament();
+  } = useTournamentData();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6">
@@ -507,11 +525,8 @@ export default function TournamentPage() {
           <div>
             <h1 className="flex items-center gap-2 font-black text-2xl text-white">
               <IconTrophy size={24} className="text-yellow-400" />
-              ESDUA Tournament
+              ESDI Tournament
             </h1>
-            <p className="text-neutral-500 text-sm">
-              Hub matches · Group stage
-            </p>
           </div>
           <Button
             variant="dark"
@@ -557,7 +572,7 @@ export default function TournamentPage() {
           <>
             {activeTab === "matches" && <MatchesTab matches={matches} />}
             {activeTab === "standings" && <StandingsTab matches={matches} />}
-            {activeTab === "mvp" && <MVPTab matches={matches} stats={stats} />}
+            {activeTab === "mvp" && <MVPTab matches={matches} />}
           </>
         )}
       </div>

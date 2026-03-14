@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTournamentData } from "@/hooks/useTournamentData";
@@ -26,37 +26,36 @@ export default function TournamentPlayerPage(props: PageProps) {
       </div>
     );
 
-  // находим все матчи игрока
   const playerMatches = matches.filter(
     (m) =>
       m.status === "FINISHED" &&
-      [...m.teams.faction1.roster, ...m.teams.faction2.roster].some(
-        (p) => p.player_id === playerId,
+      m.teams.some((t) =>
+        t.players.some(
+          (p) =>
+            p.player_id_nullable === playerId ||
+            p.player_id_mandatory === playerId,
+        ),
       ),
   );
 
   if (!playerMatches.length) return notFound();
 
-  // находим nickname и avatar
-  const rosterPlayer =
-    playerMatches[0].teams.faction1.roster.find(
-      (p) => p.player_id === playerId,
-    ) ??
-    playerMatches[0].teams.faction2.roster.find(
-      (p) => p.player_id === playerId,
+  const firstPlayer = playerMatches[0].teams
+    .flatMap((t) => t.players)
+    .find(
+      (p) =>
+        p.player_id_nullable === playerId || p.player_id_mandatory === playerId,
     );
 
-  const nickname = rosterPlayer?.nickname ?? playerId;
-  const avatar = rosterPlayer?.avatar ?? "";
+  const nickname = firstPlayer?.nickname ?? playerId;
 
-  // агрегируем статистику
   let totalKills = 0,
     totalDeaths = 0,
     totalHeadshots = 0,
     totalAdr = 0,
     totalMvp = 0;
-  let wins = 0;
-  let statMatches = 0;
+  let wins = 0,
+    statMatches = 0;
 
   type MatchRow = {
     matchId: string;
@@ -76,58 +75,56 @@ export default function TournamentPlayerPage(props: PageProps) {
   const matchRows: MatchRow[] = [];
 
   for (const match of playerMatches) {
-    const inFaction1 = match.teams.faction1.roster.some(
-      (p) => p.player_id === playerId,
+    const myTeam = match.teams.find((t) =>
+      t.players.some(
+        (p) =>
+          p.player_id_nullable === playerId ||
+          p.player_id_mandatory === playerId,
+      ),
     );
-    const faction = inFaction1 ? "faction1" : "faction2";
-    const win = match.results?.winner === faction;
+    const enemyTeam = match.teams.find(
+      (t) =>
+        !t.players.some(
+          (p) =>
+            p.player_id_nullable === playerId ||
+            p.player_id_mandatory === playerId,
+        ),
+    );
+    const win = myTeam?.team_win === true;
     if (win) wins++;
 
-    const round = match.matchStats?.rounds?.[0];
-    if (round) {
-      const team = round.teams.find((t) =>
-        t.players.some((p) => p.player_id === playerId),
-      );
-      const playerStat = team?.players.find((p) => p.player_id === playerId);
+    const playerStat = myTeam?.players.find(
+      (p) =>
+        p.player_id_nullable === playerId || p.player_id_mandatory === playerId,
+    );
 
-      if (playerStat) {
-        const s = playerStat.player_stats as unknown as Record<string, string>;
-        totalKills += Number(s.Kills);
-        totalDeaths += Number(s.Deaths);
-        totalHeadshots += Number(s.Headshots);
-        totalAdr += Number(s.ADR);
-        totalMvp += Number(s.MVPs);
-        statMatches++;
+    if (playerStat) {
+      const k = playerStat.kills ?? 0;
+      const d = playerStat.deaths ?? 0;
+      const hs = playerStat.headshots ?? 0;
+      const adr = playerStat.adr ?? 0;
 
-        const enemyFaction = inFaction1
-          ? match.teams.faction2
-          : match.teams.faction1;
-        const myTeam = round.teams.find((t) =>
-          t.players.some((p) => p.player_id === playerId),
-        );
-        const enemyTeam = round.teams.find(
-          (t) => !t.players.some((p) => p.player_id === playerId),
-        );
+      totalKills += k;
+      totalDeaths += d;
+      totalHeadshots += hs;
+      totalAdr += adr;
+      totalMvp += playerStat.mvps ?? 0;
+      statMatches++;
 
-        const k = Number(s.Kills);
-        const d = Number(s.Deaths);
-        const hs = Number(s.Headshots);
-
-        matchRows.push({
-          matchId: match.match_id,
-          map: match.voting?.map?.pick?.[0]?.replace("de_", "") ?? "—",
-          kills: k,
-          deaths: d,
-          assists: Number(s.Assists),
-          adr: Number(s.ADR),
-          kd: k / Math.max(d, 1),
-          hs: (hs / Math.max(k, 1)) * 100,
-          win,
-          score1: myTeam ? String(myTeam.team_stats["Final Score"]) : "—",
-          score2: enemyTeam ? String(enemyTeam.team_stats["Final Score"]) : "—",
-          enemyTeamName: enemyFaction.name,
-        });
-      }
+      matchRows.push({
+        matchId: match.id,
+        map: match.map_pick?.replace("de_", "") ?? "—",
+        kills: k,
+        deaths: d,
+        assists: playerStat.assists ?? 0,
+        adr,
+        kd: k / Math.max(d, 1),
+        hs: (hs / Math.max(k, 1)) * 100,
+        win,
+        score1: String(myTeam?.final_score ?? "—"),
+        score2: String(enemyTeam?.final_score ?? "—"),
+        enemyTeamName: enemyTeam?.name ?? "—",
+      });
     }
   }
 
@@ -147,12 +144,9 @@ export default function TournamentPlayerPage(props: PageProps) {
         </Link>
       </Button>
 
-      {/* player card */}
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/50 to-transparent" />
         <div className="flex items-center gap-4 px-6 py-5">
           <Avatar className="size-14 rounded-xl">
-            <AvatarImage src={avatar} />
             <AvatarFallback className="rounded-xl text-lg">
               {nickname.charAt(0)}
             </AvatarFallback>
@@ -172,8 +166,6 @@ export default function TournamentPlayerPage(props: PageProps) {
             </div>
           </div>
         </div>
-
-        {/* stat pills */}
         <div className="grid grid-cols-2 gap-px border-neutral-800 border-t sm:grid-cols-5">
           {[
             {
@@ -227,7 +219,6 @@ export default function TournamentPlayerPage(props: PageProps) {
         </div>
       </div>
 
-      {/* match history */}
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="border-neutral-800 border-b px-5 py-4">
           <h3 className="font-bold text-white">Match History</h3>

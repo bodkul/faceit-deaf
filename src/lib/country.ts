@@ -7,6 +7,7 @@ export const countryMap: Record<string, string> = {
   Kazakhstan: "KZ",
   Finland: "FI",
   Moscow: "RU",
+  AimEU: "EU",
 };
 
 export function getCountryCode(country: string) {

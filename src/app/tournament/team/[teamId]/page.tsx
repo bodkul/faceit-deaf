@@ -27,26 +27,19 @@ export default function TournamentTeamPage(props: PageProps) {
     );
 
   const teamMatches = matches.filter(
-    (m) =>
-      m.status === "FINISHED" &&
-      (m.teams.faction1.faction_id === teamId ||
-        m.teams.faction2.faction_id === teamId),
+    (m) => m.status === "FINISHED" && m.teams.some((t) => t.team_id === teamId),
   );
 
   if (!teamMatches.length) return notFound();
 
-  const firstMatch = teamMatches[0];
-  const teamData =
-    firstMatch.teams.faction1.faction_id === teamId
-      ? firstMatch.teams.faction1
-      : firstMatch.teams.faction2;
-
+  const teamData = teamMatches[0].teams.find((t) => t.team_id === teamId);
+  if (!teamData) return notFound();
   let wins = 0;
+
   const playerStats: Record<
     string,
     {
       nickname: string;
-      avatar: string;
       player_id: string;
       kills: number;
       deaths: number;
@@ -70,53 +63,43 @@ export default function TournamentTeamPage(props: PageProps) {
   const history: MatchHistoryRow[] = [];
 
   for (const match of teamMatches) {
-    const isF1 = match.teams.faction1.faction_id === teamId;
-    const myFaction = isF1 ? match.teams.faction1 : match.teams.faction2;
-    const enemyFaction = isF1 ? match.teams.faction2 : match.teams.faction1;
-    const win = match.results?.winner === (isF1 ? "faction1" : "faction2");
+    const myTeam = match.teams.find((t) => t.team_id === teamId);
+    const enemyTeam = match.teams.find((t) => t.team_id !== teamId);
+    if (!myTeam) continue;
+
+    const win = myTeam.team_win === true;
     if (win) wins++;
 
-    const round = match.matchStats?.rounds?.[0];
-    const myTeam = round?.teams.find((t) => t.team_id === teamId);
-    const enemyTeam = round?.teams.find((t) => t.team_id !== teamId);
-
     history.push({
-      matchId: match.match_id,
-      map: match.voting?.map?.pick?.[0]?.replace("de_", "") ?? "—",
+      matchId: match.id,
+      map: match.map_pick?.replace("de_", "") ?? "—",
       win,
-      score1: myTeam ? String(myTeam.team_stats["Final Score"]) : "—",
-      score2: enemyTeam ? String(enemyTeam.team_stats["Final Score"]) : "—",
-      enemyName: enemyFaction.name,
-      enemyAvatar: enemyFaction.avatar,
+      score1: String(myTeam.final_score ?? "—"),
+      score2: String(enemyTeam?.final_score ?? "—"),
+      enemyName: enemyTeam?.name ?? "—",
+      enemyAvatar: enemyTeam?.avatar ?? "",
     });
 
-    // player stats
-    if (myTeam) {
-      for (const p of myTeam.players) {
-        if (!playerStats[p.player_id]) {
-          const rosterP = myFaction.roster.find(
-            (r) => r.player_id === p.player_id,
-          );
-          playerStats[p.player_id] = {
-            nickname: p.nickname,
-            player_id: p.player_id,
-            avatar: rosterP?.avatar ?? "",
-            kills: 0,
-            deaths: 0,
-            assists: 0,
-            headshots: 0,
-            adr: 0,
-            matches: 0,
-          };
-        }
-        const s = p.player_stats as unknown as Record<string, string>;
-        playerStats[p.player_id].kills += Number(s.Kills);
-        playerStats[p.player_id].deaths += Number(s.Deaths);
-        playerStats[p.player_id].assists += Number(s.Assists);
-        playerStats[p.player_id].headshots += Number(s.Headshots);
-        playerStats[p.player_id].adr += Number(s.ADR);
-        playerStats[p.player_id].matches++;
+    for (const p of myTeam.players) {
+      const pid = p.player_id_nullable ?? p.player_id_mandatory;
+      if (!playerStats[pid]) {
+        playerStats[pid] = {
+          nickname: p.nickname,
+          player_id: pid,
+          kills: 0,
+          deaths: 0,
+          assists: 0,
+          headshots: 0,
+          adr: 0,
+          matches: 0,
+        };
       }
+      playerStats[pid].kills += p.kills ?? 0;
+      playerStats[pid].deaths += p.deaths ?? 0;
+      playerStats[pid].assists += p.assists ?? 0;
+      playerStats[pid].headshots += p.headshots ?? 0;
+      playerStats[pid].adr += p.adr ?? 0;
+      playerStats[pid].matches++;
     }
   }
 
@@ -132,11 +115,10 @@ export default function TournamentTeamPage(props: PageProps) {
         </Link>
       </Button>
 
-      {/* team header */}
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="flex items-center gap-4 px-6 py-5">
           <Avatar className="size-14 rounded-xl">
-            <AvatarImage src={teamData.avatar} />
+            <AvatarImage src={teamData.avatar ?? undefined} />
             <AvatarFallback className="rounded-xl text-lg">
               {teamData.name.charAt(0)}
             </AvatarFallback>
@@ -166,7 +148,6 @@ export default function TournamentTeamPage(props: PageProps) {
         </div>
       </div>
 
-      {/* players */}
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="border-neutral-800 border-b px-5 py-4">
           <h3 className="font-bold text-white">Players</h3>
@@ -183,7 +164,14 @@ export default function TournamentTeamPage(props: PageProps) {
             </colgroup>
             <thead>
               <tr className="border-neutral-800/50 border-b">
-                {["Player", "M", "Avg K", "Avg D", "KD", "ADR"].map((h, i) => (
+                {[
+                  "Player",
+                  "Matches",
+                  "Avg Kills",
+                  "Avg Deaths",
+                  "KD",
+                  "ADR",
+                ].map((h, i) => (
                   <th
                     key={h}
                     className={cn(
@@ -208,29 +196,21 @@ export default function TournamentTeamPage(props: PageProps) {
                     className="border-neutral-800/50 border-b last:border-0 hover:bg-neutral-800/20"
                   >
                     <td className="px-4 py-2.5">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="size-6 rounded-md">
-                          <AvatarImage src={p.avatar} />
-                          <AvatarFallback className="rounded-md text-xs">
-                            {p.nickname.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <Link
-                          href={`/tournament/player/${p.player_id}`}
-                          className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
-                        >
-                          {p.nickname}
-                        </Link>
-                      </div>
+                      <Link
+                        href={`/tournament/player/${p.player_id}`}
+                        className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
+                      >
+                        {p.nickname}
+                      </Link>
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
                       {p.matches}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-neutral-200 text-sm">
-                      {avgK.toFixed(1)}
+                      {avgK.toFixed(0)}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                      {avgD.toFixed(1)}
+                      {avgD.toFixed(0)}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-sm">
                       <span
@@ -252,7 +232,6 @@ export default function TournamentTeamPage(props: PageProps) {
         </div>
       </div>
 
-      {/* match history */}
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="border-neutral-800 border-b px-5 py-4">
           <h3 className="font-bold text-white">Match History</h3>
@@ -263,8 +242,7 @@ export default function TournamentTeamPage(props: PageProps) {
               key={row.matchId}
               href={`/tournament/match/${row.matchId}`}
               className={cn(
-                "flex items-center gap-4 border-neutral-800/50 border-b px-4 py-3 transition-colors last:border-0 hover:bg-neutral-800/20",
-                "border-l-2",
+                "flex items-center gap-4 border-neutral-800/50 border-b border-l-2 px-4 py-3 transition-colors last:border-0 hover:bg-neutral-800/20",
                 row.win ? "border-l-emerald-500/40" : "border-l-red-500/40",
               )}
             >

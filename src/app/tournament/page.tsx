@@ -3,18 +3,13 @@
 import { IconRefresh, IconTrophy } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { orderBy } from "es-toolkit/compat";
-import type { Match } from "faceit-sdk/hubs";
-import type { MatchStats } from "faceit-sdk/matches";
 import Link from "next/link";
 import { useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  type TournamentMatch,
-  useTournamentData,
-} from "@/hooks/useTournamentData";
+import { useTournamentData } from "@/hooks/useTournamentData";
 import { cn } from "@/lib/utils";
 
 type Tab = "matches" | "standings" | "mvp";
@@ -32,6 +27,10 @@ type PlayerAgg = {
   adr: number;
 };
 
+type TournamentMatches = NonNullable<
+  ReturnType<typeof useTournamentData>["data"]
+>;
+
 function LiveBadge() {
   return (
     <span className="flex items-center gap-1.5 rounded-full bg-red-500/10 px-2 py-0.5 font-mono text-red-400 text-xs">
@@ -41,41 +40,39 @@ function LiveBadge() {
   );
 }
 
-function MatchCard({
-  match,
-  matchStats,
-}: {
-  match: Match;
-  matchStats: MatchStats | null;
-}) {
-  const isLive = match.status === "LIVE";
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-950 px-5 py-16 text-center">
+      <IconTrophy size={32} className="text-yellow-400/60" />
+      <div>
+        <p className="font-bold text-neutral-300 text-sm">
+          Tournament starts soon
+        </p>
+        <p className="mt-1 text-neutral-500 text-sm">
+          14 March · 13:00 <span className="text-neutral-600">GMT+1</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function MatchCard({ match }: { match: TournamentMatches[number] }) {
+  const isLive = match.status === "ONGOING";
   const isFinished = match.status === "FINISHED";
-  const f1 = match.teams.faction1;
-  const f2 = match.teams.faction2;
-  const winner = match.results?.winner;
-  const map = match.voting?.map?.pick?.[0]?.replace("de_", "");
+  const t1 = match.teams[0];
+  const t2 = match.teams[1];
+  const map = match.map_pick?.replace("de_", "");
 
-  let score1: string | number = "—";
-  let score2: string | number = "—";
-
-  if (matchStats?.rounds?.[0]) {
-    const round = matchStats.rounds[0];
-    const t1 = round.teams.find((t) => t.team_id === f1.faction_id);
-    const t2 = round.teams.find((t) => t.team_id === f2.faction_id);
-    if (t1 && t2) {
-      score1 = String(t1.team_stats["Final Score"]);
-      score2 = String(t2.team_stats["Final Score"]);
-    }
-  } else if (match.results?.score) {
-    score1 = match.results.score.faction1;
-    score2 = match.results.score.faction2;
-  }
+  const score1 = t1?.final_score ?? "—";
+  const score2 = t2?.final_score ?? "—";
+  const t1Win = t1?.team_win;
+  const t2Win = t2?.team_win;
 
   return (
-    <Link href={`/tournament/match/${match.match_id}`} className="block">
+    <Link href={`/tournament/match/${match.id}`} className="block">
       <div
         className={cn(
-          "relative overflow-hidden rounded-xl border bg-neutral-950 transition-colors",
+          "relative overflow-hidden rounded-xl border bg-neutral-950 transition-colors hover:bg-neutral-900/50",
           isLive ? "border-red-500/30" : "border-neutral-800",
         )}
       >
@@ -104,7 +101,7 @@ function MatchCard({
             )}
             {match.started_at && (
               <span className="font-mono text-neutral-600 text-xs">
-                {format(match.started_at * 1000, "HH:mm")}
+                {format(new Date(match.started_at), "HH:mm")}
               </span>
             )}
           </div>
@@ -112,58 +109,58 @@ function MatchCard({
         <div className="grid grid-cols-3 items-center gap-2 px-4 py-3">
           <div className="flex items-center gap-2">
             <Avatar className="size-8 rounded-lg">
-              <AvatarImage src={f1.avatar} />
+              <AvatarImage src={t1?.avatar ?? undefined} />
               <AvatarFallback className="rounded-lg text-xs">
-                {f1.name.charAt(0)}
+                {t1?.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <span
               className={cn("truncate font-medium text-sm", {
-                "text-emerald-400": isFinished && winner === "faction1",
-                "text-red-400": isFinished && winner === "faction2",
-                "text-white": !isFinished && winner === "faction1",
-                "text-neutral-500": isFinished && winner === "faction2",
+                "text-emerald-400": isFinished && t1Win === true,
+                "text-red-400": isFinished && t1Win === false,
+                "text-white": !isFinished,
+                "text-neutral-500": isFinished && t1Win === false,
               })}
             >
-              {f1.name}
+              {t1?.name}
             </span>
           </div>
           <div className="flex items-center justify-center gap-3">
             <span
               className={cn("font-black font-mono text-2xl tabular-nums", {
-                "text-emerald-400": isFinished && winner === "faction1",
-                "text-red-400": isFinished && winner === "faction2",
+                "text-emerald-400": isFinished && t1Win === true,
+                "text-red-400": isFinished && t1Win === false,
                 "text-neutral-400": !isFinished,
               })}
             >
-              {score1 ?? "—"}
+              {score1}
             </span>
             <span className="font-mono text-neutral-700 text-sm">:</span>
             <span
               className={cn("font-black font-mono text-2xl tabular-nums", {
-                "text-emerald-400": isFinished && winner === "faction2",
-                "text-red-400": isFinished && winner === "faction1",
+                "text-emerald-400": isFinished && t2Win === true,
+                "text-red-400": isFinished && t2Win === false,
                 "text-neutral-400": !isFinished,
               })}
             >
-              {score2 ?? "—"}
+              {score2}
             </span>
           </div>
           <div className="flex items-center justify-end gap-2">
             <span
               className={cn("truncate text-right font-medium text-sm", {
-                "text-emerald-400": isFinished && winner === "faction2",
-                "text-red-400": isFinished && winner === "faction1",
-                "text-white": !isFinished && winner === "faction2",
-                "text-neutral-500": isFinished && winner === "faction1",
+                "text-emerald-400": isFinished && t2Win === true,
+                "text-red-400": isFinished && t2Win === false,
+                "text-white": !isFinished,
+                "text-neutral-500": isFinished && t2Win === false,
               })}
             >
-              {f2.name}
+              {t2?.name}
             </span>
             <Avatar className="size-8 rounded-lg">
-              <AvatarImage src={f2.avatar} />
+              <AvatarImage src={t2?.avatar ?? undefined} />
               <AvatarFallback className="rounded-lg text-xs">
-                {f2.name.charAt(0)}
+                {t2?.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -173,23 +170,7 @@ function MatchCard({
   );
 }
 
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-950 px-5 py-16 text-center">
-      <IconTrophy size={32} className="text-yellow-400/60" />
-      <div>
-        <p className="font-bold text-neutral-300 text-sm">
-          Tournament starts soon
-        </p>
-        <p className="mt-1 text-neutral-500 text-sm">
-          14 March · 13:00 <span className="text-neutral-600">GMT+1</span>
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function MatchesTab({ matches }: { matches: TournamentMatch[] }) {
+function MatchesTab({ matches }: { matches: TournamentMatches }) {
   const live = matches.filter((m) => m.status === "ONGOING");
   const scheduled = matches.filter((m) => m.status === "SCHEDULED");
   const finished = matches.filter((m) => m.status === "FINISHED");
@@ -205,7 +186,7 @@ function MatchesTab({ matches }: { matches: TournamentMatch[] }) {
             🔴 Live ({live.length})
           </h2>
           {live.map((m) => (
-            <MatchCard key={m.match_id} match={m} matchStats={null} />
+            <MatchCard key={m.id} match={m} />
           ))}
         </div>
       )}
@@ -215,7 +196,7 @@ function MatchesTab({ matches }: { matches: TournamentMatch[] }) {
             Upcoming ({scheduled.length})
           </h2>
           {scheduled.map((m) => (
-            <MatchCard key={m.match_id} match={m} matchStats={null} />
+            <MatchCard key={m.id} match={m} />
           ))}
         </div>
       )}
@@ -225,7 +206,7 @@ function MatchesTab({ matches }: { matches: TournamentMatch[] }) {
             Finished ({finished.length})
           </h2>
           {finished.map((m) => (
-            <MatchCard key={m.match_id} match={m} matchStats={m.matchStats} />
+            <MatchCard key={m.id} match={m} />
           ))}
         </div>
       )}
@@ -233,44 +214,30 @@ function MatchesTab({ matches }: { matches: TournamentMatch[] }) {
   );
 }
 
-function StandingsTab({ matches }: { matches: Match[] }) {
-  const finished = matches.filter((m) => m.status === "FINISHED" && m.results);
+function StandingsTab({ matches }: { matches: TournamentMatches }) {
+  const finished = matches.filter((m) => m.status === "FINISHED");
   const teams: Record<
     string,
-    { name: string; avatar: string; faction_id: string; w: number; l: number }
+    { name: string; avatar: string; team_id: string; w: number; l: number }
   > = {};
 
   for (const match of finished) {
-    const f1 = match.teams.faction1;
-    const f2 = match.teams.faction2;
-    const winner = match.results?.winner;
-    if (!teams[f1.name])
-      teams[f1.name] = {
-        name: f1.name,
-        avatar: f1.avatar,
-        faction_id: f1.faction_id,
-        w: 0,
-        l: 0,
-      };
-    if (!teams[f2.name])
-      teams[f2.name] = {
-        name: f2.name,
-        avatar: f2.avatar,
-        faction_id: f2.faction_id,
-        w: 0,
-        l: 0,
-      };
-    if (winner === "faction1") {
-      teams[f1.name].w++;
-      teams[f2.name].l++;
-    } else if (winner === "faction2") {
-      teams[f2.name].w++;
-      teams[f1.name].l++;
+    for (const t of match.teams) {
+      if (!teams[t.team_id]) {
+        teams[t.team_id] = {
+          name: t.name,
+          avatar: t.avatar ?? "",
+          team_id: t.team_id,
+          w: 0,
+          l: 0,
+        };
+      }
+      if (t.team_win === true) teams[t.team_id].w++;
+      else if (t.team_win === false) teams[t.team_id].l++;
     }
   }
 
   const sorted = orderBy(Object.values(teams), ["w", "l"], ["desc", "asc"]);
-
   if (!sorted.length) return <EmptyState />;
 
   return (
@@ -294,7 +261,7 @@ function StandingsTab({ matches }: { matches: Match[] }) {
         <tbody>
           {sorted.map((team, i) => (
             <tr
-              key={team.name}
+              key={team.team_id}
               className="border-neutral-800/50 border-b last:border-0 hover:bg-neutral-800/20"
             >
               <td className="px-4 py-3 font-mono text-neutral-600 text-sm">
@@ -309,7 +276,7 @@ function StandingsTab({ matches }: { matches: Match[] }) {
                     </AvatarFallback>
                   </Avatar>
                   <Link
-                    href={`/tournament/team/${team.faction_id}`}
+                    href={`/tournament/team/${team.team_id}`}
                     className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
                   >
                     {team.name}
@@ -330,51 +297,43 @@ function StandingsTab({ matches }: { matches: Match[] }) {
   );
 }
 
-function MVPTab({ matches }: { matches: TournamentMatch[] }) {
+function MVPTab({ matches }: { matches: TournamentMatches }) {
   const players: Record<string, PlayerAgg> = {};
-  const avatarMap: Record<string, string> = {};
 
+  const avatarMap: Record<string, string> = {};
   for (const match of matches.filter((m) => m.status === "FINISHED")) {
-    for (const p of [
-      ...match.teams.faction1.roster,
-      ...match.teams.faction2.roster,
-    ]) {
-      avatarMap[p.nickname] = p.avatar;
+    for (const team of match.teams) {
+      for (const p of team.players) {
+        if (p.player_id_nullable) avatarMap[p.player_id_nullable] = "";
+      }
     }
   }
 
   for (const match of matches.filter((m) => m.status === "FINISHED")) {
-    const matchStats = match.matchStats;
-    if (!matchStats) continue;
-
-    console.log(matchStats);
-
-    for (const round of matchStats.rounds) {
-      for (const team of round.teams) {
-        for (const p of team.players) {
-          if (!players[p.player_id]) {
-            players[p.player_id] = {
-              player_id: p.player_id,
-              nickname: p.nickname,
-              avatar: avatarMap[p.nickname] ?? "",
-              matches: 0,
-              kills: 0,
-              deaths: 0,
-              assists: 0,
-              headshots: 0,
-              mvp: 0,
-              adr: 0,
-            };
-          }
-          const s = p.player_stats as unknown as Record<string, string>;
-          players[p.player_id].matches++;
-          players[p.player_id].kills += Number(s.Kills);
-          players[p.player_id].deaths += Number(s.Deaths);
-          players[p.player_id].assists += Number(s.Assists);
-          players[p.player_id].headshots += Number(s.Headshots);
-          players[p.player_id].mvp += Number(s.MVPs);
-          players[p.player_id].adr += Number(s.ADR);
+    for (const team of match.teams) {
+      for (const p of team.players) {
+        const pid = p.player_id_nullable ?? p.player_id_mandatory;
+        if (!players[pid]) {
+          players[pid] = {
+            player_id: pid,
+            nickname: p.nickname,
+            avatar: avatarMap[pid] ?? "",
+            matches: 0,
+            kills: 0,
+            deaths: 0,
+            assists: 0,
+            headshots: 0,
+            mvp: 0,
+            adr: 0,
+          };
         }
+        players[pid].matches++;
+        players[pid].kills += p.kills ?? 0;
+        players[pid].deaths += p.deaths ?? 0;
+        players[pid].assists += p.assists ?? 0;
+        players[pid].headshots += p.headshots ?? 0;
+        players[pid].mvp += p.mvps ?? 0;
+        players[pid].adr += p.adr ?? 0;
       }
     }
   }
@@ -391,7 +350,7 @@ function MVPTab({ matches }: { matches: TournamentMatch[] }) {
     <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
       <div className="border-neutral-800 border-b px-5 py-4">
         <h3 className="font-bold text-white">Player Statistics</h3>
-        <p className="text-neutral-500 text-sm">Sorted by KD ratio</p>
+        <p className="text-neutral-500 text-sm">Sorted by KD</p>
       </div>
       <div className="w-full overflow-x-auto">
         <table className="w-max min-w-full">
@@ -441,7 +400,7 @@ function MVPTab({ matches }: { matches: TournamentMatch[] }) {
 
               return (
                 <tr
-                  key={p.nickname}
+                  key={p.player_id}
                   className="border-neutral-800/50 border-b last:border-0 hover:bg-neutral-800/20"
                 >
                   <td className="px-4 py-2.5 font-mono text-neutral-600 text-sm">
@@ -450,7 +409,6 @@ function MVPTab({ matches }: { matches: TournamentMatch[] }) {
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-2">
                       <Avatar className="size-6 rounded-md">
-                        <AvatarImage src={p.avatar} />
                         <AvatarFallback className="rounded-md text-xs">
                           {p.nickname.charAt(0)}
                         </AvatarFallback>
@@ -476,10 +434,10 @@ function MVPTab({ matches }: { matches: TournamentMatch[] }) {
                     </span>
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-200 text-sm">
-                    {avgK.toFixed(1)}
+                    {avgK.toFixed(0)}
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                    {avgD.toFixed(1)}
+                    {avgD.toFixed(0)}
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-sm tabular-nums">
                     <span
@@ -520,7 +478,6 @@ const TABS: { id: Tab; label: string }[] = [
 
 export default function TournamentPage() {
   const [activeTab, setActiveTab] = useState<Tab>("matches");
-
   const {
     data: matches = [],
     isLoading,
@@ -532,12 +489,10 @@ export default function TournamentPage() {
     <div className="mx-auto max-w-4xl px-4 py-6">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="flex items-center gap-2 font-black text-2xl text-white">
-              <IconTrophy size={24} className="text-yellow-400" />
-              ESDI Tournament
-            </h1>
-          </div>
+          <h1 className="flex items-center gap-2 font-black text-2xl text-white">
+            <IconTrophy size={24} className="text-yellow-400" />
+            ESDUA Tournament
+          </h1>
           <Button
             variant="dark"
             size="sm"
@@ -552,6 +507,7 @@ export default function TournamentPage() {
             Refresh
           </Button>
         </div>
+
         <div className="flex gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1">
           {TABS.map((tab) => (
             <button
@@ -569,6 +525,7 @@ export default function TournamentPage() {
             </button>
           ))}
         </div>
+
         {isLoading ? (
           <div className="flex flex-col gap-3">
             {Array.from({ length: 4 }, (_, i) => `skeleton-${i}`).map((key) => (

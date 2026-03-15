@@ -15,6 +15,8 @@ type PageProps = { params: Promise<{ teamId: string }> };
 
 export default function TournamentTeamPage(props: PageProps) {
   const { teamId } = use(props.params);
+  const teamName = decodeURIComponent(teamId);
+
   const { data: matches = [], isLoading } = useTournamentData();
 
   if (isLoading)
@@ -27,12 +29,12 @@ export default function TournamentTeamPage(props: PageProps) {
     );
 
   const teamMatches = matches.filter(
-    (m) => m.status === "FINISHED" && m.teams.some((t) => t.team_id === teamId),
+    (m) => m.status === "FINISHED" && m.teams.some((t) => t.name === teamName),
   );
 
   if (!teamMatches.length) return notFound();
 
-  const teamData = teamMatches[0].teams.find((t) => t.team_id === teamId);
+  const teamData = teamMatches[0].teams.find((t) => t.name === teamName);
   if (!teamData) return notFound();
   let wins = 0;
 
@@ -63,8 +65,8 @@ export default function TournamentTeamPage(props: PageProps) {
   const history: MatchHistoryRow[] = [];
 
   for (const match of teamMatches) {
-    const myTeam = match.teams.find((t) => t.team_id === teamId);
-    const enemyTeam = match.teams.find((t) => t.team_id !== teamId);
+    const myTeam = match.teams.find((t) => t.name === teamName);
+    const enemyTeam = match.teams.find((t) => t.name !== teamName);
     if (!myTeam) continue;
 
     const win = myTeam.team_win === true;

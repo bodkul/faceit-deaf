@@ -102,7 +102,7 @@ export default function TournamentMatchPage(props: PageProps) {
                 </AvatarFallback>
               </Avatar>
               <Link
-                href={`/tournament/team/${t1?.team_id}`}
+                href={`/tournament/team/${encodeURIComponent(t1.name)}`}
                 className="font-bold text-white transition-colors hover:text-neutral-300"
               >
                 {t1?.name}
@@ -172,7 +172,7 @@ export default function TournamentMatchPage(props: PageProps) {
 
             <div className="flex items-center justify-end gap-3">
               <Link
-                href={`/tournament/team/${t2?.team_id}`}
+                href={`/tournament/team/${encodeURIComponent(t2.name)}`}
                 className="font-bold text-white transition-colors hover:text-neutral-300"
               >
                 {t2?.name}

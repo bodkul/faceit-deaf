@@ -170,42 +170,257 @@ function MatchCard({ match }: { match: TournamentMatches[number] }) {
   );
 }
 
-function MatchesTab({ matches }: { matches: TournamentMatches }) {
-  const live = matches.filter((m) => m.status === "ONGOING");
-  const scheduled = matches.filter((m) => m.status === "SCHEDULED");
-  const finished = matches.filter((m) => m.status === "FINISHED");
+type Bo3Series = {
+  teamA: { name: string; avatar: string; team_id: string; wins: number };
+  teamB: { name: string; avatar: string; team_id: string; wins: number };
+  matches: TournamentMatches;
+  winner: string | null;
+};
 
-  if (!live.length && !scheduled.length && !finished.length)
-    return <EmptyState />;
+function groupIntoSeries(matches: TournamentMatches): Bo3Series[] {
+  const seriesMap = new Map<string, Bo3Series>();
+
+  for (const match of matches) {
+    const t1 = match.teams[0];
+    const t2 = match.teams[1];
+    if (!t1 || !t2) continue;
+
+    const key = [t1.name, t2.name].sort().join("__vs__");
+
+    if (!seriesMap.has(key)) {
+      seriesMap.set(key, {
+        teamA: {
+          name: t1.name,
+          avatar: t1.avatar ?? "",
+          team_id: t1.team_id,
+          wins: 0,
+        },
+        teamB: {
+          name: t2.name,
+          avatar: t2.avatar ?? "",
+          team_id: t2.team_id,
+          wins: 0,
+        },
+        matches: [],
+        winner: null,
+      });
+    }
+
+    const series = seriesMap.get(key);
+    if (!series) continue;
+    series.matches.push(match);
+
+    if (match.status === "FINISHED") {
+      const winTeam = match.teams.find((t) => t.team_win === true);
+      if (winTeam) {
+        if (winTeam.name === series.teamA.name) series.teamA.wins++;
+        else series.teamB.wins++;
+      }
+    }
+
+    if (series.teamA.wins === 2) series.winner = series.teamA.name;
+    else if (series.teamB.wins === 2) series.winner = series.teamB.name;
+  }
+
+  return Array.from(seriesMap.values());
+}
+
+function SeriesCard({ series: s }: { series: Bo3Series }) {
+  const isOngoing = s.matches.some((m) => m.status === "ONGOING");
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-xl border bg-neutral-950",
+        isOngoing ? "border-red-500/30" : "border-neutral-800",
+      )}
+    >
+      {isOngoing && (
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-red-500/50 to-transparent" />
+      )}
+      <div className="grid grid-cols-3 items-center gap-2 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <Avatar className="size-7 rounded-lg">
+            <AvatarImage src={s.teamA.avatar} />
+            <AvatarFallback className="rounded-lg text-xs">
+              {s.teamA.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <Link
+            href={`/tournament/team/${encodeURIComponent(s.teamA.name)}`}
+            className={cn(
+              "truncate font-medium text-sm transition-colors hover:text-white",
+              {
+                "text-emerald-400": s.winner === s.teamA.name,
+                "text-red-400": s.winner === s.teamB.name,
+                "text-white": !s.winner,
+              },
+            )}
+          >
+            {s.teamA.name}
+          </Link>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <div className="flex items-center gap-2">
+            <span
+              className={cn("font-black font-mono text-2xl tabular-nums", {
+                "text-emerald-400": s.winner === s.teamA.name,
+                "text-red-400": s.winner === s.teamB.name,
+                "text-neutral-300": !s.winner,
+              })}
+            >
+              {s.teamA.wins}
+            </span>
+            <span className="font-mono text-neutral-700">:</span>
+            <span
+              className={cn("font-black font-mono text-2xl tabular-nums", {
+                "text-emerald-400": s.winner === s.teamB.name,
+                "text-red-400": s.winner === s.teamA.name,
+                "text-neutral-300": !s.winner,
+              })}
+            >
+              {s.teamB.wins}
+            </span>
+          </div>
+          <span className="font-mono text-neutral-700 text-xs">Bo3</span>
+        </div>
+        <div className="flex items-center justify-end gap-2">
+          <Link
+            href={`/tournament/team/${encodeURIComponent(s.teamB.name)}`}
+            className={cn(
+              "truncate text-right font-medium text-sm transition-colors hover:text-white",
+              {
+                "text-emerald-400": s.winner === s.teamB.name,
+                "text-red-400": s.winner === s.teamA.name,
+                "text-white": !s.winner,
+              },
+            )}
+          >
+            {s.teamB.name}
+          </Link>
+          <Avatar className="size-7 rounded-lg">
+            <AvatarImage src={s.teamB.avatar} />
+            <AvatarFallback className="rounded-lg text-xs">
+              {s.teamB.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      </div>
+      {s.matches.length > 0 && (
+        <div className="border-neutral-800 border-t">
+          {s.matches.map((m, idx) => {
+            const mt1 = m.teams.find((t) => t.name === s.teamA.name);
+            const mt2 = m.teams.find((t) => t.name === s.teamB.name);
+            const map = m.map_pick?.replace("de_", "") ?? "—";
+            return (
+              <Link
+                key={m.id}
+                href={`/tournament/match/${m.id}`}
+                className="flex items-center gap-3 border-neutral-800/50 border-b px-4 py-2 transition-colors last:border-0 hover:bg-neutral-800/20"
+              >
+                <span className="w-8 font-mono text-neutral-600 text-xs">
+                  M{idx + 1}
+                </span>
+                <span className="flex-1 font-mono text-neutral-400 text-xs capitalize">
+                  {map}
+                </span>
+                {m.status === "FINISHED" ? (
+                  <span className="font-mono text-xs tabular-nums">
+                    <span
+                      className={
+                        mt1?.team_win ? "text-emerald-400" : "text-red-400"
+                      }
+                    >
+                      {mt1?.final_score ?? "—"}
+                    </span>
+                    <span className="text-neutral-700"> : </span>
+                    <span
+                      className={
+                        mt2?.team_win ? "text-emerald-400" : "text-red-400"
+                      }
+                    >
+                      {mt2?.final_score ?? "—"}
+                    </span>
+                  </span>
+                ) : m.status === "ONGOING" ? (
+                  <LiveBadge />
+                ) : (
+                  <span className="font-mono text-neutral-700 text-xs">
+                    upcoming
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MatchesTab({ matches }: { matches: TournamentMatches }) {
+  const groupMatches = matches.filter((m) => {
+    if (!m.started_at) return false;
+    const d = new Date(m.started_at);
+    return d.getDate() === 14;
+  });
+
+  const playoffMatches = matches.filter((m) => {
+    if (!m.started_at) return false;
+    const d = new Date(m.started_at);
+    return d.getDate() === 15;
+  });
+
+  const playoffSeries = groupIntoSeries(
+    playoffMatches.filter(
+      (m) => m.status === "FINISHED" || m.status === "ONGOING",
+    ),
+  );
+
+  const live = playoffMatches.filter((m) => m.status === "ONGOING");
+  const scheduled = playoffMatches.filter((m) => m.status === "SCHEDULED");
+  const finishedGroup = groupMatches.filter((m) => m.status === "FINISHED");
+
+  if (!groupMatches.length && !playoffMatches.length) return <EmptyState />;
 
   return (
     <div className="flex flex-col gap-6">
+      {/* playoff live/ongoing */}
       {live.length > 0 && (
         <div className="flex flex-col gap-3">
           <h2 className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-            🔴 Live ({live.length})
+            🔴 Live
           </h2>
-          {live.map((m) => (
-            <MatchCard key={m.id} match={m} />
-          ))}
+          {playoffSeries
+            .filter((s) => s.matches.some((m) => m.status === "ONGOING"))
+            .map((s) => (
+              <SeriesCard
+                key={`${s.teamA.name}__vs__${s.teamB.name}`}
+                series={s}
+              />
+            ))}
         </div>
       )}
+
+      {/* playoff scheduled */}
       {scheduled.length > 0 && (
         <div className="flex flex-col gap-3">
           <h2 className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-            Upcoming ({scheduled.length})
+            Playoffs · 15 March · Bo3
           </h2>
           {scheduled.map((m) => (
             <MatchCard key={m.id} match={m} />
           ))}
         </div>
       )}
-      {finished.length > 0 && (
+
+      {/* group stage finished */}
+      {finishedGroup.length > 0 && (
         <div className="flex flex-col gap-3">
           <h2 className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-            Finished ({finished.length})
+            Group Stage · 14 March · Bo1 ({finishedGroup.length})
           </h2>
-          {finished.map((m) => (
+          {finishedGroup.map((m) => (
             <MatchCard key={m.id} match={m} />
           ))}
         </div>
@@ -214,33 +429,82 @@ function MatchesTab({ matches }: { matches: TournamentMatches }) {
   );
 }
 
+const GROUP_A_NAMES = [
+  "MiX",
+  "DAVI_JUNIOR",
+  "Eagleforce",
+  "NOVA",
+  "PrimeDeaf",
+  "DAVI",
+];
+const GROUP_B_NAMES = [
+  "Made in Sauna",
+  "Chernihiv",
+  "MOSSAD RUSH B",
+  "Silent_Team",
+  "SeaGod",
+  "STORMING",
+  "Samurai",
+];
+
 function StandingsTab({ matches }: { matches: TournamentMatches }) {
-  const finished = matches.filter((m) => m.status === "FINISHED");
-  const teams: Record<
-    string,
-    { name: string; avatar: string; team_id: string; w: number; l: number }
-  > = {};
+  const groupMatches = matches.filter((m) => {
+    if (!m.started_at) return false;
+    const d = new Date(m.started_at);
+    return d.getDate() === 14 && m.status === "FINISHED";
+  });
 
-  for (const match of finished) {
-    for (const t of match.teams) {
-      if (!teams[t.team_id]) {
-        teams[t.team_id] = {
-          name: t.name,
-          avatar: t.avatar ?? "",
-          team_id: t.team_id,
-          w: 0,
-          l: 0,
-        };
+  const playoffMatches = matches.filter((m) => {
+    if (!m.started_at) return false;
+    const d = new Date(m.started_at);
+    return d.getDate() === 15 && m.status === "FINISHED";
+  });
+
+  const buildStandings = (ms: TournamentMatches, filterNames?: string[]) => {
+    const teams: Record<
+      string,
+      { name: string; avatar: string; team_id: string; w: number; l: number }
+    > = {};
+    for (const match of ms) {
+      for (const t of match.teams) {
+        if (
+          filterNames &&
+          !filterNames.some((n) =>
+            t.name.toLowerCase().includes(n.toLowerCase()),
+          )
+        )
+          continue;
+        if (!teams[t.name])
+          teams[t.name] = {
+            name: t.name,
+            avatar: t.avatar ?? "",
+            team_id: t.team_id,
+            w: 0,
+            l: 0,
+          };
+        if (t.team_win === true) teams[t.name].w++;
+        else if (t.team_win === false) teams[t.name].l++;
       }
-      if (t.team_win === true) teams[t.team_id].w++;
-      else if (t.team_win === false) teams[t.team_id].l++;
     }
-  }
+    return orderBy(Object.values(teams), ["w", "l"], ["desc", "asc"]);
+  };
 
-  const sorted = orderBy(Object.values(teams), ["w", "l"], ["desc", "asc"]);
-  if (!sorted.length) return <EmptyState />;
+  const groupAStandings = buildStandings(groupMatches, GROUP_A_NAMES);
+  const groupBStandings = buildStandings(groupMatches, GROUP_B_NAMES);
+  const playoffSeries = groupIntoSeries(playoffMatches);
 
-  return (
+  if (
+    !groupAStandings.length &&
+    !groupBStandings.length &&
+    !playoffSeries.length
+  )
+    return <EmptyState />;
+
+  const StandingsTable = ({
+    teams,
+  }: {
+    teams: ReturnType<typeof buildStandings>;
+  }) => (
     <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
       <table className="w-full">
         <thead>
@@ -259,9 +523,9 @@ function StandingsTab({ matches }: { matches: TournamentMatches }) {
           </tr>
         </thead>
         <tbody>
-          {sorted.map((team, i) => (
+          {teams.map((team, i) => (
             <tr
-              key={team.team_id}
+              key={team.name}
               className="border-neutral-800/50 border-b last:border-0 hover:bg-neutral-800/20"
             >
               <td className="px-4 py-3 font-mono text-neutral-600 text-sm">
@@ -276,7 +540,7 @@ function StandingsTab({ matches }: { matches: TournamentMatches }) {
                     </AvatarFallback>
                   </Avatar>
                   <Link
-                    href={`/tournament/team/${team.team_id}`}
+                    href={`/tournament/team/${encodeURIComponent(team.name)}`}
                     className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
                   >
                     {team.name}
@@ -295,70 +559,119 @@ function StandingsTab({ matches }: { matches: TournamentMatches }) {
       </table>
     </div>
   );
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Group A */}
+      {groupAStandings.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h2 className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
+            Group A · 14 March · Bo1
+          </h2>
+          <StandingsTable teams={groupAStandings} />
+        </div>
+      )}
+
+      {/* Group B */}
+      {groupBStandings.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h2 className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
+            Group B · 14 March · Bo1
+          </h2>
+          <StandingsTable teams={groupBStandings} />
+        </div>
+      )}
+
+      {/* Playoffs */}
+      {playoffSeries.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h2 className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
+            Playoffs · 15 March · Bo3
+          </h2>
+          <div className="flex flex-col gap-3">
+            {playoffSeries.map((s) => (
+              <SeriesCard
+                key={`${s.teamA.name}__vs__${s.teamB.name}`}
+                series={s}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function MVPTab({ matches }: { matches: TournamentMatches }) {
-  const players: Record<string, PlayerAgg> = {};
+  const groupMatches = matches.filter((m) => {
+    if (!m.started_at) return false;
+    const d = new Date(m.started_at);
+    return d.getDate() === 14 && m.status === "FINISHED";
+  });
 
-  const avatarMap: Record<string, string> = {};
-  for (const match of matches.filter((m) => m.status === "FINISHED")) {
-    for (const team of match.teams) {
-      for (const p of team.players) {
-        if (p.player_id_nullable) avatarMap[p.player_id_nullable] = "";
-      }
-    }
-  }
+  const playoffMatches = matches.filter((m) => {
+    if (!m.started_at) return false;
+    const d = new Date(m.started_at);
+    return d.getDate() === 15 && m.status === "FINISHED";
+  });
 
-  for (const match of matches.filter((m) => m.status === "FINISHED")) {
-    for (const team of match.teams) {
-      for (const p of team.players) {
-        const pid = p.player_id_nullable ?? p.player_id_mandatory;
-        if (!players[pid]) {
-          players[pid] = {
-            player_id: pid,
-            nickname: p.nickname,
-            avatar: avatarMap[pid] ?? "",
-            matches: 0,
-            kills: 0,
-            deaths: 0,
-            assists: 0,
-            headshots: 0,
-            mvp: 0,
-            adr: 0,
-          };
+  const buildPlayerStats = (ms: TournamentMatches) => {
+    const players: Record<string, PlayerAgg> = {};
+    for (const match of ms) {
+      for (const team of match.teams) {
+        for (const p of team.players) {
+          const pid = p.player_id_nullable ?? p.player_id_mandatory;
+          if (!players[pid]) {
+            players[pid] = {
+              player_id: pid,
+              nickname: p.nickname,
+              avatar: "",
+              matches: 0,
+              kills: 0,
+              deaths: 0,
+              assists: 0,
+              headshots: 0,
+              mvp: 0,
+              adr: 0,
+            };
+          }
+          players[pid].matches++;
+          players[pid].kills += p.kills ?? 0;
+          players[pid].deaths += p.deaths ?? 0;
+          players[pid].assists += p.assists ?? 0;
+          players[pid].headshots += p.headshots ?? 0;
+          players[pid].mvp += p.mvps ?? 0;
+          players[pid].adr += p.adr ?? 0;
         }
-        players[pid].matches++;
-        players[pid].kills += p.kills ?? 0;
-        players[pid].deaths += p.deaths ?? 0;
-        players[pid].assists += p.assists ?? 0;
-        players[pid].headshots += p.headshots ?? 0;
-        players[pid].mvp += p.mvps ?? 0;
-        players[pid].adr += p.adr ?? 0;
       }
     }
-  }
+    return orderBy(
+      Object.values(players),
+      [(p) => p.kills / Math.max(p.deaths, 1)],
+      ["desc"],
+    );
+  };
 
-  const sorted = orderBy(
-    Object.values(players),
-    [(p) => p.kills / Math.max(p.deaths, 1)],
-    ["desc"],
-  );
+  const groupStats = buildPlayerStats(groupMatches);
+  const playoffStats = buildPlayerStats(playoffMatches);
 
-  if (!sorted.length) return <EmptyState />;
+  if (!groupStats.length && !playoffStats.length) return <EmptyState />;
 
-  return (
+  const StatsTable = ({
+    players,
+    showMvp,
+  }: {
+    players: PlayerAgg[];
+    showMvp: boolean;
+  }) => (
     <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-      <div className="border-neutral-800 border-b px-5 py-4">
-        <h3 className="font-bold text-white">Player Statistics</h3>
-        <p className="text-neutral-500 text-sm">Sorted by KD</p>
-      </div>
       <div className="w-full overflow-x-auto">
         <table className="w-max min-w-full">
           <colgroup>
             <col className="w-10" />
             <col className="w-44" />
             <col className="w-16" />
-            <col className="w-16" />
+            {showMvp && <col className="w-16" />}
             <col className="w-16" />
             <col className="w-16" />
             <col className="w-20" />
@@ -371,7 +684,7 @@ function MVPTab({ matches }: { matches: TournamentMatches }) {
                 "#",
                 "Player",
                 "M",
-                "MVP",
+                ...(showMvp ? ["MVP"] : []),
                 "Avg K",
                 "Avg D",
                 "KD",
@@ -391,13 +704,12 @@ function MVPTab({ matches }: { matches: TournamentMatches }) {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((p, i) => {
+            {players.map((p, i) => {
               const avgK = p.kills / Math.max(p.matches, 1);
               const avgD = p.deaths / Math.max(p.matches, 1);
               const kd = p.kills / Math.max(p.deaths, 1);
               const kdDiff = p.kills - p.deaths;
               const hs = (p.headshots / Math.max(p.kills, 1)) * 100;
-
               return (
                 <tr
                   key={p.player_id}
@@ -424,15 +736,17 @@ function MVPTab({ matches }: { matches: TournamentMatches }) {
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
                     {p.matches}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-sm">
-                    <span
-                      className={cn(
-                        p.mvp > 0 ? "text-yellow-400" : "text-neutral-600",
-                      )}
-                    >
-                      {p.mvp > 0 ? p.mvp : "—"}
-                    </span>
-                  </td>
+                  {showMvp && (
+                    <td className="px-4 py-2.5 text-right font-mono text-sm">
+                      <span
+                        className={cn(
+                          p.mvp > 0 ? "text-yellow-400" : "text-neutral-600",
+                        )}
+                      >
+                        {p.mvp > 0 ? p.mvp : "—"}
+                      </span>
+                    </td>
+                  )}
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-200 text-sm">
                     {avgK.toFixed(0)}
                   </td>
@@ -466,6 +780,31 @@ function MVPTab({ matches }: { matches: TournamentMatches }) {
           </tbody>
         </table>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-6">
+      {playoffStats.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <div className="border-neutral-800 border-b px-1 pb-3">
+            <h3 className="font-bold text-white">Playoffs MVP</h3>
+            <p className="text-neutral-500 text-sm">
+              15 March · includes MVP count
+            </p>
+          </div>
+          <StatsTable players={playoffStats} showMvp={true} />
+        </div>
+      )}
+      {groupStats.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <div className="border-neutral-800 border-b px-1 pb-3">
+            <h3 className="font-bold text-white">Group Stage Stats</h3>
+            <p className="text-neutral-500 text-sm">14 March · sorted by KD</p>
+          </div>
+          <StatsTable players={groupStats} showMvp={false} />
+        </div>
+      )}
     </div>
   );
 }

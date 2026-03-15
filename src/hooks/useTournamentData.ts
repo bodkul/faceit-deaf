@@ -8,6 +8,8 @@ export const TOURNAMENT_HUB_IDS = [
   "9508886f-759a-4389-bd84-deaf02a77928",
   "74912e42-b2ba-44b6-b851-70f5fc48508d",
   "e15b0fdc-892b-4b10-bee0-7177a52f5e40",
+  "d0cc790c-d813-4373-baa2-9cb91eee531d",
+  "d26a3ca8-7be3-4a12-9880-e9217b826028"
 ];
 
 export function useTournamentData() {

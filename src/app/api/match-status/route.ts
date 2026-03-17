@@ -10,6 +10,8 @@ import { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
 export async function POST(request: NextRequest) {
   const { payload, event } = await request.json();
 
+  console.log(`Received:`, { event, payload });
+
   if (payload?.game !== GAME) {
     return NextResponse.json({ message: "Ignored: not a valid match" });
   }

@@ -27,6 +27,7 @@ type PlayerType = TeamType["team_players"][number];
 
 const formatDuration = (start: string, end: string): string => {
   const { hours = 0, minutes = 0 } = intervalToDuration({ start, end });
+  if (hours > 0 && minutes === 0) return `${hours}h`;
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
 

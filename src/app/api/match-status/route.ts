@@ -26,7 +26,9 @@ export async function POST(request: NextRequest) {
       break;
 
     case "match_status_finished": {
-      const handle = await syncFinishedMatchTask.trigger(payload);
+      const handle = await syncFinishedMatchTask.trigger(payload, {
+        tags: [`match_${payload.id}`],
+      });
       return NextResponse.json(handle);
     }
 

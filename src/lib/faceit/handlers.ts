@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import pMap from "p-map";
 
 import { fetchMatch } from "@/lib/faceit/api";
@@ -17,11 +18,13 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
     team.roster.map((p) => p.id),
   );
 
-  const [existingPlayers, match] = await Promise.all([
-    getExistingPlayers(playerIds),
-    fetchMatch(payload.id),
-  ]);
+  const match = await fetchMatch(payload.id);
 
+  if (match.voting.location?.pick[0] === "wingman-eu") {
+    return NextResponse.json({ message: "Ignored: wingman match" });
+  }
+
+  const existingPlayers = await getExistingPlayers(playerIds);
   const existingPlayerIds = existingPlayers.map((p) => p.id);
 
   await upsertMatch({

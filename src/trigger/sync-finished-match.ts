@@ -33,9 +33,14 @@ export const syncFinishedMatchTask = task({
       playerIds,
     });
 
-    const [existingPlayers, match, matchStats] = await Promise.all([
+    const match = await fetchMatch(payload.id);
+
+    if (match.voting.location?.pick[0] === "wingman-eu") {
+      return { message: `Ignored: wingman match` };
+    }
+
+    const [existingPlayers, matchStats] = await Promise.all([
       getExistingPlayers(playerIds),
-      fetchMatch(payload.id),
       fetchMatchStats(payload.id),
     ]);
 

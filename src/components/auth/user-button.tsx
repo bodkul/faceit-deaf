@@ -68,6 +68,12 @@ export function UserButton() {
           asChild
           className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"
         >
+          <Link href="/profile">Profile</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          asChild
+          className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"
+        >
           <Link href={`/player/${user.name}`}>Statistics</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-neutral-800" />

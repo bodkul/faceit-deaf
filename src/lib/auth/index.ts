@@ -3,6 +3,8 @@ import NextAuth from "next-auth";
 import FaceItProvider from "next-auth/providers/faceit";
 import TwitchProvider from "next-auth/providers/twitch";
 
+import { supabaseClient } from "@/lib/supabase";
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     FaceItProvider({
@@ -28,10 +30,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY,
   }),
   callbacks: {
-    async signIn({ account }) {
-      if (account?.provider === "twitch") {
-        return true;
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "faceit") {
+        const userId = profile?.guid;
+        if (userId) {
+          await supabaseClient
+            .from("players")
+            .update({ auth_user_id: user.id })
+            .eq("id", userId);
+        }
       }
+
       return true;
     },
     async session({ session, user }) {

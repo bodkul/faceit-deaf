@@ -12,9 +12,11 @@ import { notFound } from "next/navigation";
 import { use, useMemo } from "react";
 
 import { SkillLevelIcon } from "@/components/icons";
+import { TwitchPlayer } from "@/components/twitch-player";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLiveStreams } from "@/hooks/useLiveStreams";
 import { useMatch } from "@/hooks/useMatch";
 import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { getCountryCode, getFlagUrl } from "@/lib/country";
@@ -544,6 +546,7 @@ function TeamStatsTable({
 export default function MatchPage(props: PageProps<"/match/[matchId]">) {
   const { matchId } = use(props.params);
   const { data: match, isLoading } = useMatch(matchId.replace(/^1-/, ""));
+  const { data: streamingPlayers = [] } = useLiveStreams();
 
   if (!matchId.startsWith("1-")) return notFound();
   if (isLoading) return <Loading />;
@@ -551,9 +554,39 @@ export default function MatchPage(props: PageProps<"/match/[matchId]">) {
 
   const totalScore = sumBy(match.teams, (team) => team.final_score ?? 0);
 
+  const matchPlayerIds = match.teams
+    .flatMap((t) => t.team_players)
+    .map((p) => p.player_id_nullable)
+    .filter(Boolean);
+
+  const activeStreams = streamingPlayers
+    .filter((s) => s.twitch_login)
+    .filter((s) => matchPlayerIds.includes(s.id));
+
   return (
     <div className="flex flex-col gap-4">
       <MatchHeader match={match} />
+
+      {activeStreams.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h2 className="font-bold text-neutral-600 text-sm uppercase tracking-widest">
+            Live Streams
+          </h2>
+          <div
+            className={cn(
+              "grid gap-4",
+              activeStreams.length === 1
+                ? "grid-cols-1"
+                : "grid-cols-1 lg:grid-cols-2",
+            )}
+          >
+            {activeStreams.map((s) => (
+              <TwitchPlayer key={s.id} login={s.twitch_login as string} />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-3">
         <h2 className="font-bold text-neutral-600 text-sm uppercase tracking-widest">
           Match Statistics

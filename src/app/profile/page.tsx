@@ -1,6 +1,7 @@
 "use client";
 
 import { IconBrandTwitch, IconCheck } from "@tabler/icons-react";
+import ky from "ky";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -13,8 +14,8 @@ function useTwitchLinked() {
   const [linked, setLinked] = useState<boolean | null>(null);
 
   useEffect(() => {
-    fetch("/api/profile/accounts")
-      .then((r) => r.json())
+    ky("/api/profile/accounts")
+      .json<{ twitch: boolean }>()
       .then((data) => setLinked(data.twitch ?? false))
       .catch(() => setLinked(false));
   }, []);
@@ -50,7 +51,6 @@ export default function ProfilePage() {
     <div className="mx-auto flex max-w-xl flex-col gap-6 px-4 py-10">
       <h1 className="font-black text-2xl text-white">Profile</h1>
 
-      {/* user card */}
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/50 to-transparent" />
         <div className="flex items-center gap-4 px-6 py-5">
@@ -67,13 +67,11 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* connected accounts */}
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="border-neutral-800 border-b px-5 py-4">
           <h3 className="font-bold text-white">Connected accounts</h3>
         </div>
 
-        {/* FACEIT — always connected */}
         <div className="flex items-center justify-between border-neutral-800/50 border-b px-5 py-4">
           <div className="flex items-center gap-3">
             <div className="flex size-8 items-center justify-center rounded-lg border border-[#ff5500]/20 bg-[#ff5500]/10">
@@ -92,7 +90,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Twitch */}
         <div className="flex items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3">
             <div className="flex size-8 items-center justify-center rounded-lg border border-[#9146ff]/20 bg-[#9146ff]/10">

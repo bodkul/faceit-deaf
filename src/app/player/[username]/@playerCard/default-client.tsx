@@ -43,11 +43,11 @@ export function PlayerCard({
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neutral-700/50 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/50 to-transparent" />
       <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
       <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/4 blur-3xl" />
 
-      <div className="h-16 w-full bg-gradient-to-br from-neutral-900 to-neutral-950" />
+      <div className="h-16 w-full bg-linear-to-br from-neutral-900 to-neutral-950" />
 
       <div className="relative -mt-8 flex flex-col items-center px-6 pb-6">
         <div className="relative mb-3">

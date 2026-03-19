@@ -455,6 +455,7 @@ export type Database = {
       };
       players: {
         Row: {
+          auth_user_id: string | null;
           avatar: string;
           country: string | null;
           cover_image: string | null;
@@ -467,6 +468,7 @@ export type Database = {
           twitch_username: string | null;
         };
         Insert: {
+          auth_user_id?: string | null;
           avatar: string;
           country?: string | null;
           cover_image?: string | null;
@@ -479,6 +481,7 @@ export type Database = {
           twitch_username?: string | null;
         };
         Update: {
+          auth_user_id?: string | null;
           avatar?: string;
           country?: string | null;
           cover_image?: string | null;

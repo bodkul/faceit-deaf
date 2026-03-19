@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDeviceGamepad2 } from "@tabler/icons-react";
+import { IconBrandTwitch, IconDeviceGamepad2 } from "@tabler/icons-react";
 import { differenceInMinutes } from "date-fns";
 import { now } from "es-toolkit/compat";
 import Link from "next/link";
@@ -21,30 +21,21 @@ import {
 } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import { useLiveMatches } from "@/hooks/useLiveMatches";
+import { useLiveStreams } from "@/hooks/useLiveStreams";
 
 type MatchStatus = "live" | "soon" | "finished";
 
-function getMatchStatus(match: {
-  started_at: string | null;
-  finished_at: string | null;
-}): MatchStatus {
+type LiveMatch = NonNullable<ReturnType<typeof useLiveMatches>["data"]>[number];
+
+function getMatchStatus(match: LiveMatch): MatchStatus {
   if (match.finished_at) return "finished";
   if (match.started_at) return "live";
   return "soon";
 }
 
-function MatchCard({
-  match,
-}: {
-  match: {
-    id: string | null;
-    map_pick: string | null;
-    round_score: string | null;
-    started_at: string | null;
-    finished_at: string | null;
-    players: string[] | null;
-  };
-}) {
+function MatchCard({ match }: { match: LiveMatch }) {
+  const { data: streamingPlayers = [] } = useLiveStreams();
+
   const status = getMatchStatus(match);
   const isLive = status === "live";
   const isSoon = status === "soon";
@@ -56,6 +47,9 @@ function MatchCard({
     isLive && match.started_at
       ? differenceInMinutes(now(), match.started_at)
       : null;
+  const hasStream = match.players?.some((nickname) =>
+    streamingPlayers.some((p) => p.nickname === nickname),
+  );
 
   return (
     <Link
@@ -84,15 +78,23 @@ function MatchCard({
       <div className="p-4">
         <div className="mb-3 flex items-center justify-between">
           {isLive ? (
-            <div className="flex items-center gap-1.5">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
-              </span>
-              <span className="font-bold font-mono text-red-400 text-xs uppercase tracking-widest">
-                {minutes}m
-              </span>
-            </div>
+            <>
+              <div className="flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                </span>
+                <span className="font-bold font-mono text-red-400 text-xs uppercase tracking-widest">
+                  {minutes}m
+                </span>
+              </div>
+              {hasStream && (
+                <div className="flex items-center gap-1 rounded-full border border-[#9146ff]/20 bg-[#9146ff]/10 px-2 py-0.5">
+                  <IconBrandTwitch size={11} className="text-[#9146ff]" />
+                  <span className="font-mono text-[#9146ff] text-xs">Live</span>
+                </div>
+              )}
+            </>
           ) : isSoon ? (
             <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-yellow-400/80" />

@@ -83,4 +83,4 @@ function SecondaryFlowButton({
   );
 }
 
-export { PrimaryFlowButton, SecondaryFlowButton, type FlowButtonProps };
+export { type FlowButtonProps, PrimaryFlowButton, SecondaryFlowButton };

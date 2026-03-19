@@ -12,17 +12,16 @@ import {
   upsertMatchTeamPlayers,
 } from "@/lib/supabase";
 
+import { getMatchId, getPlayerIds, isWingmanMatch } from "./utils";
+
 export async function handleMatchStatusReady(payload: MatchPayload) {
-  const matchId = payload.id.replace(/^1-/, "");
-  const playerIds = payload.teams.flatMap((team) =>
-    team.roster.map((p) => p.id),
-  );
+  const matchId = getMatchId(payload);
+  const playerIds = getPlayerIds(payload);
 
   const match = await fetchMatch(payload.id);
 
-  if (match.voting.location?.pick[0] === "wingman-eu") {
-    return NextResponse.json({ message: "Ignored: wingman match" });
-  }
+  if (isWingmanMatch(match))
+    return NextResponse.json({ message: "Ignored: not a valid match" });
 
   const existingPlayers = await getExistingPlayers(playerIds);
   const existingPlayerIds = existingPlayers.map((p) => p.id);
@@ -70,6 +69,6 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
 }
 
 export async function handleMatchStatusCancelled(payload: MatchPayload) {
-  const matchId = payload.id.replace(/^1-/, "");
+  const matchId = getMatchId(payload);
   await deleteMatch(matchId);
 }

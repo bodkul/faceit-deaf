@@ -4,6 +4,7 @@ import pMap from "p-map";
 
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/match-events";
+import { getMatchId, getPlayerIds, isWingmanMatch } from "@/lib/faceit/utils";
 import {
   getExistingPlayers,
   supabaseClient,
@@ -23,10 +24,8 @@ export const syncFinishedMatchTask = task({
       totalPlayers: payload.teams.reduce((acc, t) => acc + t.roster.length, 0),
     });
 
-    const matchId = payload.id.replace(/^1-/, "");
-    const playerIds = payload.teams.flatMap((team) =>
-      team.roster.map((p) => p.id),
-    );
+    const matchId = getMatchId(payload);
+    const playerIds = getPlayerIds(payload);
 
     logger.debug("Fetching match data and existing players", {
       matchId,
@@ -35,9 +34,7 @@ export const syncFinishedMatchTask = task({
 
     const match = await fetchMatch(payload.id);
 
-    if (match.voting.location?.pick[0] === "wingman-eu") {
-      return { message: `Ignored: wingman match` };
-    }
+    if (isWingmanMatch(match)) return { message: "Ignored: not a valid match" };
 
     const [existingPlayers, matchStats] = await Promise.all([
       getExistingPlayers(playerIds),

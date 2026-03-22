@@ -31,7 +31,7 @@ export async function GET() {
   const params = new URLSearchParams();
   for (const id of twitchIds) params.append("user_id", id);
 
-  const { data } = await ky
+  const { data: liveStreams } = await ky
     .get("https://api.twitch.tv/helix/streams", {
       headers: {
         "Client-ID": process.env.TWITCH_CLIENT_ID,
@@ -40,7 +40,8 @@ export async function GET() {
       searchParams: params,
     })
     .json<{ data: { user_id: string; user_login: string }[] }>();
-  const liveIds = (data ?? []).map((s: { user_id: string }) => s.user_id);
+
+  const liveIds = liveStreams.map((s) => s.user_id);
 
   const { data: players } = await supabaseClient
     .from("players")
@@ -52,5 +53,15 @@ export async function GET() {
         .map((a) => a.userId),
     );
 
-  return NextResponse.json({ streamingPlayers: players ?? [] });
+  const streamingPlayers = (players ?? []).map((p) => {
+    const account = accounts.find((a) =>
+      liveIds.includes(a.providerAccountId ?? ""),
+    );
+    const stream = liveStreams.find(
+      (s) => s.user_id === account?.providerAccountId,
+    );
+    return { ...p, twitch_login: stream?.user_login ?? null };
+  });
+
+  return NextResponse.json({ streamingPlayers });
 }

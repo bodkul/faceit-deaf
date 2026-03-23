@@ -13,9 +13,9 @@ export function useMatchHistory(player_id: string) {
     enabled: !!player_id,
     queryFn: async () => {
       const { count } = await supabaseClient
-        .from("player_matches")
+        .from("match_team_players")
         .select("*", { count: "exact", head: true })
-        .match({ player_id });
+        .eq("player_id_mandatory", player_id);
       return count ?? 0;
     },
   });

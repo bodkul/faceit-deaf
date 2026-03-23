@@ -20,7 +20,7 @@ export function usePlayersWithPagination() {
     queryKey: ["leaderboard_players_count"],
     queryFn: async () => {
       const { count } = await supabaseClient
-        .from("leaderboard_players")
+        .from("players")
         .select("*", { count: "exact", head: true });
       return count ?? 0;
     },

@@ -10,6 +10,7 @@ export function usePlayerMaps(player_id: string) {
       const { data } = await supabaseClient
         .from("player_matches")
         .select("map")
+        .notIn("map", ["de_train", "de_vertigo"])
         .match({ player_id })
         .order("finished_at", { ascending: false });
 

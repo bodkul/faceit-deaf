@@ -2,7 +2,7 @@
 
 import { IconChartBar } from "@tabler/icons-react";
 import { take } from "es-toolkit/array";
-import { add, maxBy, meanBy, minBy, subtract, sumBy } from "es-toolkit/compat";
+import { meanBy, sumBy } from "es-toolkit/compat";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 
@@ -35,7 +35,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const chartConfig = {
-  elo: { color: "oklch(70.5% 0.213 47.604)" },
+  elo: { color: "var(--chart-2)" },
 } satisfies ChartConfig;
 
 const STAT_LABELS = [
@@ -101,19 +101,24 @@ function EloChart({
 }) {
   return (
     <ChartContainer config={chartConfig} className="h-40 w-full">
-      <AreaChart accessibilityLayer data={data}>
-        <CartesianGrid vertical={false} stroke="#262626" />
+      <AreaChart
+        accessibilityLayer
+        data={data}
+        margin={{
+          left: -20,
+        }}
+      >
+        <CartesianGrid vertical={false} />
         <YAxis
-          dataKey="match"
-          domain={[
-            subtract(minBy(data, "elo")?.elo ?? 0, 10),
-            add(maxBy(data, "elo")?.elo ?? 0, 10),
-          ]}
+          domain={["auto", "auto"]}
           tickLine={false}
           axisLine={false}
-          tick={{ fill: "#525252", fontSize: 11 }}
+          tickMargin={5}
         />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent indicator="line" />}
+        />
         <defs>
           <linearGradient id="fillElo" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--color-elo)" stopOpacity={0.8} />

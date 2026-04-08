@@ -114,6 +114,7 @@ export function usePlayerStatistics(
         )
         .eq("status", "FINISHED")
         .eq("match_teams.match_team_players.player_id_mandatory", playerId)
+        .neq("organizer_id", "200aea79-4218-4289-a6ea-8261c610dd2e")
         .order("finished_at", { ascending: false });
 
       if (range === "currentSession") {

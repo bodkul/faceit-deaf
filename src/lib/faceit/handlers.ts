@@ -20,6 +20,8 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
 
   const match = await fetchMatch(payload.id);
 
+  console.log(`Fetched match:`, { match });
+
   if (isWingmanMatch(match))
     return NextResponse.json({ message: "Ignored: not a valid match" });
 

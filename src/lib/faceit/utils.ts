@@ -1,4 +1,3 @@
-import type { fetchMatch } from "./api";
 import type { MatchPayload } from "./match-events";
 
 export const formatNumberWithSign = (n: number) => (n > 0 ? `+${n}` : `${n}`);
@@ -22,11 +21,4 @@ export function getMatchId(payload: MatchPayload) {
 
 export function getPlayerIds(payload: MatchPayload) {
   return payload.teams.flatMap((team) => team.roster.map((p) => p.id));
-}
-
-export function isWingmanMatch(match: Awaited<ReturnType<typeof fetchMatch>>) {
-  return (
-    match.voting.location?.pick[0] === "wingman-eu" ||
-    /^\d+$/.test(match.voting.map?.pick[0] ?? "")
-  );
 }

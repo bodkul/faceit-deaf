@@ -12,7 +12,7 @@ import {
   upsertMatchTeamPlayers,
 } from "@/lib/supabase";
 
-import { getMatchId, getPlayerIds, isWingmanMatch } from "./utils";
+import { getMatchId, getPlayerIds } from "./utils";
 
 export async function handleMatchStatusReady(payload: MatchPayload) {
   const matchId = getMatchId(payload);
@@ -20,9 +20,7 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
 
   const match = await fetchMatch(payload.id);
 
-  console.log(`Fetched match:`, { match });
-
-  if (isWingmanMatch(match))
+  if (match.calculate_elo !== true)
     return NextResponse.json({ message: "Ignored: not a valid match" });
 
   const existingPlayers = await getExistingPlayers(playerIds);

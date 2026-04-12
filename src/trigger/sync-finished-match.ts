@@ -4,7 +4,7 @@ import pMap from "p-map";
 
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/match-events";
-import { getMatchId, getPlayerIds, isWingmanMatch } from "@/lib/faceit/utils";
+import { getMatchId, getPlayerIds } from "@/lib/faceit/utils";
 import {
   getExistingPlayers,
   supabaseClient,
@@ -34,7 +34,8 @@ export const syncFinishedMatchTask = task({
 
     const match = await fetchMatch(payload.id);
 
-    if (isWingmanMatch(match)) return { message: "Ignored: not a valid match" };
+    if (match.calculate_elo !== true)
+      return { message: "Ignored: not a valid match" };
 
     const [existingPlayers, matchStats] = await Promise.all([
       getExistingPlayers(playerIds),

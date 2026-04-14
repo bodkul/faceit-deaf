@@ -8,7 +8,13 @@ export function ReactQueryProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 3,
+      },
+    },
+  });
 
   return (
     <QueryClientProvider client={queryClient}>

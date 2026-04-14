@@ -5,7 +5,7 @@ import {
   startOfToday,
   subDays,
 } from "date-fns";
-import { first, nth } from "es-toolkit/compat";
+import { nth } from "es-toolkit/compat";
 
 import { supabaseClient } from "@/lib/supabase";
 
@@ -39,40 +39,48 @@ export async function getCurrentSessionStart(
   const { data } = await supabaseClient
     .from("matches")
     .select(`
-    finished_at,
-    match_teams!inner(
-      match_team_players!inner(
-        player_id_mandatory
+      finished_at,
+      match_teams!inner(
+        match_team_players!inner(
+          player_id_mandatory
+        )
       )
-    )
-  `)
+    `)
     .eq("status", "FINISHED")
+    .not("finished_at", "is", null)
     .eq("match_teams.match_team_players.player_id_mandatory", playerId)
     .order("finished_at", { ascending: false })
-    .limit(MAX_SESSION_MATCHES);
+    .limit(MAX_SESSION_MATCHES)
+    .throwOnError();
 
   if (!data?.length) {
     return undefined;
   }
 
-  const firstFinishedAt = first(data)?.finished_at;
+  const firstFinishedAt = data.find(
+    (match) => !!match.finished_at,
+  )?.finished_at;
 
   if (!firstFinishedAt) {
     return undefined;
   }
 
   let sessionStart = parseISO(firstFinishedAt);
+  let previousFinishedAt = firstFinishedAt;
 
   for (let i = 1; i < data.length; i++) {
-    const prevFinishedAt = nth(data, i - 1)?.finished_at;
     const currFinishedAt = nth(data, i)?.finished_at;
 
-    if (!prevFinishedAt || !currFinishedAt) {
-      return undefined;
+    if (!currFinishedAt) {
+      continue;
     }
 
-    const prev = parseISO(prevFinishedAt);
+    const prev = parseISO(previousFinishedAt);
     const curr = parseISO(currFinishedAt);
+
+    if (Number.isNaN(prev.getTime()) || Number.isNaN(curr.getTime())) {
+      continue;
+    }
 
     const diff = differenceInMilliseconds(prev, curr);
 
@@ -81,6 +89,7 @@ export async function getCurrentSessionStart(
     }
 
     sessionStart = curr;
+    previousFinishedAt = currFinishedAt;
   }
 
   return sessionStart;
@@ -95,8 +104,7 @@ export function usePlayerStatistics(
     queryFn: async () => {
       let query = supabaseClient
         .from("matches")
-        .select(
-          `
+        .select(`
           match_teams!inner(
             team_win,
             match_team_players!inner(
@@ -110,12 +118,12 @@ export function usePlayerStatistics(
               adr
             )
           )
-        `,
-        )
+        `)
         .eq("status", "FINISHED")
         .eq("match_teams.match_team_players.player_id_mandatory", playerId)
         .neq("organizer_id", "200aea79-4218-4289-a6ea-8261c610dd2e")
-        .order("finished_at", { ascending: false });
+        .order("finished_at", { ascending: false })
+        .throwOnError();
 
       if (range === "currentSession") {
         const sessionStart = await getCurrentSessionStart(playerId);
@@ -134,9 +142,10 @@ export function usePlayerStatistics(
       const { data } = await query;
       return data;
     },
+    enabled: !!playerId,
   });
 
-  const enhancedData = data?.map((match) => {
+  const enhancedData = data?.flatMap((match) => {
     const team = match.match_teams[0];
     const player = team.match_team_players[0];
 

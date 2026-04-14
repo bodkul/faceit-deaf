@@ -341,13 +341,6 @@ export type Database = {
             foreignKeyName: "match_team_players_player_id_nullable_fkey";
             columns: ["player_id_nullable"];
             isOneToOne: false;
-            referencedRelation: "leaderboard_players";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "match_team_players_player_id_nullable_fkey";
-            columns: ["player_id_nullable"];
-            isOneToOne: false;
             referencedRelation: "players";
             referencedColumns: ["id"];
           },
@@ -536,18 +529,6 @@ export type Database = {
           indexrelid: unknown;
           schema_name: unknown;
           table_name: unknown;
-        };
-        Relationships: [];
-      };
-      leaderboard_players: {
-        Row: {
-          avatar: string | null;
-          country: string | null;
-          elo_before: number | null;
-          faceit_elo: number | null;
-          id: string | null;
-          nickname: string | null;
-          skill_level: number | null;
         };
         Relationships: [];
       };

@@ -1,5 +1,6 @@
 "use client";
 
+import NumberFlow from "@number-flow/react";
 import { IconClock, IconExternalLink, IconMapPin } from "@tabler/icons-react";
 import { format, intervalToDuration } from "date-fns";
 import { isNumber, meanBy } from "es-toolkit";
@@ -166,7 +167,7 @@ function MatchHeader({ match }: { match: MatchType }) {
                   "text-white": team1.team_win === null,
                 })}
               >
-                {team1.final_score ?? 0}
+                <NumberFlow value={Number(team1.final_score)} />
               </span>
             </div>
           </div>
@@ -238,7 +239,7 @@ function MatchHeader({ match }: { match: MatchType }) {
                   "text-white": team2.team_win === null,
                 })}
               >
-                {team2.final_score ?? 0}
+                <NumberFlow value={Number(team2.final_score)} />
               </span>
             </div>
             <Avatar className="size-14 rounded-xl">

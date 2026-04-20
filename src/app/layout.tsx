@@ -5,7 +5,6 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 
-import { Header } from "@/components/header";
 import { siteConfig } from "@/config/site";
 import { AuthProvider } from "@/providers/auth";
 import { ReactQueryProvider } from "@/providers/react-query";
@@ -32,12 +31,7 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
           <AuthProvider>
-            <ReactQueryProvider>
-              <Header />
-              <main className="mx-auto max-w-6xl flex-1 space-y-4 p-4">
-                {children}
-              </main>
-            </ReactQueryProvider>
+            <ReactQueryProvider>{children}</ReactQueryProvider>
           </AuthProvider>
         </ThemeProvider>
 

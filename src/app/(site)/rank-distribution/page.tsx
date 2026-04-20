@@ -182,7 +182,7 @@ export default function RankDistributionPage() {
               <h3 className="font-bold text-white">Overview</h3>
             </div>
             <div className="flex items-center justify-center p-5">
-              <ChartContainer config={chartConfig} className="h-64 w-64">
+              <ChartContainer config={chartConfig} className="size-64">
                 <PieChart>
                   <ChartTooltip
                     content={({ active, payload }) => {

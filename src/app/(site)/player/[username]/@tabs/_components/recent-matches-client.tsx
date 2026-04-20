@@ -19,7 +19,7 @@ import { MatchesTableHead, MatchesTableRow } from "./matches";
 function RecentMatchesWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
       <div className="border-neutral-800 border-b px-5 py-4">
         <h3 className="font-bold text-white">Recent Matches</h3>
         <p className="text-neutral-500 text-sm">Last 10 played matches</p>

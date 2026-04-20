@@ -240,7 +240,7 @@ function StatisticsHeader({
 export function StatisticsSkeleton() {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
       <div className="mb-5 flex items-center justify-between">
         <div className="flex flex-col gap-1.5">
           <Skeleton className="h-5 w-24 bg-neutral-800" />
@@ -270,7 +270,7 @@ export default function Statistics({ playerId }: { playerId: string }) {
   if (!stats) {
     return (
       <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-        <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
+        <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
         <div className="mb-5">
           <StatisticsHeader
             statisticsRange={statisticsRange}
@@ -307,8 +307,8 @@ export default function Statistics({ playerId }: { playerId: string }) {
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/4 blur-3xl" />
+      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
 
       <div className="mb-5">
         <StatisticsHeader

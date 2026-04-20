@@ -1,5 +1,6 @@
 "use client";
 
+import NumberFlow from "@number-flow/react";
 import { IconBrandTwitch, IconDeviceGamepad2 } from "@tabler/icons-react";
 import { differenceInMinutes } from "date-fns";
 import { now } from "es-toolkit/compat";
@@ -80,9 +81,9 @@ function MatchCard({ match }: { match: LiveMatch }) {
           {isLive ? (
             <>
               <div className="flex items-center gap-1.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-red-500" />
                 </span>
                 <span className="font-bold font-mono text-red-400 text-xs uppercase tracking-widest">
                   {minutes}m
@@ -97,14 +98,14 @@ function MatchCard({ match }: { match: LiveMatch }) {
             </>
           ) : isSoon ? (
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-yellow-400/80" />
+              <span className="size-2 rounded-full bg-yellow-400/80" />
               <span className="font-bold font-mono text-xs text-yellow-400/80 uppercase tracking-widest">
                 Soon
               </span>
             </div>
           ) : (
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-neutral-600" />
+              <span className="size-2 rounded-full bg-neutral-600" />
               <span className="font-bold font-mono text-neutral-500 text-xs uppercase tracking-widest">
                 Finished
               </span>
@@ -118,11 +119,11 @@ function MatchCard({ match }: { match: LiveMatch }) {
 
         <div className="mb-4 flex items-center justify-center gap-3">
           <span className="font-black font-mono text-3xl text-white tabular-nums">
-            {scoreA}
+            <NumberFlow value={Number(scoreA)} />
           </span>
           <span className="font-mono text-lg text-neutral-600">:</span>
           <span className="font-black font-mono text-3xl text-white tabular-nums">
-            {scoreB}
+            <NumberFlow value={Number(scoreB)} />
           </span>
         </div>
 
@@ -151,8 +152,8 @@ export function LiveMatches() {
 
   return (
     <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-      <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-red-500/3 blur-3xl" />
+      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/3 blur-3xl" />
       <CardHeader className="pb-4">
         <div className="flex items-center gap-2">
           <CardTitle className="text-white">Live Matches</CardTitle>

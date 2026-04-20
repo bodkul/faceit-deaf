@@ -39,18 +39,18 @@
     "react-dom": "19.2.5",
     "recharts": "^3.8.1",
     "tailwind-merge": "^3.5.0",
-    "uuid": "^14.0.0",
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",
     "@svgr/webpack": "^8.1.0",
-    "@tailwindcss/postcss": "^4.2.2",
+    "@tailwindcss/postcss": "^4.2.3",
     "@trigger.dev/build": "4.4.4",
     "@types/node": "^25.6.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "postcss": "^8",
-    "tailwindcss": "^4.2.2",
+    "tailwindcss": "^4.2.3",
     "typescript": "^6.0.3"
   },
   "overrides": {

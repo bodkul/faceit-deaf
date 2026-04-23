@@ -20,7 +20,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         dark: "border border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:bg-neutral-800 hover:text-white",
         faceit:
-          "border border-[#ff5500]/30 bg-[#ff5500]/10 text-[#ff5500] hover:bg-[#ff5500]/20 hover:text-[#ff5500]",
+          "border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-400",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

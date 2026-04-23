@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-import { FaceitIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +22,6 @@ export function UserButton() {
   if (status === "unauthenticated" || !session?.user) {
     return (
       <Button onClick={() => signIn("faceit")} variant="faceit">
-        <FaceitIcon className="size-4" data-icon="inline-start" />
         Login with Faceit
       </Button>
     );

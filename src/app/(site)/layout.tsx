@@ -12,7 +12,9 @@ export default function SiteLayout({
     <>
       <BGPattern variant="grid" mask="fade-edges" />
       <Header />
-      <main className="mx-auto max-w-6xl flex-1 space-y-4 p-4">{children}</main>
+      <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-12">
+        {children}
+      </main>
     </>
   );
 }

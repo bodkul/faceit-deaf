@@ -825,63 +825,58 @@ export default function TournamentPage() {
   } = useTournamentData();
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <h1 className="flex items-center gap-2 font-black text-2xl text-white">
-            <IconTrophy size={24} className="text-yellow-400" />
-            ESDUA Tournament
-          </h1>
-          <Button
-            variant="dark"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
-            className="gap-2"
-          >
-            <IconRefresh
-              size={14}
-              className={cn(isFetching && "animate-spin")}
-            />
-            Refresh
-          </Button>
-        </div>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <h1 className="flex items-center gap-2 font-black text-2xl text-white">
+          <IconTrophy size={24} className="text-yellow-400" />
+          ESDUA Tournament
+        </h1>
+        <Button
+          variant="dark"
+          size="sm"
+          onClick={() => refetch()}
+          disabled={isFetching}
+          className="gap-2"
+        >
+          <IconRefresh size={14} className={cn(isFetching && "animate-spin")} />
+          Refresh
+        </Button>
+      </div>
 
-        <div className="flex gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "flex-1 rounded-lg px-4 py-2 font-medium text-sm transition-all",
-                activeTab === tab.id
-                  ? "bg-neutral-800 text-white shadow-sm"
-                  : "text-neutral-500 hover:text-neutral-300",
-              )}
-            >
-              {tab.label}
-            </button>
+      <div className="flex gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              "flex-1 rounded-lg px-4 py-2 font-medium text-sm transition-all",
+              activeTab === tab.id
+                ? "bg-neutral-800 text-white shadow-sm"
+                : "text-neutral-500 hover:text-neutral-300",
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {isLoading ? (
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 4 }, (_, i) => `skeleton-${i}`).map((key) => (
+            <Skeleton
+              key={key}
+              className="h-24 w-full rounded-xl bg-neutral-900"
+            />
           ))}
         </div>
-
-        {isLoading ? (
-          <div className="flex flex-col gap-3">
-            {Array.from({ length: 4 }, (_, i) => `skeleton-${i}`).map((key) => (
-              <Skeleton
-                key={key}
-                className="h-24 w-full rounded-xl bg-neutral-900"
-              />
-            ))}
-          </div>
-        ) : (
-          <>
-            {activeTab === "matches" && <MatchesTab matches={matches} />}
-            {activeTab === "standings" && <StandingsTab matches={matches} />}
-            {activeTab === "mvp" && <MVPTab matches={matches} />}
-          </>
-        )}
-      </div>
+      ) : (
+        <>
+          {activeTab === "matches" && <MatchesTab matches={matches} />}
+          {activeTab === "standings" && <StandingsTab matches={matches} />}
+          {activeTab === "mvp" && <MVPTab matches={matches} />}
+        </>
+      )}
     </div>
   );
 }

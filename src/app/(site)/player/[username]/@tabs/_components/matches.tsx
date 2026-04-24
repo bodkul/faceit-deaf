@@ -96,7 +96,10 @@ export function MatchesTableRow({
       <td className="whitespace-nowrap px-4 py-2.5 text-center font-mono text-sm">
         {match.elo_diff ? (
           <span
-            className={match.win === true ? "text-emerald-400" : "text-red-400"}
+            className={cn({
+              "text-emerald-400": match.elo_diff > 0,
+              "text-red-400": match.elo_diff < 0,
+            })}
           >
             {formatNumberWithSign(match.elo_diff)}
           </span>

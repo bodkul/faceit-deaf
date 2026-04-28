@@ -1,4 +1,3 @@
-import { syncVercelEnvVars } from "@trigger.dev/build/extensions/core";
 import { defineConfig } from "@trigger.dev/sdk/v3";
 
 export default defineConfig({
@@ -16,13 +15,4 @@ export default defineConfig({
     },
   },
   dirs: ["./src/trigger"],
-  build: {
-    extensions: [
-      syncVercelEnvVars({
-        vercelAccessToken: process.env.VERCEL_ACCESS_TOKEN,
-        projectId: process.env.VERCEL_PROJECT_ID,
-        vercelTeamId: process.env.VERCEL_TEAM_ID,
-      }),
-    ],
-  },
 });

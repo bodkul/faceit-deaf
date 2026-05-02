@@ -9,27 +9,36 @@ import { supabaseClient } from "@/lib/supabase";
 
 const PAGE_SIZE = 20;
 
-export function usePlayersWithPagination() {
+export function usePlayersWithPagination(season: string = "season-8") {
   const [totalCount, setTotalCount] = useState(0);
 
   const pagination = usePagination(totalCount, PAGE_SIZE);
 
   const { data: players, ...rest } = useQuery({
-    queryKey: ["players", pagination.pageIndex],
+    queryKey: ["players", pagination.pageIndex, season],
     queryFn: async () => {
       const start = pagination.pageOffset * PAGE_SIZE;
       const end = (pagination.pageOffset + 1) * PAGE_SIZE - 1;
-      const { data, count } = await supabaseClient
+
+      let query = supabaseClient
         .from("players")
-        .select("id, nickname, avatar, faceit_elo, country", {
+        .select("id, nickname, avatar, faceit_elo, country, elo_season_7", {
           count: "exact",
         })
-        .order("faceit_elo", { ascending: false })
-        .range(start, end)
-        .throwOnError();
+        .range(start, end);
+
+      if (season === "season-8") {
+        query = query.not("faceit_elo", "is", null);
+        query = query.order("faceit_elo", { ascending: false });
+      } else if (season === "season-7") {
+        query = query.not("elo_season_7", "is", null);
+        query = query.order("elo_season_7", { ascending: false });
+      }
+
+      const { data, count } = await query.throwOnError();
 
       return {
-        data: data ?? [],
+        data: data,
         count: count ?? 0,
       };
     },

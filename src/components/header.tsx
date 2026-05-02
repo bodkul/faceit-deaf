@@ -12,8 +12,8 @@ import { cn } from "@/lib/utils";
 
 export const navLinks = [
   {
-    label: "Ranking",
-    href: "/ranking",
+    label: "Leaderboard",
+    href: "/leaderboard",
   },
   {
     label: "Tournament",

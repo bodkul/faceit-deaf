@@ -15,7 +15,7 @@ export function useLiveStreams() {
   return useQuery({
     queryKey: ["live-streams"],
     queryFn: async () => {
-      const { streamingPlayers = [] } =
+      const { streamingPlayers } =
         await ky("/api/streams").json<TwitchStreams>();
       return streamingPlayers;
     },

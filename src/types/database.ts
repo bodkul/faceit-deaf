@@ -453,10 +453,10 @@ export type Database = {
           country: string | null;
           cover_image: string | null;
           created_at: string;
-          faceit_elo: number;
+          elo_season_7: number | null;
+          faceit_elo: number | null;
           id: string;
           nickname: string;
-          skill_level: number;
           steam_id_64: string;
           twitch_username: string | null;
         };
@@ -466,10 +466,10 @@ export type Database = {
           country?: string | null;
           cover_image?: string | null;
           created_at?: string;
-          faceit_elo: number;
+          elo_season_7?: number | null;
+          faceit_elo?: number | null;
           id: string;
           nickname: string;
-          skill_level: number;
           steam_id_64: string;
           twitch_username?: string | null;
         };
@@ -479,10 +479,10 @@ export type Database = {
           country?: string | null;
           cover_image?: string | null;
           created_at?: string;
-          faceit_elo?: number;
+          elo_season_7?: number | null;
+          faceit_elo?: number | null;
           id?: string;
           nickname?: string;
-          skill_level?: number;
           steam_id_64?: string;
           twitch_username?: string | null;
         };

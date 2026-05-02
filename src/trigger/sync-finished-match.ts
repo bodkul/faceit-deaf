@@ -1,5 +1,6 @@
 import { logger, task } from "@trigger.dev/sdk/v3";
 import { fromUnixTime } from "date-fns";
+import { sumBy } from "es-toolkit";
 import pMap from "p-map";
 
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
@@ -21,8 +22,13 @@ export const syncFinishedMatchTask = task({
     logger.info("Starting sync of finished match", {
       matchId: payload.id,
       teamsCount: payload.teams.length,
-      totalPlayers: payload.teams.reduce((acc, t) => acc + t.roster.length, 0),
+      totalPlayers: sumBy(payload.teams, (t) => t.roster.length),
     });
+
+    const match = await fetchMatch(payload.id);
+
+    if (match.calculate_elo !== true)
+      return { message: "Ignored: not a valid match" };
 
     const matchId = getMatchId(payload);
     const playerIds = getPlayerIds(payload);
@@ -31,11 +37,6 @@ export const syncFinishedMatchTask = task({
       matchId,
       playerIds,
     });
-
-    const match = await fetchMatch(payload.id);
-
-    if (match.calculate_elo !== true)
-      return { message: "Ignored: not a valid match" };
 
     const [existingPlayers, matchStats] = await Promise.all([
       getExistingPlayers(playerIds),
@@ -62,7 +63,6 @@ export const syncFinishedMatchTask = task({
         id: player.player_id,
         avatar: player.avatar,
         nickname: player.nickname,
-        skill_level: player.games.cs2.skill_level,
         faceit_elo: player.games.cs2.faceit_elo,
         steam_id_64: player.steam_id_64,
         cover_image: player.cover_image,

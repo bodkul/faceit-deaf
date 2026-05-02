@@ -61,10 +61,12 @@ export function PlayerCard({
               {player.nickname.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <SkillLevelIcon
-            level={getSkillLevelFromElo(player.faceit_elo)}
-            className="absolute -right-1 -bottom-1 size-8 drop-shadow-lg"
-          />
+          {player.faceit_elo && (
+            <SkillLevelIcon
+              level={getSkillLevelFromElo(player.faceit_elo)}
+              className="absolute -right-1 -bottom-1 size-8 drop-shadow-lg"
+            />
+          )}
         </div>
 
         <div className="mb-1 flex items-center gap-2">
@@ -80,7 +82,7 @@ export function PlayerCard({
           <h2 className="font-bold text-lg text-white">{player.nickname}</h2>
         </div>
 
-        {player.faceit_elo > 0 && (
+        {player.faceit_elo && player.faceit_elo > 0 && (
           <div className="mb-5 rounded-lg border border-neutral-800 bg-neutral-900/80 px-4 py-1.5">
             <span className="font-bold font-mono text-sm text-white tabular-nums">
               {player.faceit_elo}

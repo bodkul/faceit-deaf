@@ -120,10 +120,12 @@ export function PlayerSearch() {
                       <span className="font-mono text-neutral-500 text-xs">
                         {player.faceit_elo}
                       </span>
-                      <SkillLevelIcon
-                        level={getSkillLevelFromElo(player.faceit_elo)}
-                        className="size-5"
-                      />
+                      {player.faceit_elo && (
+                        <SkillLevelIcon
+                          level={getSkillLevelFromElo(player.faceit_elo)}
+                          className="size-5"
+                        />
+                      )}
                     </div>
                   </Link>
                 </li>

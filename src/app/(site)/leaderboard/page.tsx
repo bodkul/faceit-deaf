@@ -193,7 +193,7 @@ export default function LeaderboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-11 w-11 rounded-xl ring-1 ring-neutral-700/70">
+                  <Avatar className="size-11 rounded-xl ring-1 ring-neutral-700/70">
                     <AvatarImage src={player.avatar} alt={player.nickname} />
                     <AvatarFallback className="rounded-xl text-neutral-500 text-xs">
                       {player.nickname?.charAt(0)}

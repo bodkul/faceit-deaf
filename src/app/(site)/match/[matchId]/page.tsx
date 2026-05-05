@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import { use, useMemo } from "react";
 
 import { SkillLevelIcon } from "@/components/icons";
+import { MapBackground } from "@/components/map-background";
 import { TwitchPlayer } from "@/components/twitch-player";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -103,18 +104,7 @@ function MatchHeader({ match }: { match: MatchType }) {
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-      {match.map_pick && (
-        <div className="absolute inset-0">
-          <Image
-            src={`/img/maps/${match.map_pick}.webp`}
-            alt="Map"
-            fill
-            className="object-cover opacity-50"
-          />
-          <div className="absolute inset-0 bg-linear-to-b from-neutral-950/60 via-neutral-950/80 to-neutral-950" />
-        </div>
-      )}
-      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-600/50 to-transparent" />
+      {match.map_pick && <MapBackground map={match.map_pick} />}
 
       <div className="relative px-6 pt-5 pb-6">
         <div className="mb-6 flex items-center justify-between">

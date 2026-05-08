@@ -101,7 +101,7 @@ export function PlayerSearch() {
                       <div className="flex items-center gap-1.5">
                         {player.country && (
                           <Image
-                            className="h-2.5 w-3.75 shrink-0 rounded-xs"
+                            className="shrink-0 rounded-xs"
                             src={getCountryFlagUrl(
                               player.country.toLowerCase(),
                               20,

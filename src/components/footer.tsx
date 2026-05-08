@@ -15,7 +15,7 @@ export function Footer() {
           >
             <Image
               src="https://distribution.faceit-cdn.net/images/2a3722fd-d0f1-4e12-8619-b80137387ed8.jpeg"
-              className="size-4 rounded-full"
+              className="rounded-full"
               height={16}
               width={16}
               alt="bodkul"

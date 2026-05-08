@@ -82,7 +82,7 @@ function CompactPlayerRow({
         </p>
         {player.country ? (
           <Image
-            className="h-2.5 w-3.75 shrink-0 rounded-xs"
+            className="shrink-0 rounded-xs"
             src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
             width={15}
             height={10}
@@ -205,7 +205,7 @@ export default function LeaderboardPage() {
                     </p>
                     {player.country ? (
                       <Image
-                        className="h-2.5 w-3.75 shrink-0 rounded-xs"
+                        className="shrink-0 rounded-xs"
                         src={getCountryFlagUrl(
                           player.country.toLowerCase(),
                           20,
@@ -274,7 +274,9 @@ export default function LeaderboardPage() {
           (shouldShowTopCards ? remainingPlayers : filteredPlayers).map(
             (player, index) => {
               const rank =
-                (pageIndex - 1) * PAGE_SIZE + index + (shouldShowTopCards ? 4 : 1);
+                (pageIndex - 1) * PAGE_SIZE +
+                index +
+                (shouldShowTopCards ? 4 : 1);
 
               return (
                 <CompactPlayerRow

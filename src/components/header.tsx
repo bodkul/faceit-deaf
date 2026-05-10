@@ -16,8 +16,8 @@ export const navLinks = [
     href: "/leaderboard",
   },
   {
-    label: "Tournament",
-    href: "/tournament",
+    label: "Events",
+    href: "/events",
   },
 ];
 function SeparatorVertical() {

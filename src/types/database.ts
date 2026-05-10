@@ -488,6 +488,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      events: {
+        Row: {
+          created_at: string;
+          end_date: string;
+          id: string;
+          logo_url: string;
+          name: string;
+          start_date: string;
+        };
+        Insert: {
+          created_at?: string;
+          end_date: string;
+          id?: string;
+          logo_url: string;
+          name: string;
+          start_date: string;
+        };
+        Update: {
+          created_at?: string;
+          end_date?: string;
+          id?: string;
+          logo_url?: string;
+          name?: string;
+          start_date?: string;
+        };
+        Relationships: [];
+      };
       users: {
         Row: {
           email: string | null;

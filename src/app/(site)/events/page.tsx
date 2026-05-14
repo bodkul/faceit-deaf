@@ -153,7 +153,7 @@ function EventCard({
       href={
         event.id === "5a79e54a-19e4-4934-b6cb-4746b71f2c0f"
           ? "/tournament"
-          : "#"
+          : `/events/${event.id}`
       }
       className={cn(
         "group relative cursor-pointer overflow-hidden rounded-xl border transition-all duration-300",

@@ -141,35 +141,29 @@ export default function LeaderboardPage() {
 
   return (
     <div className="mx-auto w-full max-w-5xl space-y-6">
-      <section className="overflow-hidden rounded-2xl border border-neutral-800/80 bg-[radial-gradient(120%_140%_at_100%_0%,rgba(239,68,68,0.18),rgba(10,10,10,0.92)_45%)] p-4 md:p-6">
-        <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-          <div className="min-w-0 flex-1 space-y-1">
-            <p className="font-medium font-mono text-[11px] text-red-400 uppercase tracking-[0.18em]">
-              Leaderboard
-            </p>
-            <h2 className="font-semibold text-2xl text-white tracking-tight md:text-3xl">
-              Player Rankings by ELO
-            </h2>
-            <p className="max-w-prose text-neutral-300/80 text-sm md:text-base">
-              All linked players sorted by current rating for the selected
-              season.
-            </p>
-          </div>
-          <div className="w-full md:w-52">
-            <Select value={season} onValueChange={setSeason}>
-              <SelectTrigger className="w-full border-neutral-600/70 bg-black/40 backdrop-blur">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="season-8">Season 8</SelectItem>
-                  <SelectItem value="season-7">Season 7</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+        <div className="space-y-1">
+          <h1 className="font-bold text-2xl text-white tracking-tight">
+            Player Rankings
+          </h1>
+          <p className="text-neutral-500 text-sm">
+            All linked players sorted by current ELO for the selected season.
+          </p>
         </div>
-      </section>
+        <div className="w-full md:w-52">
+          <Select value={season} onValueChange={setSeason}>
+            <SelectTrigger className="w-full border-neutral-700 bg-neutral-900">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="season-8">Season 8</SelectItem>
+                <SelectItem value="season-7">Season 7</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {shouldShowTopCards && topPlayers.length > 0 ? (
         <section className="hidden gap-3 sm:grid-cols-2 lg:grid lg:grid-cols-3">

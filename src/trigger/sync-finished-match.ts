@@ -252,9 +252,7 @@ export const syncFinishedMatchTask = task({
       { concurrency: 2 },
     );
 
-    await supabaseClient
-      .channel(`match:${matchId}`)
-      .send({ type: "broadcast", event: "*" });
+    await supabaseClient.channel(`match:${matchId}`).httpSend("*", {});
 
     logger.info("Finished syncing match successfully", {
       matchId,

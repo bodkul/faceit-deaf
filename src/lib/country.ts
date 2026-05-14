@@ -1,4 +1,4 @@
-export const countryMap: Record<string, string> = {
+const countryMap: Record<string, string> = {
   France: "FR",
   Sweden: "SE",
   Germany: "DE",

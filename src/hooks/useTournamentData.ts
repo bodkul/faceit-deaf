@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { supabaseClient } from "@/lib/supabase";
 
-export const TOURNAMENT_HUB_IDS = [
+const TOURNAMENT_HUB_IDS = [
   // "05049049-fdf3-4d5b-afc9-a6818f86064a", // Hub
   "a08c8b46-b418-47c3-8c25-d5831cd09f55",
   "9508886f-759a-4389-bd84-deaf02a77928",

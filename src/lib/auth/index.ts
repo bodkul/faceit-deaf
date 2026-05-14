@@ -5,7 +5,7 @@ import TwitchProvider from "next-auth/providers/twitch";
 
 import { supabaseClient } from "@/lib/supabase";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, auth } = NextAuth({
   providers: [
     FaceItProvider({
       clientId: process.env.FACEIT_CLIENT_ID,

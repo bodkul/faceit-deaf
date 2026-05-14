@@ -1,15 +1,3 @@
-export interface MatchStatusEvent {
-  transaction_id: string;
-  event: string;
-  event_id: string;
-  third_party_id: string;
-  app_id: string;
-  timestamp: Date;
-  retry_count: number;
-  version: number;
-  payload: MatchPayload;
-}
-
 export interface MatchPayload {
   id: string;
   game: string;

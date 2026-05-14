@@ -16,13 +16,11 @@ export type PlayerStatisticsRange =
   | "last30Days"
   | "allTime";
 
-export const SESSION_GAP_HOURS = 4;
-export const SESSION_GAP_MS = SESSION_GAP_HOURS * 60 * 60 * 1000;
-export const MAX_SESSION_MATCHES = 20;
+const SESSION_GAP_HOURS = 4;
+const SESSION_GAP_MS = SESSION_GAP_HOURS * 60 * 60 * 1000;
+const MAX_SESSION_MATCHES = 20;
 
-export function getDateFromRange(
-  range: PlayerStatisticsRange,
-): Date | undefined {
+function getDateFromRange(range: PlayerStatisticsRange): Date | undefined {
   switch (range) {
     case "last7Days":
       return subDays(startOfToday(), 7);
@@ -33,7 +31,7 @@ export function getDateFromRange(
   }
 }
 
-export async function getCurrentSessionStart(
+async function getCurrentSessionStart(
   playerId: string,
 ): Promise<Date | undefined> {
   const { data } = await supabaseClient

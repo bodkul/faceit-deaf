@@ -1,16 +1,10 @@
 import Image from "next/image";
 
-const BASE_PATH = "/img/maps";
-
-export function getMapImage(mapName: string) {
-  return `${BASE_PATH}/${mapName}.webp`;
-}
-
 export function MapBackground({ map }: { map: string }) {
   return (
     <div className="absolute inset-0">
       <Image
-        src={getMapImage(map)}
+        src={`/img/maps/${map}.webp`}
         alt={`Map ${map}`}
         fill
         className="object-cover opacity-50"

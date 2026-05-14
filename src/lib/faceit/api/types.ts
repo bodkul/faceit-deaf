@@ -34,7 +34,7 @@ export interface Player {
   verified: boolean;
 }
 
-export interface PlayerStats {
+interface PlayerStats {
   Assists: number;
   "Best Of": string;
   "Competition Id": string;
@@ -103,14 +103,6 @@ export interface PlayerStats {
   "Sniper Kills": number;
   "Sniper Kill Rate per Match": number;
   "Sniper Kill Rate per Round": number;
-}
-
-export interface PlayerCS2Stats {
-  start: number;
-  end: number;
-  items: {
-    stats: PlayerStats;
-  }[];
 }
 
 export interface Match {
@@ -282,8 +274,4 @@ export interface MatchStats {
       }[];
     }[];
   }[];
-}
-
-export interface HubStats {
-  players: [];
 }

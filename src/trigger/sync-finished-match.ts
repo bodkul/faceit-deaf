@@ -64,6 +64,7 @@ export const syncFinishedMatchTask = task({
         avatar: player.avatar,
         nickname: player.nickname,
         faceit_elo: player.games.cs2.faceit_elo,
+        skill_level: player.games.cs2.skill_level,
         steam_id_64: player.steam_id_64,
         cover_image: player.cover_image,
       })),

@@ -160,6 +160,310 @@ export type Database = {
   };
   public: {
     Tables: {
+      event_map_player_stats: {
+        Row: {
+          adr: number | null;
+          assists: number | null;
+          clutch_kills: number | null;
+          damage: number | null;
+          deaths: number | null;
+          double_kills: number | null;
+          enemies_flashed: number | null;
+          entry_count: number | null;
+          entry_wins: number | null;
+          faction_id: string;
+          first_kills: number | null;
+          flash_count: number | null;
+          flash_successes: number | null;
+          headshots: number | null;
+          headshots_pct: number | null;
+          id: string;
+          kd_ratio: number | null;
+          kills: number | null;
+          kr_ratio: number | null;
+          match_map_id: string;
+          mvps: number | null;
+          nickname: string;
+          penta_kills: number | null;
+          pistol_kills: number | null;
+          player_id: string;
+          quadro_kills: number | null;
+          result: number | null;
+          sniper_kills: number | null;
+          triple_kills: number | null;
+          utility_damage: number | null;
+        };
+        Insert: {
+          adr?: number | null;
+          assists?: number | null;
+          clutch_kills?: number | null;
+          damage?: number | null;
+          deaths?: number | null;
+          double_kills?: number | null;
+          enemies_flashed?: number | null;
+          entry_count?: number | null;
+          entry_wins?: number | null;
+          faction_id: string;
+          first_kills?: number | null;
+          flash_count?: number | null;
+          flash_successes?: number | null;
+          headshots?: number | null;
+          headshots_pct?: number | null;
+          id?: string;
+          kd_ratio?: number | null;
+          kills?: number | null;
+          kr_ratio?: number | null;
+          match_map_id: string;
+          mvps?: number | null;
+          nickname: string;
+          penta_kills?: number | null;
+          pistol_kills?: number | null;
+          player_id: string;
+          quadro_kills?: number | null;
+          result?: number | null;
+          sniper_kills?: number | null;
+          triple_kills?: number | null;
+          utility_damage?: number | null;
+        };
+        Update: {
+          adr?: number | null;
+          assists?: number | null;
+          clutch_kills?: number | null;
+          damage?: number | null;
+          deaths?: number | null;
+          double_kills?: number | null;
+          enemies_flashed?: number | null;
+          entry_count?: number | null;
+          entry_wins?: number | null;
+          faction_id?: string;
+          first_kills?: number | null;
+          flash_count?: number | null;
+          flash_successes?: number | null;
+          headshots?: number | null;
+          headshots_pct?: number | null;
+          id?: string;
+          kd_ratio?: number | null;
+          kills?: number | null;
+          kr_ratio?: number | null;
+          match_map_id?: string;
+          mvps?: number | null;
+          nickname?: string;
+          penta_kills?: number | null;
+          pistol_kills?: number | null;
+          player_id?: string;
+          quadro_kills?: number | null;
+          result?: number | null;
+          sniper_kills?: number | null;
+          triple_kills?: number | null;
+          utility_damage?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_map_player_stats_match_map_id_fkey";
+            columns: ["match_map_id"];
+            isOneToOne: false;
+            referencedRelation: "event_match_maps";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      event_map_team_stats: {
+        Row: {
+          faction_id: string;
+          final_score: number | null;
+          first_half_score: number | null;
+          id: string;
+          is_winner: boolean | null;
+          match_map_id: string;
+          overtime_score: number | null;
+          second_half_score: number | null;
+          team_headshots: number | null;
+          team_name: string | null;
+        };
+        Insert: {
+          faction_id: string;
+          final_score?: number | null;
+          first_half_score?: number | null;
+          id?: string;
+          is_winner?: boolean | null;
+          match_map_id: string;
+          overtime_score?: number | null;
+          second_half_score?: number | null;
+          team_headshots?: number | null;
+          team_name?: string | null;
+        };
+        Update: {
+          faction_id?: string;
+          final_score?: number | null;
+          first_half_score?: number | null;
+          id?: string;
+          is_winner?: boolean | null;
+          match_map_id?: string;
+          overtime_score?: number | null;
+          second_half_score?: number | null;
+          team_headshots?: number | null;
+          team_name?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_map_team_stats_match_map_id_fkey";
+            columns: ["match_map_id"];
+            isOneToOne: false;
+            referencedRelation: "event_match_maps";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      event_match_maps: {
+        Row: {
+          id: string;
+          map_name: string;
+          match_id: string;
+          match_round: number;
+          total_rounds: number | null;
+          winner_faction_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          map_name: string;
+          match_id: string;
+          match_round: number;
+          total_rounds?: number | null;
+          winner_faction_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          map_name?: string;
+          match_id?: string;
+          match_round?: number;
+          total_rounds?: number | null;
+          winner_faction_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_match_maps_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "event_matches";
+            referencedColumns: ["match_id"];
+          },
+        ];
+      };
+      event_match_teams: {
+        Row: {
+          faction_id: string;
+          faction_key: string;
+          id: string;
+          is_winner: boolean | null;
+          match_id: string;
+          team_name: string | null;
+        };
+        Insert: {
+          faction_id: string;
+          faction_key: string;
+          id?: string;
+          is_winner?: boolean | null;
+          match_id: string;
+          team_name?: string | null;
+        };
+        Update: {
+          faction_id?: string;
+          faction_key?: string;
+          id?: string;
+          is_winner?: boolean | null;
+          match_id?: string;
+          team_name?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_match_teams_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "event_matches";
+            referencedColumns: ["match_id"];
+          },
+        ];
+      };
+      event_matches: {
+        Row: {
+          best_of: number | null;
+          configured_at: string | null;
+          event_id: string;
+          faceit_competition_id: string | null;
+          finished_at: string | null;
+          match_id: string;
+          region: string | null;
+          score_faction1: number | null;
+          score_faction2: number | null;
+          started_at: string | null;
+          status: string | null;
+          winner_faction: string | null;
+        };
+        Insert: {
+          best_of?: number | null;
+          configured_at?: string | null;
+          event_id: string;
+          faceit_competition_id?: string | null;
+          finished_at?: string | null;
+          match_id: string;
+          region?: string | null;
+          score_faction1?: number | null;
+          score_faction2?: number | null;
+          started_at?: string | null;
+          status?: string | null;
+          winner_faction?: string | null;
+        };
+        Update: {
+          best_of?: number | null;
+          configured_at?: string | null;
+          event_id?: string;
+          faceit_competition_id?: string | null;
+          finished_at?: string | null;
+          match_id?: string;
+          region?: string | null;
+          score_faction1?: number | null;
+          score_faction2?: number | null;
+          started_at?: string | null;
+          status?: string | null;
+          winner_faction?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_matches_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      events: {
+        Row: {
+          created_at: string;
+          end_date: string;
+          id: string;
+          logo_url: string;
+          name: string;
+          start_date: string;
+        };
+        Insert: {
+          created_at?: string;
+          end_date: string;
+          id?: string;
+          logo_url: string;
+          name: string;
+          start_date: string;
+        };
+        Update: {
+          created_at?: string;
+          end_date?: string;
+          id?: string;
+          logo_url?: string;
+          name?: string;
+          start_date?: string;
+        };
+        Relationships: [];
+      };
       match_team_players: {
         Row: {
           "1v1count": number | null;
@@ -457,6 +761,7 @@ export type Database = {
           faceit_elo: number | null;
           id: string;
           nickname: string;
+          skill_level: number;
           steam_id_64: string;
           twitch_username: string | null;
         };
@@ -470,6 +775,7 @@ export type Database = {
           faceit_elo?: number | null;
           id: string;
           nickname: string;
+          skill_level: number;
           steam_id_64: string;
           twitch_username?: string | null;
         };
@@ -483,35 +789,9 @@ export type Database = {
           faceit_elo?: number | null;
           id?: string;
           nickname?: string;
+          skill_level?: number;
           steam_id_64?: string;
           twitch_username?: string | null;
-        };
-        Relationships: [];
-      };
-      events: {
-        Row: {
-          created_at: string;
-          end_date: string;
-          id: string;
-          logo_url: string;
-          name: string;
-          start_date: string;
-        };
-        Insert: {
-          created_at?: string;
-          end_date: string;
-          id?: string;
-          logo_url: string;
-          name: string;
-          start_date: string;
-        };
-        Update: {
-          created_at?: string;
-          end_date?: string;
-          id?: string;
-          logo_url?: string;
-          name?: string;
-          start_date?: string;
         };
         Relationships: [];
       };

@@ -150,11 +150,7 @@ function EventCard({
 
   return (
     <Link
-      href={
-        event.id === "5a79e54a-19e4-4934-b6cb-4746b71f2c0f"
-          ? "/tournament"
-          : `/events/${event.id}`
-      }
+      href={`/events/${event.id}`}
       className={cn(
         "group relative cursor-pointer overflow-hidden rounded-xl border transition-all duration-300",
         "hover:-translate-y-0.5 hover:shadow-xl",

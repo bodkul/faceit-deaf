@@ -298,7 +298,7 @@ export default function EventMatchPage(props: PageProps) {
 
   if (isLoading)
     return (
-      <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
+      <div className="space-y-4">
         <Loading />
       </div>
     );
@@ -315,7 +315,7 @@ export default function EventMatchPage(props: PageProps) {
   const currentMap = sortedMaps[activeMap];
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
+    <div className="space-y-4">
       <Button variant="dark" size="sm" asChild className="w-fit">
         <Link href={`/events/${id}?tab=matches`}>
           <IconArrowLeft size={14} className="mr-1" />

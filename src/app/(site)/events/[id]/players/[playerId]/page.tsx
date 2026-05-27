@@ -144,7 +144,7 @@ export default function EventPlayerPage(props: PageProps) {
   ];
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6">
+    <div className="space-y-6">
       <Button variant="dark" size="sm" asChild className="w-fit">
         <Link href={`/events/${id}?tab=players`}>
           <IconArrowLeft size={14} className="mr-1" />

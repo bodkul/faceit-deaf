@@ -1,6 +1,6 @@
 import { fromUnixTime } from "date-fns";
+import { mapAsync } from "es-toolkit";
 import { NextResponse } from "next/server";
-import pMap from "p-map";
 
 import { fetchMatches } from "@/lib/faceit/api";
 import {
@@ -24,7 +24,7 @@ export async function GET() {
     ["ONGOING", "READY"].includes(m.status),
   );
 
-  await pMap(
+  await mapAsync(
     relevantMatches,
     async ({ match_id, voting, started_at, status, results, teams }) => {
       const id = match_id.replace(/^1-/, "");

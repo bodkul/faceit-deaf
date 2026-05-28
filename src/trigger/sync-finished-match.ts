@@ -1,7 +1,6 @@
 import { logger, task } from "@trigger.dev/sdk/v3";
 import { fromUnixTime } from "date-fns";
-import { sumBy } from "es-toolkit";
-import pMap from "p-map";
+import { mapAsync, sumBy } from "es-toolkit";
 
 import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/match-events";
@@ -101,7 +100,7 @@ export const syncFinishedMatchTask = task({
       status: match.status,
     });
 
-    await pMap(
+    await mapAsync(
       payload.teams,
       async (team) => {
         const roundTeam = round.teams.find((rt) => rt.team_id === team.id);
@@ -144,7 +143,7 @@ export const syncFinishedMatchTask = task({
           teamWin: stats["Team Win"] === "1",
         });
 
-        await pMap(
+        await mapAsync(
           team.roster,
           async (player) => {
             const qwe = roundTeam?.players.find(

@@ -1,4 +1,4 @@
-import pMap from "p-map";
+import { mapAsync } from "es-toolkit";
 
 import faceitClient from "@/lib/faceit/client";
 
@@ -16,7 +16,7 @@ const fetchPlayer = async (playerId: string) => {
 };
 
 export const fetchPlayers = async (playerIds: string[]) => {
-  return await pMap(playerIds, fetchPlayer, { concurrency: 10 });
+  return await mapAsync(playerIds, fetchPlayer, { concurrency: 10 });
 };
 
 export const fetchMatch = async (matchId: string) => {
@@ -29,7 +29,7 @@ export const fetchMatch = async (matchId: string) => {
 };
 
 export const fetchMatches = async (matchIds: string[]) => {
-  return await pMap(matchIds, fetchMatch, { concurrency: 10 });
+  return await mapAsync(matchIds, fetchMatch, { concurrency: 10 });
 };
 
 export const fetchMatchStats = async (matchId: string) => {

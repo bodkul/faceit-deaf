@@ -1,5 +1,5 @@
+import { mapAsync } from "es-toolkit";
 import { NextResponse } from "next/server";
-import pMap from "p-map";
 
 import { fetchMatch } from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/match-events";
@@ -35,7 +35,7 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
     status: match.status.toUpperCase(),
   });
 
-  await pMap(
+  await mapAsync(
     payload.teams,
     async (team, index) => {
       const resTeam = await upsertMatchTeam({

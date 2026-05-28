@@ -4,9 +4,9 @@ import { enGB } from "date-fns/locale";
 import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
-import type { EventById } from "@/lib/db/events";
+import type { EventBySlug } from "@/lib/db/events";
 
-function getEventStatus(event: EventById): "upcoming" | "live" | "finished" {
+function getEventStatus(event: EventBySlug): "upcoming" | "live" | "finished" {
   const now = new Date();
 
   if (isBefore(now, event.start_date)) return "upcoming";
@@ -18,7 +18,7 @@ function formatDate(dateStr: string) {
   return format(dateStr, "d MMM yyyy", { locale: enGB });
 }
 
-export function EventHeader({ event }: { event: EventById }) {
+export function EventHeader({ event }: { event: EventBySlug }) {
   const status = getEventStatus(event);
 
   const statusConfig = {

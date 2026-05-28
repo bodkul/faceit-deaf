@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 
 import { supabaseClient } from "@/lib/supabase";
 
-export function useEventData(eventId: string) {
+export function useEventData(slug: string) {
   return useQuery({
-    queryKey: ["event", eventId],
+    queryKey: ["event", slug],
     queryFn: async () => {
-      const { data, error } = await supabaseClient
+      const { data } = await supabaseClient
         .from("event_matches")
         .select(
           `
@@ -62,13 +62,14 @@ export function useEventData(eventId: string) {
               triple_kills,
               clutch_kills
             )
-          )
+          ),
+          events()
         `,
         )
-        .eq("event_id", eventId)
-        .order("started_at", { ascending: false });
+        .eq("events.slug", slug)
+        .order("started_at", { ascending: false })
+        .throwOnError();
 
-      if (error) throw error;
       return data ?? [];
     },
   });

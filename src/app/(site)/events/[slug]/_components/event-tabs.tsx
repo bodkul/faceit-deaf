@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type EventMatch, useEventData } from "@/hooks/useEventData";
+import { type EventMatch, useEventData } from "@/hooks/use-event-data";
 import { cn } from "@/lib/utils";
 
 type Tab = "matches" | "teams" | "players";
@@ -24,7 +24,7 @@ function statusLabel(status: string | null) {
   return { text: status ?? "—", cls: "bg-muted text-muted-foreground" };
 }
 
-function MatchCard({ match, eventId }: { match: EventMatch; eventId: string }) {
+function MatchCard({ match, slug }: { match: EventMatch; slug: string }) {
   const t1 = match.teams[0];
   const t2 = match.teams[1];
   const st = statusLabel(match.status);
@@ -37,7 +37,7 @@ function MatchCard({ match, eventId }: { match: EventMatch; eventId: string }) {
 
   return (
     <Link
-      href={`/events/${eventId}/matches/${match.match_id}`}
+      href={`/events/${slug}/matches/${match.match_id}`}
       className="flex items-center gap-4 rounded-xl border border-neutral-800 bg-neutral-950 px-5 py-4 transition-colors hover:border-neutral-700 hover:bg-neutral-900"
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -115,10 +115,10 @@ function MatchCard({ match, eventId }: { match: EventMatch; eventId: string }) {
 
 function MatchesTab({
   matches,
-  eventId,
+  slug,
 }: {
   matches: EventMatch[];
-  eventId: string;
+  slug: string;
 }) {
   if (!matches.length) {
     return (
@@ -132,7 +132,7 @@ function MatchesTab({
   return (
     <div className="flex flex-col gap-2">
       {matches.map((m) => (
-        <MatchCard key={m.match_id} match={m} eventId={eventId} />
+        <MatchCard key={m.match_id} match={m} slug={slug} />
       ))}
     </div>
   );
@@ -189,15 +189,8 @@ function buildStandings(data: EventMatch[]): TeamStanding[] {
   );
 }
 
-function TeamsTab({
-  matches,
-  eventId,
-}: {
-  matches: EventMatch[];
-  eventId: string;
-}) {
+function TeamsTab({ matches, slug }: { matches: EventMatch[]; slug: string }) {
   const standings = buildStandings(matches);
-
   if (!standings.length) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-950 px-5 py-16 text-center">
@@ -245,7 +238,7 @@ function TeamsTab({
                 </td>
                 <td className="px-4 py-3">
                   <Link
-                    href={`/events/${eventId}/teams/${encodeURIComponent(team.faction_id)}`}
+                    href={`/events/${slug}/teams/${encodeURIComponent(team.faction_id)}`}
                     className="flex items-center gap-3 transition-colors hover:text-white"
                   >
                     <Avatar className="size-7 rounded-lg">
@@ -332,13 +325,12 @@ function buildPlayerLeaderboard(data: EventMatch[]): PlayerLeaderboardRow[] {
 
 function PlayersTab({
   matches,
-  eventId,
+  slug,
 }: {
   matches: EventMatch[];
-  eventId: string;
+  slug: string;
 }) {
   const players = buildPlayerLeaderboard(matches);
-
   if (!players.length) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-950 px-5 py-16 text-center">
@@ -395,7 +387,7 @@ function PlayersTab({
                   </td>
                   <td className="px-4 py-2.5">
                     <Link
-                      href={`/events/${eventId}/players/${encodeURIComponent(p.player_id)}`}
+                      href={`/events/${slug}/players/${encodeURIComponent(p.player_id)}`}
                       className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
                     >
                       {p.nickname}
@@ -442,17 +434,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "players", label: "Players" },
 ];
 
-function LoadingSkeleton() {
-  return (
-    <div className="flex flex-col gap-3">
-      <Skeleton className="h-20 w-full rounded-xl bg-neutral-900" />
-      <Skeleton className="h-20 w-full rounded-xl bg-neutral-900" />
-      <Skeleton className="h-20 w-full rounded-xl bg-neutral-900" />
-    </div>
-  );
-}
-
-export function EventTabs({ eventId }: { eventId: string }) {
+export function EventTabs({ slug }: { slug: string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -460,10 +442,10 @@ export function EventTabs({ eventId }: { eventId: string }) {
   const activeTab: Tab =
     rawTab && TABS.some((t) => t.id === rawTab) ? rawTab : "matches";
 
-  const { data: matches = [], isLoading } = useEventData(eventId);
+  const { data: matches = [], isLoading } = useEventData(slug);
 
   function setTab(tab: Tab) {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams);
     params.set("tab", tab);
     router.push(`?${params.toString()}`, { scroll: false });
   }
@@ -489,13 +471,17 @@ export function EventTabs({ eventId }: { eventId: string }) {
       </div>
 
       {isLoading ? (
-        <LoadingSkeleton />
+        <div className="flex flex-col gap-3">
+          <Skeleton className="h-20 w-full rounded-xl bg-neutral-900" />
+          <Skeleton className="h-20 w-full rounded-xl bg-neutral-900" />
+          <Skeleton className="h-20 w-full rounded-xl bg-neutral-900" />
+        </div>
       ) : activeTab === "matches" ? (
-        <MatchesTab matches={matches} eventId={eventId} />
+        <MatchesTab matches={matches} slug={slug} />
       ) : activeTab === "teams" ? (
-        <TeamsTab matches={matches} eventId={eventId} />
+        <TeamsTab matches={matches} slug={slug} />
       ) : (
-        <PlayersTab matches={matches} eventId={eventId} />
+        <PlayersTab matches={matches} slug={slug} />
       )}
     </div>
   );

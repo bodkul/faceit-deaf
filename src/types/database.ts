@@ -389,7 +389,6 @@ export type Database = {
           best_of: number | null;
           configured_at: string | null;
           event_id: string;
-          faceit_competition_id: string | null;
           finished_at: string | null;
           match_id: string;
           region: string | null;
@@ -403,7 +402,6 @@ export type Database = {
           best_of?: number | null;
           configured_at?: string | null;
           event_id: string;
-          faceit_competition_id?: string | null;
           finished_at?: string | null;
           match_id: string;
           region?: string | null;
@@ -417,7 +415,6 @@ export type Database = {
           best_of?: number | null;
           configured_at?: string | null;
           event_id?: string;
-          faceit_competition_id?: string | null;
           finished_at?: string | null;
           match_id?: string;
           region?: string | null;
@@ -444,6 +441,7 @@ export type Database = {
           id: string;
           logo_url: string;
           name: string;
+          slug: string;
           start_date: string;
         };
         Insert: {
@@ -452,6 +450,7 @@ export type Database = {
           id?: string;
           logo_url: string;
           name: string;
+          slug: string;
           start_date: string;
         };
         Update: {
@@ -460,6 +459,7 @@ export type Database = {
           id?: string;
           logo_url?: string;
           name?: string;
+          slug?: string;
           start_date?: string;
         };
         Relationships: [];

@@ -1,6 +1,8 @@
 "use client";
 
 import { IconArrowLeft } from "@tabler/icons-react";
+import { format } from "date-fns";
+import { orderBy, sumBy } from "es-toolkit";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use } from "react";
@@ -8,12 +10,8 @@ import { use } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEventData } from "@/hooks/useEventData";
+import { useEventData } from "@/hooks/use-event-data";
 import { cn } from "@/lib/utils";
-
-type PageProps = {
-  params: Promise<{ id: string; playerId: string }>;
-};
 
 function Loading() {
   return (
@@ -26,101 +24,74 @@ function Loading() {
   );
 }
 
-type MapRow = {
-  match_id: string;
-  map_name: string;
-  match_round: number;
-  kills: number;
-  deaths: number;
-  assists: number;
-  adr: number | null;
-  kd: number;
-  hs: number;
-  mvps: number;
-  result: number | null;
-  team_name: string;
-  is_winner: boolean | null;
-};
-
-export default function EventPlayerPage(props: PageProps) {
-  const { id, playerId } = use(props.params);
-  const pid = decodeURIComponent(playerId);
-
-  const { data: matches = [], isLoading } = useEventData(id);
+export default function EventPlayerPage(
+  props: PageProps<"/events/[slug]/players/[playerId]">,
+) {
+  const { slug, playerId } = use(props.params);
+  const { data: matches = [], isLoading } = useEventData(slug);
 
   if (isLoading) return <Loading />;
+  if (!matches) return notFound();
 
-  // Collect all map rows for this player
-  const mapRows: MapRow[] = [];
+  const mapRows = orderBy(
+    matches.flatMap((match) =>
+      match.maps.flatMap((mapData) => {
+        const ps = mapData.player_stats[0];
+        if (!ps) return [];
 
-  let totalKills = 0;
-  let totalDeaths = 0;
-  let totalHeadshots = 0;
-  let totalAdr = 0;
-  let totalMvps = 0;
-  let mapsPlayed = 0;
-  let mapsWon = 0;
-  let nickname = pid;
+        const kills = ps.kills ?? 0;
+        const deaths = ps.deaths ?? 0;
+        const headshots = ps.headshots ?? 0;
+        const teamStat = mapData.team_stats.find(
+          (ts) => ts.faction_id === ps.faction_id,
+        );
+        const teamInfo = match.teams.find(
+          (t) => t.faction_id === ps.faction_id,
+        );
 
-  for (const match of matches) {
-    if (match.status !== "FINISHED") continue;
-    for (const mapData of match.maps) {
-      const ps = mapData.player_stats.find((p) => p.player_id === pid);
-      if (!ps) continue;
+        return [
+          {
+            match_id: match.match_id,
+            started_at: match.started_at ?? null,
+            map_name: mapData.map_name,
+            match_round: mapData.match_round,
+            nickname: ps.nickname,
+            kills,
+            deaths,
+            assists: ps.assists ?? 0,
+            headshots,
+            adr: ps.adr,
+            kd: kills / Math.max(deaths, 1),
+            hs_pct: (headshots / Math.max(kills, 1)) * 100,
+            mvps: ps.mvps ?? 0,
+            result: ps.result,
+            team_name: teamInfo?.team_name ?? ps.faction_id,
+            is_winner: teamStat?.is_winner,
+          },
+        ];
+      }),
+    ),
+    [(r) => r.match_id, (r) => r.match_round],
+    ["desc", "asc"],
+  );
 
-      const k = ps.kills ?? 0;
-      const d = ps.deaths ?? 0;
-      const hs = ps.headshots ?? 0;
+  if (!mapRows.length) return notFound();
 
-      nickname = ps.nickname;
-
-      totalKills += k;
-      totalDeaths += d;
-      totalHeadshots += hs;
-      totalAdr += ps.adr ?? 0;
-      totalMvps += ps.mvps ?? 0;
-      mapsPlayed++;
-
-      // Find team result on this map
-      const teamStat = mapData.team_stats.find(
-        (ts) => ts.faction_id === ps.faction_id,
-      );
-      const teamInfo = match.teams.find((t) => t.faction_id === ps.faction_id);
-
-      if (teamStat?.is_winner === true) mapsWon++;
-
-      mapRows.push({
-        match_id: match.match_id,
-        map_name: mapData.map_name,
-        match_round: mapData.match_round,
-        kills: k,
-        deaths: d,
-        assists: ps.assists ?? 0,
-        adr: ps.adr,
-        kd: k / Math.max(d, 1),
-        hs: (hs / Math.max(k, 1)) * 100,
-        mvps: ps.mvps ?? 0,
-        result: ps.result,
-        team_name: teamInfo?.team_name ?? ps.faction_id,
-        is_winner: teamStat?.is_winner ?? null,
-      });
-    }
-  }
-
-  if (!mapsPlayed) return notFound();
-
-  // Sort by match then map round
-  mapRows.sort((a, b) => {
-    const matchCmp = b.match_id.localeCompare(a.match_id);
-    return matchCmp !== 0 ? matchCmp : a.match_round - b.match_round;
-  });
+  const nickname = mapRows[0]?.nickname ?? decodeURIComponent(playerId);
+  const mapsPlayed = mapRows.length;
+  const mapsWon = mapRows.filter((r) => r.is_winner === true).length;
+  const totalKills = sumBy(mapRows, (r) => r.kills);
+  const totalDeaths = sumBy(mapRows, (r) => r.deaths);
+  const totalHeadshots = sumBy(mapRows, (r) => r.headshots);
+  const totalAdr = sumBy(mapRows, (r) => r.adr ?? 0);
+  const totalMvps = sumBy(mapRows, (r) => r.mvps);
 
   const kd = totalKills / Math.max(totalDeaths, 1);
-  const avgK = totalKills / Math.max(mapsPlayed, 1);
-  const avgD = totalDeaths / Math.max(mapsPlayed, 1);
-  const avgAdr = totalAdr / Math.max(mapsPlayed, 1);
+  const avgK = totalKills / mapsPlayed;
+  const avgD = totalDeaths / mapsPlayed;
+  const avgAdr = totalAdr / mapsPlayed;
   const hsPercent = (totalHeadshots / Math.max(totalKills, 1)) * 100;
-  const winRate = (mapsWon / Math.max(mapsPlayed, 1)) * 100;
+  const winRate = (mapsWon / mapsPlayed) * 100;
 
   const stats = [
     {
@@ -146,7 +117,7 @@ export default function EventPlayerPage(props: PageProps) {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6">
       <Button variant="dark" size="sm" asChild className="w-fit">
-        <Link href={`/events/${id}?tab=players`}>
+        <Link href={`/events/${slug}?tab=players`}>
           <IconArrowLeft size={14} className="mr-1" />
           Back to Event
         </Link>
@@ -258,11 +229,16 @@ export default function EventPlayerPage(props: PageProps) {
                   </td>
                   <td className="px-4 py-2.5">
                     <Link
-                      href={`/events/${id}/matches/${row.match_id}`}
+                      href={`/events/${slug}/matches/${row.match_id}`}
                       className="font-mono text-neutral-300 text-sm capitalize transition-colors hover:text-white"
                     >
-                      {row.map_name.replace("de_", "")}
+                      {row.map_name?.replace("de_", "")}
                     </Link>
+                    {row.started_at && (
+                      <p className="font-mono text-neutral-600 text-xs">
+                        {format(row.started_at, "d MMM yyyy")}
+                      </p>
+                    )}
                   </td>
                   <td className="max-w-36 truncate px-4 py-2.5 text-neutral-500 text-sm">
                     {row.team_name}
@@ -289,7 +265,7 @@ export default function EventPlayerPage(props: PageProps) {
                     {row.adr?.toFixed(1) ?? "—"}
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                    {row.hs.toFixed(1)}%
+                    {row.hs_pct.toFixed(1)}%
                   </td>
                 </tr>
               ))}

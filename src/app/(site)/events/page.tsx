@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { format, getYear } from "date-fns";
+import { format, getYear, parseISO } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { sortBy } from "es-toolkit/array";
+import { sortBy } from "es-toolkit";
 import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,9 +32,12 @@ function useEvents() {
   return useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      const { data } = await supabaseClient.from("events").select("*");
+      const { data } = await supabaseClient
+        .from("events")
+        .select("*")
+        .throwOnError();
 
-      return sortBy(data ?? [], [(t) => -new Date(t.start_date).getTime()]);
+      return sortBy(data ?? [], [(t) => -parseISO(t.start_date).getTime()]);
     },
   });
 }
@@ -150,11 +153,7 @@ function EventCard({
 
   return (
     <Link
-      href={
-        event.id === "5a79e54a-19e4-4934-b6cb-4746b71f2c0f"
-          ? "/tournament"
-          : `/events/${event.id}`
-      }
+      href={`/events/${event.slug}`}
       className={cn(
         "group relative cursor-pointer overflow-hidden rounded-xl border transition-all duration-300",
         "hover:-translate-y-0.5 hover:shadow-xl",

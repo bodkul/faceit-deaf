@@ -2,14 +2,16 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { getEventById } from "@/lib/db/events";
+import { getEventBySlug } from "@/lib/db/events";
 
-import { EventHeader } from "./_components/EventHeader";
-import { EventTabs } from "./_components/EventTabs";
+import { EventHeader } from "./_components/event-header";
+import { EventTabs } from "./_components/event-tabs";
 
-export async function generateMetadata({ params }: PageProps<"/events/[id]">) {
-  const { id } = await params;
-  const event = await getEventById(id);
+export async function generateMetadata({
+  params,
+}: PageProps<"/events/[slug]">) {
+  const { slug } = await params;
+  const event = await getEventBySlug(slug);
 
   if (!event) return { title: "Event not found" };
 
@@ -33,9 +35,11 @@ function TabsSkeleton() {
   );
 }
 
-export default async function EventPage({ params }: PageProps<"/events/[id]">) {
-  const { id } = await params;
-  const event = await getEventById(id);
+export default async function EventPage({
+  params,
+}: PageProps<"/events/[slug]">) {
+  const { slug } = await params;
+  const event = await getEventBySlug(slug);
 
   if (!event) notFound();
 
@@ -43,7 +47,7 @@ export default async function EventPage({ params }: PageProps<"/events/[id]">) {
     <div className="container mx-auto max-w-6xl space-y-6 px-4 py-8">
       <EventHeader event={event} />
       <Suspense fallback={<TabsSkeleton />}>
-        <EventTabs eventId={id} />
+        <EventTabs slug={slug} />
       </Suspense>
     </div>
   );

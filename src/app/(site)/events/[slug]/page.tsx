@@ -44,7 +44,7 @@ export default async function EventPage({
   if (!event) notFound();
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-6 px-4 py-8">
+    <div className="space-y-6">
       <EventHeader event={event} />
       <Suspense fallback={<TabsSkeleton />}>
         <EventTabs slug={slug} />

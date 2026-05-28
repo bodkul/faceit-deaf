@@ -440,7 +440,7 @@ export default function EventMatchPage(
 
   if (isLoading)
     return (
-      <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
+      <div className="space-y-4">
         <Loading />
       </div>
     );
@@ -456,7 +456,7 @@ export default function EventMatchPage(
   const isBo1 = sortedMaps.length === 1;
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Button variant="dark" size="sm" asChild className="w-fit">
           <Link href={`/events/${eventSlug}?tab=matches`}>

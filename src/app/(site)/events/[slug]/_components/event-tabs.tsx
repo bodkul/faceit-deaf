@@ -3,7 +3,6 @@
 import { IconTrophy } from "@tabler/icons-react";
 import { format } from "date-fns";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -434,30 +433,22 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "players", label: "Players" },
 ];
 
-export function EventTabs({ slug }: { slug: string }) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const rawTab = searchParams.get("tab") as Tab | null;
-  const activeTab: Tab =
-    rawTab && TABS.some((t) => t.id === rawTab) ? rawTab : "matches";
-
+export function EventTabs({
+  slug,
+  activeTab,
+}: {
+  slug: string;
+  activeTab: Tab;
+}) {
   const { data: matches = [], isLoading } = useEventData(slug);
-
-  function setTab(tab: Tab) {
-    const params = new URLSearchParams(searchParams);
-    params.set("tab", tab);
-    router.push(`?${params.toString()}`, { scroll: false });
-  }
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-fit gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1">
         {TABS.map((tab) => (
-          <button
+          <Link
             key={tab.id}
-            type="button"
-            onClick={() => setTab(tab.id)}
+            href={`/events/${slug}/${tab.id}`}
             className={cn(
               "rounded-lg px-4 py-1.5 font-medium text-sm transition-colors",
               activeTab === tab.id
@@ -466,7 +457,7 @@ export function EventTabs({ slug }: { slug: string }) {
             )}
           >
             {tab.label}
-          </button>
+          </Link>
         ))}
       </div>
 

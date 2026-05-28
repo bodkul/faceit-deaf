@@ -1,11 +1,6 @@
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { notFound, redirect } from "next/navigation";
 
-import { Skeleton } from "@/components/ui/skeleton";
 import { getEventBySlug } from "@/lib/db/events";
-
-import { EventHeader } from "./_components/event-header";
-import { EventTabs } from "./_components/event-tabs";
 
 export async function generateMetadata({
   params,
@@ -21,20 +16,6 @@ export async function generateMetadata({
   };
 }
 
-function TabsSkeleton() {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        <Skeleton className="h-9 w-24 rounded-lg bg-neutral-900" />
-        <Skeleton className="h-9 w-20 rounded-lg bg-neutral-900" />
-        <Skeleton className="h-9 w-24 rounded-lg bg-neutral-900" />
-      </div>
-      <Skeleton className="h-48 w-full rounded-2xl bg-neutral-900" />
-      <Skeleton className="h-48 w-full rounded-2xl bg-neutral-900" />
-    </div>
-  );
-}
-
 export default async function EventPage({
   params,
 }: PageProps<"/events/[slug]">) {
@@ -43,12 +24,5 @@ export default async function EventPage({
 
   if (!event) notFound();
 
-  return (
-    <div className="space-y-6">
-      <EventHeader event={event} />
-      <Suspense fallback={<TabsSkeleton />}>
-        <EventTabs slug={slug} />
-      </Suspense>
-    </div>
-  );
+  redirect(`/events/${slug}/matches`);
 }

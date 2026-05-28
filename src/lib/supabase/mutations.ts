@@ -1,57 +1,43 @@
 import type { TablesInsert, TablesUpdate } from "@/types/database";
 
 import { supabaseClient } from "./client";
-import { handleSupabaseError, onConflictConfig } from "./utils";
+
+const onConflictConfig = {
+  matchTeams: "match_id, team_id",
+  matchTeamPlayers: "match_team_id, player_id_mandatory",
+  playerStatsNormalized: "match_team_player_id",
+};
 
 export async function getExistingPlayers(playerIds: string[]) {
-  const { data, error } = await supabaseClient
+  const { data } = await supabaseClient
     .from("players")
     .select("id, faceit_elo")
-    .in("id", playerIds);
-
-  if (error) {
-    handleSupabaseError("fetch players by IDs", error);
-  }
-
-  return data || [];
+    .in("id", playerIds)
+    .throwOnError();
+  return data ?? [];
 }
 
 export async function upsertPlayers(players: TablesInsert<"players">[]) {
-  const { error } = await supabaseClient.from("players").upsert(players);
-
-  if (error) {
-    handleSupabaseError("upsert players", error);
-  }
+  await supabaseClient.from("players").upsert(players).throwOnError();
 }
 
 export async function updateMatch(
   id: string,
   updates: TablesUpdate<"matches">,
 ) {
-  const { error } = await supabaseClient
+  await supabaseClient
     .from("matches")
     .update(updates)
-    .match({ id });
-
-  if (error) {
-    handleSupabaseError(`update match with ID ${id}`, error);
-  }
+    .match({ id })
+    .throwOnError();
 }
 
 export async function upsertMatch(match: TablesInsert<"matches">) {
-  const { error } = await supabaseClient.from("matches").upsert(match);
-
-  if (error) {
-    handleSupabaseError("upsert match", error);
-  }
+  await supabaseClient.from("matches").upsert(match).throwOnError();
 }
 
 export async function deleteMatch(id: string) {
-  const { error } = await supabaseClient.from("matches").delete().match({ id });
-
-  if (error) {
-    handleSupabaseError(`delete match with ID ${id}`, error);
-  }
+  await supabaseClient.from("matches").delete().match({ id }).throwOnError();
 }
 
 export async function updateMatchTeam(
@@ -59,63 +45,46 @@ export async function updateMatchTeam(
   team_id: string,
   rows: TablesUpdate<"match_teams">,
 ) {
-  const { error } = await supabaseClient
+  await supabaseClient
     .from("match_teams")
     .update(rows)
-    .match({ match_id, team_id });
-
-  if (error) {
-    handleSupabaseError("update match team", error);
-  }
+    .match({ match_id, team_id })
+    .throwOnError();
 }
 
 export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
-  const { data, error } = await supabaseClient
+  const { data } = await supabaseClient
     .from("match_teams")
     .upsert(team, { onConflict: onConflictConfig.matchTeams })
     .select("id")
-    .single();
-
-  if (error) {
-    handleSupabaseError("upsert match team", error);
-  }
-
+    .single()
+    .throwOnError();
   return data;
 }
 
 export async function upsertMatchTeamPlayer(
   player: TablesInsert<"match_team_players">,
 ) {
-  const { error } = await supabaseClient
+  await supabaseClient
     .from("match_team_players")
-    .upsert(player, { onConflict: onConflictConfig.matchTeamPlayers });
-
-  if (error) {
-    handleSupabaseError("upsert match team player", error);
-  }
+    .upsert(player, { onConflict: onConflictConfig.matchTeamPlayers })
+    .throwOnError();
 }
 
 export async function upsertMatchTeamPlayers(
   players: TablesInsert<"match_team_players">[],
 ) {
-  const { error } = await supabaseClient
+  await supabaseClient
     .from("match_team_players")
-    .upsert(players, { onConflict: onConflictConfig.matchTeamPlayers });
-
-  if (error) {
-    handleSupabaseError("upsert match team players", error);
-  }
+    .upsert(players, { onConflict: onConflictConfig.matchTeamPlayers })
+    .throwOnError();
 }
 
 export async function getActiveMatches() {
-  const { data, error } = await supabaseClient
+  const { data } = await supabaseClient
     .from("matches")
     .select("id")
-    .in("status", ["READY", "ONGOING"]);
-
-  if (error) {
-    handleSupabaseError(`fetch existing matches`, error);
-  }
-
-  return data || [];
+    .in("status", ["READY", "ONGOING"])
+    .throwOnError();
+  return data ?? [];
 }

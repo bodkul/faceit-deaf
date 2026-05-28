@@ -1,9 +1,8 @@
-import { validate as uuidValidate } from "uuid";
-
 import { supabaseClient } from "@/lib/supabase";
+import { isUUID } from "@/lib/utils";
 
 export async function getPlayerIdByNickname(nickname: string) {
-  if (!uuidValidate(nickname)) {
+  if (!isUUID(nickname)) {
     const { data: playerData } = await supabaseClient
       .from("players")
       .select("id")
@@ -30,7 +29,7 @@ export async function getPlayerIdByNickname(nickname: string) {
 }
 
 export async function getPlayerByUsername(nickname: string) {
-  if (!uuidValidate(nickname)) {
+  if (!isUUID(nickname)) {
     const { data: playerData } = await supabaseClient
       .from("players")
       .select(

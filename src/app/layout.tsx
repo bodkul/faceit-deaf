@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 
 import { Analytics } from "@vercel/analytics/next";
+import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
@@ -28,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans ${GeistSans.className} antialiased`}>
+      <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
           <AuthProvider>
             <ReactQueryProvider>{children}</ReactQueryProvider>

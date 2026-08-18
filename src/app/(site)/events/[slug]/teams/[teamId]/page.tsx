@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import { use } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEventData } from "@/hooks/use-event-data";
 import { cn } from "@/lib/utils";
@@ -96,12 +96,13 @@ export default function EventTeamPage(
 
   return (
     <div className="space-y-6">
-      <Button variant="dark" size="sm" asChild className="w-fit">
-        <Link href={`/events/${slug}?tab=teams`}>
-          <IconArrowLeft size={14} className="mr-1" />
-          Back to Event
-        </Link>
-      </Button>
+      <Link
+        href={`/events/${slug}/teams`}
+        className={buttonVariants({ variant: "dark" })}
+      >
+        <IconArrowLeft size={14} />
+        Back to Event
+      </Link>
 
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="flex items-center gap-4 px-6 py-5">

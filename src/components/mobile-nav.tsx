@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 
 import { navLinks } from "@/components/header";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Portal, PortalBackdrop } from "@/components/ui/portal";
 import { cn } from "@/lib/utils";
 
@@ -36,16 +36,17 @@ export function MobileNav() {
           >
             <nav className="grid gap-y-2">
               {navLinks.map((link) => (
-                <Button
-                  asChild
-                  className="justify-start"
+                <Link
                   key={link.label}
-                  size="sm"
-                  variant="ghost"
+                  href={link.href}
+                  className={buttonVariants({
+                    variant: "ghost",
+                    className: "justify-start",
+                  })}
                   onClick={() => setOpen(false)}
                 >
-                  <Link href={link.href}>{link.label}</Link>
-                </Button>
+                  {link.label}
+                </Link>
               ))}
             </nav>
           </div>

@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import LogoIcon from "@/app/icon.svg";
 import { AuthButton } from "@/components/auth/auth-button";
 import { MobileNav } from "@/components/mobile-nav";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { useScroll } from "@/hooks/use-scroll";
 import { cn } from "@/lib/utils";
 
@@ -45,15 +45,20 @@ export function Header() {
         >
           <nav className="hidden items-center md:flex">
             {navLinks.map((link) => (
-              <Button asChild key={link.label} size="sm" variant="ghost">
-                <Link href={link.href}>{link.label}</Link>
-              </Button>
+              <Link
+                key={link.label}
+                href={link.href}
+                className={buttonVariants({
+                  variant: "ghost",
+                  className: "justify-start",
+                })}
+              >
+                {link.label}
+              </Link>
             ))}
             <div className="ms-2 h-6 border-r"></div>
           </nav>
-          <div className="flex items-center">
             <AuthButton />
-          </div>
           <MobileNav />
         </motion.div>
       </div>

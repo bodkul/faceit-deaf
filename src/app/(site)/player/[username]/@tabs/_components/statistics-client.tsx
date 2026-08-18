@@ -22,6 +22,7 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectSeparator,
   SelectTrigger,
@@ -110,7 +111,7 @@ function EloChart({
       >
         <CartesianGrid vertical={false} />
         <YAxis
-          domain={["auto", "auto"]}
+          domain={["dataMin - 10", "dataMax + 10"]}
           tickLine={false}
           axisLine={false}
           tickMargin={5}
@@ -213,24 +214,31 @@ function StatisticsHeader({
           Performance metrics and ELO progression
         </p>
       </div>
-      <Select value={statisticsRange} onValueChange={onRangeChange}>
+      <Select
+        value={statisticsRange}
+        onValueChange={(value) => {
+          if (value) onRangeChange(value);
+        }}
+      >
         <SelectTrigger className="w-40 border-neutral-800 bg-neutral-900 text-neutral-300">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="border-neutral-800 bg-neutral-950">
-          {TIME_RANGES.map((range, index) => (
-            <div key={range.value}>
-              {(index === 1 || index === 4) && (
-                <SelectSeparator className="bg-neutral-800" />
-              )}
-              <SelectItem
-                value={range.value}
-                className="text-neutral-300 focus:bg-neutral-800 focus:text-white"
-              >
-                {range.label}
-              </SelectItem>
-            </div>
-          ))}
+          <SelectGroup>
+            {TIME_RANGES.map((range, index) => (
+              <div key={range.value}>
+                {(index === 1 || index === 4) && (
+                  <SelectSeparator className="bg-neutral-800" />
+                )}
+                <SelectItem
+                  value={range.value}
+                  className="text-neutral-300 focus:bg-neutral-800 focus:text-white"
+                >
+                  {range.label}
+                </SelectItem>
+              </div>
+            ))}
+          </SelectGroup>
         </SelectContent>
       </Select>
     </div>

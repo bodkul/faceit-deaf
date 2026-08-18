@@ -16,7 +16,7 @@ import { SkillLevelIcon } from "@/components/icons";
 import { MapBackground } from "@/components/map-background";
 import { TwitchPlayer } from "@/components/twitch-player";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLiveStreams } from "@/hooks/useLiveStreams";
 import { useMatch } from "@/hooks/useMatch";
@@ -127,16 +127,15 @@ function MatchHeader({ match }: { match: MatchType }) {
                 {formatDuration(match.started_at, match.finished_at)}
               </span>
             )}
-            <Button variant="dark" size="sm" asChild>
-              <Link
-                href={`https://www.faceit.com/en/cs2/room/1-${match.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                FACEIT
-                <IconExternalLink size={12} className="ml-1.5" />
-              </Link>
-            </Button>
+            <Link
+              className={buttonVariants({ variant: "dark", size: "sm" })}
+              href={`https://www.faceit.com/en/cs2/room/1-${match.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              FACEIT
+              <IconExternalLink size={12} />
+            </Link>
           </div>
         </div>
 

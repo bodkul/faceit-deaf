@@ -9,7 +9,7 @@ import { use, useState } from "react";
 
 import { MapBackground } from "@/components/map-background";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type EventMatch, useEventData } from "@/hooks/use-event-data";
 import { cn } from "@/lib/utils";
@@ -434,8 +434,8 @@ function MapView({
 export default function EventMatchPage(
   props: PageProps<"/events/[slug]/matches/[matchId]">,
 ) {
-  const { slug: eventSlug, matchId } = use(props.params);
-  const { data: matches, isLoading } = useEventData(eventSlug);
+  const { slug, matchId } = use(props.params);
+  const { data: matches, isLoading } = useEventData(slug);
   const [activeTab, setActiveTab] = useState<"overall" | number>("overall");
 
   if (isLoading)
@@ -458,12 +458,13 @@ export default function EventMatchPage(
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Button variant="dark" size="sm" asChild className="w-fit">
-          <Link href={`/events/${eventSlug}?tab=matches`}>
-            <IconArrowLeft size={14} className="mr-1" />
-            Back to Event
-          </Link>
-        </Button>
+        <Link
+          href={`/events/${slug}/matches`}
+          className={buttonVariants({ variant: "dark" })}
+        >
+          <IconArrowLeft size={14} />
+          Back to Event
+        </Link>
 
         {!isBo1 && sortedMaps.length > 0 && (
           <div className="flex w-fit gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1">
@@ -508,7 +509,7 @@ export default function EventMatchPage(
           teams={match.teams}
           mapIndex={0}
           totalMaps={1}
-          eventSlug={eventSlug}
+          eventSlug={slug}
           startedAt={match.started_at}
         />
       ) : activeTab === "overall" ? (
@@ -516,7 +517,7 @@ export default function EventMatchPage(
           match={match}
           teams={match.teams}
           maps={sortedMaps}
-          eventSlug={eventSlug}
+          eventSlug={slug}
         />
       ) : (
         currentMap && (
@@ -526,7 +527,7 @@ export default function EventMatchPage(
             teams={match.teams}
             mapIndex={activeTab as number}
             totalMaps={sortedMaps.length}
-            eventSlug={eventSlug}
+            eventSlug={slug}
             startedAt={match.started_at}
           />
         )

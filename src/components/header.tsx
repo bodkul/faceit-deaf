@@ -12,7 +12,7 @@ import { useScroll } from "@/hooks/use-scroll";
 import { cn } from "@/lib/utils";
 
 export const navLinks = [
-  { label: "Leaderboard", href: "/leaderboard" },
+  { label: "Players", href: "/players" },
   { label: "Events", href: "/events" },
 ];
 
@@ -58,7 +58,7 @@ export function Header() {
             ))}
             <div className="ms-2 h-6 border-r"></div>
           </nav>
-            <AuthButton />
+          <AuthButton />
           <MobileNav />
         </motion.div>
       </div>

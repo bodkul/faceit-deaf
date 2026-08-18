@@ -2,11 +2,12 @@
 
 import { IconBrandSteam, IconBrandTwitch } from "@tabler/icons-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo } from "react";
 
 import { FaceitIcon, SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SecondaryFlowButton } from "@/components/ui/flow-button";
+import { buttonVariants } from "@/components/ui/button";
 import { getCountryFlagUrl } from "@/lib/country";
 import { getSkillLevelFromElo } from "@/lib/faceit/utils";
 import type { getPlayerByUsername } from "@/lib/supabase";
@@ -95,11 +96,15 @@ export function PlayerCard({
 
         <div className="flex gap-2">
           {socials.map((s) => (
-            <SecondaryFlowButton key={s.key} size="icon-lg" asChild>
-              <a href={s.href} target="_blank" rel="noopener noreferrer">
-                {s.icon}
-              </a>
-            </SecondaryFlowButton>
+            <Link
+              key={s.key}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {s.icon}
+            </Link>
           ))}
         </div>
       </div>

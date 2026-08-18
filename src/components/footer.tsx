@@ -3,10 +3,8 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="w-full border-border border-t">
-      <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-4 py-4 text-muted-foreground text-sm md:flex-row md:px-6">
-        <p>Not affiliated with Valve or Faceit.</p>
-
+    <footer className="w-full border-border border-t supports-backdrop-filter:bg-background/80">
+      <div className="flex items-center justify-center py-4 text-muted-foreground text-sm">
         <p className="inline-flex items-center gap-1">
           <span>Built by</span>
           <Link

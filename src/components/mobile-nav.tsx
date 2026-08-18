@@ -1,4 +1,5 @@
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import Link from "next/link";
 import React from "react";
 
 import { navLinks } from "@/components/header";
@@ -8,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
+  const Icon = open ? IconX : IconMenu2;
 
   return (
     <div className="md:hidden">
@@ -20,11 +22,7 @@ export function MobileNav() {
         size="icon"
         variant="outline"
       >
-        {open ? (
-          <IconX className="size-4.5" />
-        ) : (
-          <IconMenu2 className="size-4.5" />
-        )}
+        <Icon className="size-4.5" />
       </Button>
       {open && (
         <Portal className="top-14" id="mobile-menu">
@@ -36,21 +34,20 @@ export function MobileNav() {
             )}
             data-slot={open ? "open" : "closed"}
           >
-            <div className="grid gap-y-2">
+            <nav className="grid gap-y-2">
               {navLinks.map((link) => (
                 <Button
                   asChild
                   className="justify-start"
                   key={link.label}
+                  size="sm"
                   variant="ghost"
+                  onClick={() => setOpen(false)}
                 >
-                  <a href={link.href}>{link.label}</a>
+                  <Link href={link.href}>{link.label}</Link>
                 </Button>
               ))}
-            </div>
-            <Button className="mt-12 w-full" variant="faceit">
-              Login with Faceit
-            </Button>
+            </nav>
           </div>
         </Portal>
       )}

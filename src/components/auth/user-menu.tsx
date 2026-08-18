@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import type { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,36 +14,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function UserButton() {
-  const { data: session, status } = useSession();
-
-  if (status === "loading") return null;
-
-  if (status === "unauthenticated" || !session?.user) {
-    return (
-      <Button onClick={() => signIn("faceit")} variant="faceit">
-        Login with Faceit
-      </Button>
-    );
-  }
-
-  const { user } = session;
-
+export function UserMenu({ user }: { user: NonNullable<Session["user"]> }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full hover:bg-neutral-800"
-        >
-          <Avatar>
-            <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
-            <AvatarFallback className="text-neutral-400 text-xs">
-              {user.name?.charAt(0) ?? "U"}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
+        <Avatar className="size-9 cursor-pointer rounded-md border-none after:rounded-md after:border-none">
+          <AvatarImage
+            className="rounded-md"
+            src={user.image ?? undefined}
+            alt={user.name ?? undefined}
+          />
+          <AvatarFallback className="rounded-md">
+            {user.name?.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
@@ -51,10 +35,11 @@ export function UserButton() {
       >
         <DropdownMenuLabel className="flex items-center gap-2">
           <Avatar>
-            <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
-            <AvatarFallback className="bg-neutral-800 text-neutral-400 text-xs">
-              {user.name?.charAt(0) ?? "U"}
-            </AvatarFallback>
+            <AvatarImage
+              src={user.image ?? undefined}
+              alt={user.name ?? undefined}
+            />
+            <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-1 flex-col">
             <span className="font-medium text-sm text-white">{user.name}</span>
@@ -66,20 +51,20 @@ export function UserButton() {
           asChild
           className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"
         >
-          <Link href="/profile">Profile</Link>
+          <Link href={`/player/${user.name}`}>Your profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem
           asChild
           className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"
         >
-          <Link href={`/player/${user.name}`}>Statistics</Link>
+          <Link href="/profile">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-neutral-800" />
         <DropdownMenuItem
           onClick={() => signOut()}
           className="text-neutral-500 hover:bg-neutral-900 hover:text-red-400 focus:bg-neutral-900 focus:text-red-400"
         >
-          Sign out
+          Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -4,6 +4,7 @@ import NumberFlow from "@number-flow/react";
 import { IconBrandTwitch, IconDeviceGamepad2 } from "@tabler/icons-react";
 import { differenceInMinutes } from "date-fns";
 import { now } from "es-toolkit/compat";
+import { motion } from "motion/react";
 import Link from "next/link";
 
 import {
@@ -158,9 +159,13 @@ export function LiveMatches() {
         <div className="flex items-center gap-2">
           <CardTitle className="text-white">Live Matches</CardTitle>
           {liveCount > 0 && (
-            <span className="rounded-full border border-red-500/20 bg-red-500/10 px-2 py-0.5 font-bold font-mono text-red-400 text-xs">
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="rounded-full border border-red-500/20 bg-red-500/10 px-2 py-0.5 font-bold font-mono text-red-400 text-xs"
+            >
               {liveCount} live
-            </span>
+            </motion.span>
           )}
         </div>
         <CardDescription>
@@ -170,15 +175,19 @@ export function LiveMatches() {
 
       <CardContent>
         {isLoading ? (
-          <div className="flex h-32 items-center justify-center">
+          <div className="flex h-38 items-center justify-center">
             <Spinner />
           </div>
         ) : matches?.length ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {matches.map((match) => (
               <MatchCard key={match.id} match={match} />
             ))}
-          </div>
+          </motion.div>
         ) : (
           <Empty>
             <EmptyHeader>

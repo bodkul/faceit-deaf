@@ -1,6 +1,10 @@
 "use client";
 
-import { IconBrandSteam, IconBrandTwitch } from "@tabler/icons-react";
+import {
+  IconBrandSteam,
+  IconBrandTelegram,
+  IconBrandTwitch,
+} from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -18,28 +22,36 @@ export function PlayerCard({
   player: NonNullable<Awaited<ReturnType<typeof getPlayerByUsername>>>;
 }) {
   const socials = useMemo(() => {
-    const list = [
+    const items = [
+      {
+        key: "steam",
+        href: `https://steamcommunity.com/profiles/${player.steam_id_64}`,
+        icon: <IconBrandSteam />,
+      },
       {
         key: "faceit",
         href: `https://www.faceit.com/en/players/${player.nickname}`,
-        icon: <FaceitIcon className="size-5 fill-[#ff5500]" />,
+        icon: <FaceitIcon />,
       },
     ];
-    if (player.steam_id_64) {
-      list.push({
-        key: "steam",
-        href: `https://steamcommunity.com/profiles/${player.steam_id_64}`,
-        icon: <IconBrandSteam className="size-5" />,
-      });
-    }
+
     if (player.twitch_username) {
-      list.push({
+      items.push({
         key: "twitch",
         href: `https://www.twitch.tv/${player.twitch_username}`,
-        icon: <IconBrandTwitch className="size-5" />,
+        icon: <IconBrandTwitch />,
       });
     }
-    return list;
+
+    if (player.id === "ce7684cf-e582-4ebd-9293-608fcd5696ee") {
+      items.push({
+        key: "telegram",
+        href: "https://t.me/bodkul",
+        icon: <IconBrandTelegram />,
+      });
+    }
+
+    return items;
   }, [player]);
 
   return (

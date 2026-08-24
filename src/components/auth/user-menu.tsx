@@ -56,7 +56,7 @@ export function UserMenu({ user }: { user: NonNullable<Session["user"]> }) {
           className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"
           render={<Link href={`/player/${user.name}`} />}
         >
-          Your Profile
+          Profile
         </DropdownMenuItem>
         <DropdownMenuItem
           className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"

@@ -25,7 +25,7 @@
   "assist": {
     "actions": {
       "source": {
-        "recommended": true,
+        "preset": "recommended",
         "organizeImports": {
           "level": "on",
           "options": {

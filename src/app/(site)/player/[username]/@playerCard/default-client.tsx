@@ -12,9 +12,11 @@ import { useMemo } from "react";
 import { FaceitIcon, SkillLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { getCountryFlagUrl } from "@/lib/country";
 import { getSkillLevelFromElo } from "@/lib/faceit/utils";
 import type { getPlayerByUsername } from "@/lib/supabase";
+// import { useTwitchLiveStatus } from "@/lib/twitch/use-twitch-live-status";
 
 export function PlayerCard({
   player,
@@ -24,14 +26,14 @@ export function PlayerCard({
   const socials = useMemo(() => {
     const items = [
       {
-        key: "steam",
-        href: `https://steamcommunity.com/profiles/${player.steam_id_64}`,
-        icon: <IconBrandSteam />,
-      },
-      {
         key: "faceit",
         href: `https://www.faceit.com/en/players/${player.nickname}`,
         icon: <FaceitIcon />,
+      },
+      {
+        key: "steam",
+        href: `https://steamcommunity.com/profiles/${player.steam_id_64}`,
+        icon: <IconBrandSteam />,
       },
     ];
 
@@ -54,72 +56,77 @@ export function PlayerCard({
     return items;
   }, [player]);
 
+  const skillLevel = player.faceit_elo
+    ? getSkillLevelFromElo(player.faceit_elo)
+    : undefined;
+
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/50 to-transparent" />
+    <Card className="relative bg-background p-6 md:flex-row md:justify-between md:p-8">
       <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
       <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
 
-      <div className="h-16 w-full bg-linear-to-br from-neutral-900 to-neutral-950" />
+      <div className="flex flex-row gap-4">
+        <Avatar className="size-30 rounded-md after:rounded-md">
+          <AvatarImage
+            className="rounded-md"
+            src={player.avatar}
+            alt={player.nickname}
+          />
+          <AvatarFallback className="rounded-md">
+            {player.nickname.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
 
-      <div className="relative -mt-8 flex flex-col items-center px-6 pb-6">
-        <div className="relative mb-3">
-          <Avatar className="size-20 rounded-2xl border-2 shadow-xl">
-            <AvatarImage
-              className="object-cover"
-              src={player.avatar}
-              alt={player.nickname}
-            />
-            <AvatarFallback className="rounded-2xl text-neutral-400">
-              {player.nickname.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          {player.faceit_elo && (
-            <SkillLevelIcon
-              level={getSkillLevelFromElo(player.faceit_elo)}
-              className="absolute -right-1 -bottom-1 size-8 drop-shadow-lg"
-            />
-          )}
-        </div>
-
-        <div className="mb-1 flex items-center gap-2">
-          {player.country && (
-            <Image
-              src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
-              width={16}
-              height={11}
-              alt={player.country}
-              className="rounded-xs"
-            />
-          )}
-          <h2 className="font-bold text-lg text-white">{player.nickname}</h2>
-        </div>
-
-        {player.faceit_elo && player.faceit_elo > 0 && (
-          <div className="mb-5 rounded-lg border border-neutral-800 bg-neutral-900/80 px-4 py-1.5">
-            <span className="font-bold font-mono text-sm text-white tabular-nums">
-              {player.faceit_elo}
-            </span>
-            <span className="ml-1 font-mono text-neutral-500 text-xs">ELO</span>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            {player.country && (
+              <Image
+                src={getCountryFlagUrl(player.country.toLowerCase(), 40)}
+                width={28}
+                height={20}
+                alt={player.country}
+                className="rounded-xs"
+              />
+            )}
+            <h1 className="font-bold text-2xl md:text-3xl">
+              {player.nickname}
+            </h1>
           </div>
-        )}
 
-        <div className="mb-4 h-px w-full bg-neutral-800" />
-
-        <div className="flex gap-2">
-          {socials.map((s) => (
-            <Link
-              key={s.key}
-              className={buttonVariants({ variant: "outline", size: "sm" })}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {s.icon}
-            </Link>
-          ))}
+          <div className="flex flex-wrap items-center gap-2">
+            {socials.map((s) => (
+              <Link
+                key={s.key}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonVariants({
+                  size: "sm",
+                  variant: "outline",
+                })}
+              >
+                {s.icon}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+
+      <div className="md:w-48">
+        {player.faceit_elo && (
+          <div className="flex items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.08)] bg-neutral-900/50 px-4 py-3">
+            {skillLevel && (
+              <SkillLevelIcon level={skillLevel} className="size-8 shrink-0" />
+            )}
+            <div className="flex flex-col leading-tight">
+              <span className="font-mono text-[#888888] text-[10px] uppercase tracking-wide">
+                Faceit ELO
+              </span>
+              <span className="font-mono text-lg">{player.faceit_elo}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </Card>
   );
 }

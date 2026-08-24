@@ -215,6 +215,7 @@ function StatisticsHeader({
         </p>
       </div>
       <Select
+        items={TIME_RANGES}
         value={statisticsRange}
         onValueChange={(value) => {
           if (value) onRangeChange(value);

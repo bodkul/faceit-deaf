@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 function Loading() {
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
+    <div className="flex flex-col gap-4">
       <Skeleton className="h-8 w-32 bg-neutral-900" />
       <Skeleton className="h-28 w-full rounded-2xl bg-neutral-900" />
       <Skeleton className="h-64 w-full rounded-2xl bg-neutral-900" />

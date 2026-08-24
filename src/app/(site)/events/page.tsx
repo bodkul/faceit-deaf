@@ -6,6 +6,12 @@ import { enUS } from "date-fns/locale";
 import { sortBy } from "es-toolkit";
 import Link from "next/link";
 
+import {
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderHeading,
+  PageHeaderTitle,
+} from "@/components/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabaseClient } from "@/lib/supabase";
@@ -55,30 +61,6 @@ function EmptyState({ message = "Nothing found" }: { message?: string }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-zinc-800 border-dashed py-16 text-center">
       <p className="text-sm text-zinc-600">{message}</p>
-    </div>
-  );
-}
-
-function PageHeader({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <div className="mb-8 flex items-start justify-between gap-4">
-      <div>
-        <h1 className="font-bold text-2xl text-zinc-100 tracking-tight">
-          {title}
-        </h1>
-        {description && (
-          <p className="mt-1 text-sm text-zinc-500">{description}</p>
-        )}
-      </div>
-      {children}
     </div>
   );
 }
@@ -192,10 +174,15 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title="Events"
-        description="CS2 events for the deaf community — follow live results and standings"
-      />
+      <PageHeader>
+        <PageHeaderHeading>
+          <PageHeaderTitle>Events</PageHeaderTitle>
+          <PageHeaderDescription>
+            CS2 events for the deaf community — follow live results and
+            standings
+          </PageHeaderDescription>
+        </PageHeaderHeading>
+      </PageHeader>
 
       <div className="flex flex-col space-y-4">
         {isLoading &&

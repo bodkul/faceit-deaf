@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 function Loading() {
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 py-6">
+    <div className="flex flex-col gap-4">
       <Skeleton className="h-8 w-32 bg-neutral-900" />
       <Skeleton className="h-28 w-full rounded-2xl bg-neutral-900" />
       <Skeleton className="h-16 w-full rounded-xl bg-neutral-900" />
@@ -241,7 +241,7 @@ export default function EventPlayerPage(
                       </p>
                     )}
                   </td>
-                  <td className="max-w-36 truncate px-4 py-2.5 text-neutral-500 text-sm">
+                  <td className="truncate px-4 py-2.5 text-neutral-500 text-sm">
                     {row.team_name}
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono text-neutral-300 text-sm">

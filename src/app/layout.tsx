@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "@/app/globals.css";
 
 import { Analytics } from "@vercel/analytics/next";
 import { GeistMono } from "geist/font/mono";

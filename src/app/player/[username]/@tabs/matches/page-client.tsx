@@ -11,7 +11,7 @@ import {
 import {
   MatchesTableHead,
   MatchesTableRow,
-} from "@/app/(site)/player/[username]/@tabs/_components/matches";
+} from "@/app/player/[username]/@tabs/_components/matches";
 import { Button } from "@/components/ui/button";
 import {
   Empty,

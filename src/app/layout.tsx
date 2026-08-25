@@ -6,6 +6,9 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 
+import { BGPattern } from "@/components/bg-pattern";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 import { siteConfig } from "@/config/site";
 import { AuthProvider } from "@/providers/auth";
 import { ReactQueryProvider } from "@/providers/react-query";
@@ -34,7 +37,16 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
           <AuthProvider>
-            <ReactQueryProvider>{children}</ReactQueryProvider>
+            <ReactQueryProvider>
+              <div className="relative flex min-h-screen w-full flex-col">
+                <BGPattern variant="grid" mask="fade-edges" />
+                <Header />
+                <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-12">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </ReactQueryProvider>
           </AuthProvider>
         </ThemeProvider>
 

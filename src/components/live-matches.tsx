@@ -7,6 +7,7 @@ import { now } from "es-toolkit/compat";
 import { motion } from "motion/react";
 import Link from "next/link";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -28,6 +29,8 @@ import { useLiveStreams } from "@/hooks/useLiveStreams";
 type MatchStatus = "live" | "soon" | "finished";
 
 type LiveMatch = NonNullable<ReturnType<typeof useLiveMatches>["data"]>[number];
+
+const MotionBadge = motion.create(Badge);
 
 function getMatchStatus(match: LiveMatch): MatchStatus {
   if (match.finished_at) return "finished";
@@ -159,13 +162,14 @@ export function LiveMatches() {
         <div className="flex items-center gap-2">
           <CardTitle className="text-white">Live Matches</CardTitle>
           {liveCount > 0 && (
-            <motion.span
+            <MotionBadge
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="rounded-full border border-red-500/20 bg-red-500/10 px-2 py-0.5 font-bold font-mono text-red-400 text-xs"
+              variant="outline"
+              className="border-red-500/20 bg-red-500/10 font-bold font-mono text-red-400"
             >
               {liveCount} live
-            </motion.span>
+            </MotionBadge>
           )}
         </div>
         <CardDescription>

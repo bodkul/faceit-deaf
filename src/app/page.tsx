@@ -1,15 +1,19 @@
 "use client";
 
 import { LiveMatches } from "@/components/live-matches";
+import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/config/site";
 
 export default function Page() {
   return (
     <>
       <div className="container flex flex-col items-center gap-4 py-8 text-center md:py-16 lg:py-20">
-        <div className="rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 font-bold font-mono text-red-400 text-xs uppercase tracking-widest">
+        <Badge
+          variant="outline"
+          className="border-red-500/20 bg-red-500/10 font-bold font-mono text-red-400 uppercase tracking-widest"
+        >
           CS2 · Deaf Community
-        </div>
+        </Badge>
 
         <h1 className="max-w-2xl text-balance font-black text-4xl leading-tight tracking-tight xl:text-5xl">
           Welcome to{" "}

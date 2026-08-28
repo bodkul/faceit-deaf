@@ -66,7 +66,7 @@ export function PlayerCard({
       <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
 
       <div className="flex flex-row gap-4">
-        <Avatar className="size-30 rounded-md after:rounded-md">
+        <Avatar className="size-17 rounded-md after:rounded-md md:size-18">
           <AvatarImage
             className="rounded-md"
             src={player.avatar}
@@ -82,15 +82,13 @@ export function PlayerCard({
             {player.country && (
               <Image
                 src={getCountryFlagUrl(player.country.toLowerCase(), 40)}
-                width={28}
-                height={20}
+                width={20}
+                height={14}
                 alt={player.country}
                 className="rounded-xs"
               />
             )}
-            <h1 className="font-bold text-2xl md:text-3xl">
-              {player.nickname}
-            </h1>
+            <h1 className="font-bold text-xl md:text-2xl">{player.nickname}</h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

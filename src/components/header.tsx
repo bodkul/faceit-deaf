@@ -7,19 +7,25 @@ import { useSession } from "next-auth/react";
 import LogoIcon from "@/app/icon.svg";
 import { AuthButton } from "@/components/auth/auth-button";
 import { MobileNav } from "@/components/mobile-nav";
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { useEventsCount } from "@/hooks/use-events-count";
 import { useScroll } from "@/hooks/use-scroll";
+import { navLinks } from "@/lib/nav-links";
 import { cn } from "@/lib/utils";
-
-export const navLinks = [
-  { label: "Players", href: "/players" },
-  { label: "Teams", href: "/teams" },
-  { label: "Events", href: "/events" },
-];
 
 export function Header() {
   const scrolled = useScroll(10);
   const { status } = useSession();
+
+  const { data: eventsCount, isSuccess: isEventsCountLoaded } =
+    useEventsCount();
+
+  const isHeaderReady = status !== "loading" && isEventsCountLoaded;
+
+  const badgeCountByHref: Partial<Record<string, number | null>> = {
+    "/events": eventsCount,
+  };
 
   return (
     <header
@@ -42,21 +48,28 @@ export function Header() {
         <motion.div
           className="flex items-center gap-2"
           initial={{ opacity: 0 }}
-          animate={status !== "loading" ? { opacity: 1 } : {}}
+          animate={isHeaderReady ? { opacity: 1 } : {}}
         >
           <nav className="hidden items-center md:flex">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={buttonVariants({
-                  variant: "ghost",
-                  className: "justify-start",
-                })}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const badgeCount = badgeCountByHref[link.href];
+
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={buttonVariants({
+                    variant: "ghost",
+                    className: "justify-start",
+                  })}
+                >
+                  {link.label}
+                  {!!badgeCount && (
+                    <Badge variant="destructive">{badgeCount}</Badge>
+                  )}
+                </Link>
+              );
+            })}
             <div className="ms-2 h-6 border-r"></div>
           </nav>
           <AuthButton />

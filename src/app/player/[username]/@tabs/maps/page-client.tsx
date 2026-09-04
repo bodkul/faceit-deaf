@@ -25,6 +25,16 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+const SKELETON_BARS = [
+  { key: "mirage", h: 40 },
+  { key: "inferno", h: 70 },
+  { key: "dust2", h: 55 },
+  { key: "nuke", h: 90 },
+  { key: "anubis", h: 35 },
+  { key: "ancient", h: 60 },
+  { key: "vertigo", h: 45 },
+] as const;
+
 function MapsWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
@@ -80,16 +90,6 @@ function MapsContent({
 }
 
 export function MapsSkeleton() {
-  const SKELETON_BARS = [
-    { key: "mirage", h: 40 },
-    { key: "inferno", h: 70 },
-    { key: "dust2", h: 55 },
-    { key: "nuke", h: 90 },
-    { key: "anubis", h: 35 },
-    { key: "ancient", h: 60 },
-    { key: "vertigo", h: 45 },
-  ];
-
   return (
     <MapsWrapper>
       <div className="flex h-64 items-end gap-3 px-4">

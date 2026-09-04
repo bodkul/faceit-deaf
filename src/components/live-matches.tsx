@@ -4,7 +4,7 @@ import NumberFlow from "@number-flow/react";
 import { IconBrandTwitch, IconDeviceGamepad2 } from "@tabler/icons-react";
 import { differenceInMinutes } from "date-fns";
 import { now } from "es-toolkit/compat";
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +30,7 @@ type MatchStatus = "live" | "soon" | "finished";
 
 type LiveMatch = NonNullable<ReturnType<typeof useLiveMatches>["data"]>[number];
 
-const MotionBadge = motion.create(Badge);
+const MotionBadge = m.create(Badge);
 
 function getMatchStatus(match: LiveMatch): MatchStatus {
   if (match.finished_at) return "finished";
@@ -183,7 +183,7 @@ export function LiveMatches() {
             <Spinner />
           </div>
         ) : matches?.length ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
@@ -191,7 +191,7 @@ export function LiveMatches() {
             {matches.map((match) => (
               <MatchCard key={match.id} match={match} />
             ))}
-          </motion.div>
+          </m.div>
         ) : (
           <Empty>
             <EmptyHeader>

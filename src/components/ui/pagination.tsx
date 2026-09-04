@@ -3,11 +3,11 @@ import {
   IconChevronRight,
   IconDots,
 } from "@tabler/icons-react";
+import { cn } from "cn";
 import Link from "next/link";
 import type * as React from "react";
 
 import { type Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (

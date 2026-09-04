@@ -6,9 +6,9 @@ import { supabaseClient } from "@/lib/supabase";
 
 import useRealtimeChannel from "./useRealtimeChannel";
 
-export function useLiveMatches() {
-  const queryKey = ["live-matches"] as const;
+const queryKey = ["live-matches"] as const;
 
+export function useLiveMatches() {
   useRealtimeChannel(queryKey);
 
   return useQuery({

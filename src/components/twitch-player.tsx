@@ -22,6 +22,7 @@ export function TwitchPlayer({ login }: { login: string }) {
           allowFullScreen
           title={`${login} live stream`}
           className="block"
+          sandbox="allow-forms allow-popups"
         />
       </div>
     </div>

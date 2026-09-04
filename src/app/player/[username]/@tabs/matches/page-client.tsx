@@ -24,6 +24,17 @@ import { PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMatchHistory } from "@/hooks/useMatchHistory";
 
+const SKELETON_COLS = [
+  "date",
+  "map",
+  "score",
+  "kd",
+  "kdr",
+  "adr",
+  "hs",
+  "elo",
+] as const;
+
 function MatchHistoryWrapper({
   children,
   footer,
@@ -59,16 +70,7 @@ function MatchHistoryWrapper({
 
 export function MatchHistorySkeleton() {
   const SKELETON_ROWS = Array.from({ length: 20 }, (_, i) => `row-${i}`);
-  const SKELETON_COLS = [
-    "date",
-    "map",
-    "score",
-    "kd",
-    "kdr",
-    "adr",
-    "hs",
-    "elo",
-  ];
+
   return (
     <MatchHistoryWrapper>
       {SKELETON_ROWS.map((rowKey) => (

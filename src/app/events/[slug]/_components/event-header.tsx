@@ -6,6 +6,22 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import type { EventBySlug } from "@/lib/db/events";
 
+const STATUS_CONFIG = {
+  upcoming: {
+    label: "Upcoming",
+    className: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  },
+  live: {
+    label: "Live",
+    className:
+      "bg-green-500/15 text-green-400 border-green-500/30 animate-pulse",
+  },
+  finished: {
+    label: "Finished",
+    className: "bg-muted text-muted-foreground",
+  },
+} as const;
+
 function getEventStatus(event: EventBySlug): "upcoming" | "live" | "finished" {
   const now = new Date();
 
@@ -20,22 +36,6 @@ function formatDate(dateStr: string) {
 
 export function EventHeader({ event }: { event: EventBySlug }) {
   const status = getEventStatus(event);
-
-  const statusConfig = {
-    upcoming: {
-      label: "Upcoming",
-      className: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-    },
-    live: {
-      label: "Live",
-      className:
-        "bg-green-500/15 text-green-400 border-green-500/30 animate-pulse",
-    },
-    finished: {
-      label: "Finished",
-      className: "bg-muted text-muted-foreground",
-    },
-  } as const;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
@@ -61,11 +61,14 @@ export function EventHeader({ event }: { event: EventBySlug }) {
             <h1 className="truncate font-black text-2xl text-white tracking-tight">
               {event.name}
             </h1>
-            <Badge variant="outline" className={statusConfig[status].className}>
+            <Badge
+              variant="outline"
+              className={STATUS_CONFIG[status].className}
+            >
               {status === "live" && (
                 <span className="mr-1.5 inline-block size-1.5 rounded-full bg-green-400" />
               )}
-              {statusConfig[status].label}
+              {STATUS_CONFIG[status].label}
             </Badge>
           </div>
 

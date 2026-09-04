@@ -1,4 +1,4 @@
-import { mapAsync } from "es-toolkit";
+import { keyBy, mapAsync } from "es-toolkit";
 import { NextResponse } from "next/server";
 
 import { fetchMatch } from "@/lib/faceit/api";
@@ -24,7 +24,7 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
     return NextResponse.json({ message: "Ignored: not a valid match" });
 
   const existingPlayers = await getExistingPlayers(playerIds);
-  const existingPlayerIds = existingPlayers.map((p) => p.id);
+  const existingPlayerById = keyBy(existingPlayers, (p) => p.id);
 
   await upsertMatch({
     id: matchId,
@@ -50,14 +50,13 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
         await upsertMatchTeamPlayers(
           team.roster.map((player) => ({
             match_team_id: resTeam.id,
-            player_id_nullable: existingPlayerIds.includes(player.id)
+            player_id_nullable: existingPlayerById[player.id]
               ? player.id
               : null,
             player_id_mandatory: player.id,
             nickname: player.nickname,
             game_skill_level: player.game_skill_level,
-            elo_before: existingPlayers.find((p) => p.id === player.id)
-              ?.faceit_elo,
+            elo_before: existingPlayerById[player.id]?.faceit_elo,
           })),
         );
       }

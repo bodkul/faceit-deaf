@@ -2,6 +2,7 @@
 
 import NumberFlow from "@number-flow/react";
 import { IconClock, IconExternalLink, IconMapPin } from "@tabler/icons-react";
+import { cn } from "cn";
 import { format, intervalToDuration } from "date-fns";
 import { isNumber, meanBy } from "es-toolkit";
 import { orderBy } from "es-toolkit/array";
@@ -23,7 +24,6 @@ import { useMatch } from "@/hooks/useMatch";
 import { calculateAverageStats } from "@/lib/calculateAverageStats";
 import { getCountryCode, getFlagUrl } from "@/lib/country";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
-import { cn } from "@/lib/utils";
 
 type MatchType = NonNullable<ReturnType<typeof useMatch>["data"]>;
 type TeamType = MatchType["teams"][number];

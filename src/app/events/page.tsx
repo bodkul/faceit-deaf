@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { cn } from "cn";
 import { format, getYear, parseISO } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { sortBy } from "es-toolkit";
@@ -15,7 +16,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabaseClient } from "@/lib/supabase";
-import { cn } from "@/lib/utils";
 
 type EventStatus = "upcoming" | "ongoing" | "finished";
 
@@ -114,19 +114,24 @@ function StatusIndicator({ status }: { status: EventStatus }) {
   );
 }
 
+function getDateFormatPattern(date: string) {
+  return getYear(date) === getYear(new Date()) ? "d MMM" : "d MMM yyyy";
+}
+
 function EventCard({
   event,
 }: {
   event: NonNullable<ReturnType<typeof useEvents>["data"]>[number];
 }) {
-  const yearFormat = (date: string) =>
-    getYear(date) === getYear(new Date()) ? "d MMM" : "d MMM yyyy";
-
-  const start = format(event.start_date, yearFormat(event.start_date), {
-    locale: enUS,
-  });
+  const start = format(
+    event.start_date,
+    getDateFormatPattern(event.start_date),
+    {
+      locale: enUS,
+    },
+  );
   const end = event.end_date
-    ? format(event.end_date, yearFormat(event.end_date), {
+    ? format(event.end_date, getDateFormatPattern(event.end_date), {
         locale: enUS,
       })
     : null;

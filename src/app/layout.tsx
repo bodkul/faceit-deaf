@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
+import { domAnimation, LazyMotion } from "motion/react";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 
@@ -38,14 +39,16 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
           <AuthProvider>
             <ReactQueryProvider>
-              <div className="relative flex min-h-screen w-full flex-col">
-                <BGPattern variant="grid" mask="fade-edges" />
-                <Header />
-                <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-12">
-                  {children}
-                </main>
-                <Footer />
-              </div>
+              <LazyMotion features={domAnimation}>
+                <div className="relative flex min-h-screen w-full flex-col">
+                  <BGPattern variant="grid" mask="fade-edges" />
+                  <Header />
+                  <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-12">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+              </LazyMotion>
             </ReactQueryProvider>
           </AuthProvider>
         </ThemeProvider>

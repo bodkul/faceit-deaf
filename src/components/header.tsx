@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "motion/react";
+import { cn } from "cn";
+import * as m from "motion/react-m";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
@@ -12,7 +13,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { useEventsCount } from "@/hooks/use-events-count";
 import { useScroll } from "@/hooks/use-scroll";
 import { navLinks } from "@/lib/nav-links";
-import { cn } from "@/lib/utils";
 
 export function Header() {
   const scrolled = useScroll(10);
@@ -45,7 +45,7 @@ export function Header() {
             <span className="text-neutral-600">.pro</span>
           </span>
         </Link>
-        <motion.div
+        <m.div
           className="flex items-center gap-2"
           initial={{ opacity: 0 }}
           animate={isHeaderReady ? { opacity: 1 } : {}}
@@ -74,7 +74,7 @@ export function Header() {
           </nav>
           <AuthButton />
           <MobileNav />
-        </motion.div>
+        </m.div>
       </div>
     </header>
   );

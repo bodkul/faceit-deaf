@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import { format, isThisYear } from "date-fns";
 import { isNumber } from "es-toolkit";
 import { gt, lt } from "es-toolkit/compat";
@@ -6,7 +7,6 @@ import { useRouter } from "next/navigation";
 
 import type { useRecentMatches } from "@/hooks/useRecentMatches";
 import { formatNumberWithSign } from "@/lib/faceit/utils";
-import { cn } from "@/lib/utils";
 
 export function MatchesTableHead() {
   return (

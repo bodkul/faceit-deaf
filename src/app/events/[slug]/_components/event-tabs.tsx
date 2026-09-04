@@ -1,6 +1,7 @@
 "use client";
 
 import { IconTrophy } from "@tabler/icons-react";
+import { cn } from "cn";
 import { format } from "date-fns";
 import Link from "next/link";
 
@@ -8,7 +9,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type EventMatch, useEventData } from "@/hooks/use-event-data";
-import { cn } from "@/lib/utils";
 
 type Tab = "matches" | "teams" | "players";
 

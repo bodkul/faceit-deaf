@@ -1,6 +1,7 @@
 "use client";
 
 import { IconArrowLeft, IconMapPin } from "@tabler/icons-react";
+import { cn } from "cn";
 import { format } from "date-fns";
 import { flatMap, groupBy, orderBy, sumBy } from "es-toolkit";
 import Link from "next/link";
@@ -12,7 +13,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type EventMatch, useEventData } from "@/hooks/use-event-data";
-import { cn } from "@/lib/utils";
 
 type MapData = EventMatch["maps"][number];
 type TeamData = EventMatch["teams"][number];

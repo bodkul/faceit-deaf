@@ -1,4 +1,5 @@
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import { cn } from "cn";
 import Link from "next/link";
 import React from "react";
 
@@ -7,7 +8,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Portal, PortalBackdrop } from "@/components/ui/portal";
 import { useEventsCount } from "@/hooks/use-events-count";
 import { navLinks } from "@/lib/nav-links";
-import { cn } from "@/lib/utils";
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);

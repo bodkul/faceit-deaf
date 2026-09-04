@@ -97,7 +97,7 @@ export function usePlayerStatistics(
   playerId: string,
   range: PlayerStatisticsRange,
 ) {
-  const { data, ...rest } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["playerStatistics", playerId, range],
     queryFn: async () => {
       let query = supabaseClient
@@ -160,5 +160,5 @@ export function usePlayerStatistics(
     };
   });
 
-  return { data: enhancedData, ...rest };
+  return { data: enhancedData, isLoading };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { IconArrowLeft } from "@tabler/icons-react";
+import { cn } from "cn";
 import { format } from "date-fns";
 import { orderBy, sumBy } from "es-toolkit";
 import Link from "next/link";
@@ -11,7 +12,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEventData } from "@/hooks/use-event-data";
-import { cn } from "@/lib/utils";
 
 function Loading() {
   return (

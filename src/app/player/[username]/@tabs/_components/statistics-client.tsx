@@ -1,6 +1,7 @@
 "use client";
 
 import { IconChartBar } from "@tabler/icons-react";
+import { cn } from "cn";
 import { take } from "es-toolkit/array";
 import { meanBy, sumBy } from "es-toolkit/compat";
 import { useMemo, useState } from "react";
@@ -33,7 +34,6 @@ import {
   type PlayerStatisticsRange,
   usePlayerStatistics,
 } from "@/hooks/usePlayerStatistics";
-import { cn } from "@/lib/utils";
 
 const chartConfig = {
   elo: { color: "var(--chart-2)" },

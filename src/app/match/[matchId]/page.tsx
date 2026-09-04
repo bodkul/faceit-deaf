@@ -13,7 +13,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use, useMemo } from "react";
 
-import { SkillLevelIcon } from "@/components/icons";
+import { FaceitLevelIcon } from "@/components/icons";
 import { MapBackground } from "@/components/map-background";
 import { TwitchPlayer } from "@/components/twitch-player";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -305,8 +305,8 @@ function PlayerStatsRow({
     <tr className="group border-neutral-800/50 border-b transition-colors last:border-0 hover:bg-neutral-800/20">
       <td className="px-4 py-2.5">
         <div className="flex items-center gap-2.5">
-          <SkillLevelIcon
-            level={player.game_skill_level ?? 0}
+          <FaceitLevelIcon
+            level={player.game_skill_level}
             className="size-6 shrink-0"
           />
           <Link

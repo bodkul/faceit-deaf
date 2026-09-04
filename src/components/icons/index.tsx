@@ -1,4 +1,2 @@
-import { FaceitIcon } from "./faceit-icon";
-import SkillLevelIcon from "./skill-level-icon";
-
-export { FaceitIcon, SkillLevelIcon };
+export { FaceitIcon } from "./faceit-icon";
+export { FaceitLevelIcon } from "./faceit-level-icon";

@@ -5,7 +5,6 @@ export const FaceitIcon = (props: React.SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <title>FACEIT</title>
     <path
       d="M21 4.134c0-.143-.17-.18-.238-.071-2.177 3.553-3.436 5.563-4.525 7.429H3.174c-.17 0-.238.215-.102.287 5.41 2.153 13.233 5.42 17.622 7.214.102.036.306-.072.306-.144V4.134z"
       fill="currentColor"

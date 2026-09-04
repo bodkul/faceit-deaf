@@ -9,12 +9,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 
-import { FaceitIcon, SkillLevelIcon } from "@/components/icons";
+import { FaceitIcon, FaceitLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getCountryFlagUrl } from "@/lib/country";
-import { getSkillLevelFromElo } from "@/lib/faceit/utils";
 import type { getPlayerByUsername } from "@/lib/supabase";
 // import { useTwitchLiveStatus } from "@/lib/twitch/use-twitch-live-status";
 
@@ -55,10 +54,6 @@ export function PlayerCard({
 
     return items;
   }, [player]);
-
-  const skillLevel = player.faceit_elo
-    ? getSkillLevelFromElo(player.faceit_elo)
-    : undefined;
 
   return (
     <Card className="relative bg-background p-6 md:flex-row md:justify-between md:p-8">
@@ -113,9 +108,10 @@ export function PlayerCard({
       <div className="md:w-48">
         {player.faceit_elo && (
           <div className="flex items-center gap-3 rounded-xl border border-[rgba(255,255,255,0.08)] bg-neutral-900/50 px-4 py-3">
-            {skillLevel && (
-              <SkillLevelIcon level={skillLevel} className="size-8 shrink-0" />
-            )}
+            <FaceitLevelIcon
+              elo={player.faceit_elo}
+              className="size-8 shrink-0"
+            />
             <div className="flex flex-col leading-tight">
               <span className="font-mono text-[#888888] text-[10px] uppercase tracking-wide">
                 Faceit ELO

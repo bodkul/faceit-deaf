@@ -3,7 +3,7 @@ import * as motion from "motion/react-client";
 import Image from "next/image";
 import Link from "next/link";
 
-import { SkillLevelIcon } from "@/components/icons";
+import { FaceitLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/item";
 import { getCountryFlagUrl } from "@/lib/country";
 import { getPlayerRankings } from "@/lib/db/players/queries";
-import { getSkillLevelFromElo } from "@/lib/faceit/utils";
 
 import { PlayersPagination } from "./players-pagination";
 
@@ -40,9 +39,6 @@ function PlayerRankRow({
   player: Awaited<ReturnType<typeof getPlayerRankings>>["players"][number];
   rank: number;
 }) {
-  const skillLevel =
-    player.faceit_elo != null ? getSkillLevelFromElo(player.faceit_elo) : null;
-
   return (
     <Item
       variant="outline"
@@ -78,9 +74,7 @@ function PlayerRankRow({
         <span className="text-right font-bold font-mono text-neutral-200 text-sm tabular-nums md:text-base">
           {player.faceit_elo}
         </span>
-        {skillLevel !== null && (
-          <SkillLevelIcon level={skillLevel} className="size-5 shrink-0" />
-        )}
+        <FaceitLevelIcon elo={player.faceit_elo} className="size-5 shrink-0" />
       </ItemContent>
     </Item>
   );

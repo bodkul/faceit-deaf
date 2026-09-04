@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import { SkillLevelIcon } from "@/components/icons";
+import { FaceitLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Empty,
@@ -21,7 +21,6 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { usePlayerSearch } from "@/hooks/usePlayerSearch";
 import { getCountryFlagUrl } from "@/lib/country";
-import { getSkillLevelFromElo } from "@/lib/faceit/utils";
 
 export function PlayerSearch() {
   const [isOpen, setIsOpen] = useState(false);
@@ -120,12 +119,10 @@ export function PlayerSearch() {
                       <span className="font-mono text-neutral-500 text-xs">
                         {player.faceit_elo}
                       </span>
-                      {player.faceit_elo && (
-                        <SkillLevelIcon
-                          level={getSkillLevelFromElo(player.faceit_elo)}
-                          className="size-5"
-                        />
-                      )}
+                      <FaceitLevelIcon
+                        elo={player.faceit_elo}
+                        className="size-5"
+                      />
                     </div>
                   </Link>
                 </li>

@@ -117,8 +117,30 @@
 }
 
 @layer base {
+  html {
+    @apply scrollbar-gutter-stable;
+  }
+
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+
+    &::-webkit-scrollbar {
+      @apply size-2;
+    }
+
+    &::-webkit-scrollbar-track {
+      @apply bg-transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      @apply bg-border rounded-full border-2 border-solid border-transparent bg-clip-padding;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      @apply bg-muted-foreground;
+    }
   }
 
   body {

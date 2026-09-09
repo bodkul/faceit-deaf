@@ -1,9 +1,9 @@
 "use client";
 
 import { IconBrandTwitch, IconCheck } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { signIn, useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 
 import { FaceitIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,16 +13,13 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function useTwitchLinked() {
-  const [linked, setLinked] = useState<boolean | null>(null);
+  const { data } = useQuery({
+    queryKey: ["profile", "accounts"],
+    queryFn: () => ky("/api/profile/accounts").json<{ twitch: boolean }>(),
+    select: (data) => data.twitch ?? false,
+  });
 
-  useEffect(() => {
-    ky("/api/profile/accounts")
-      .json<{ twitch: boolean }>()
-      .then((data) => setLinked(data.twitch ?? false))
-      .catch(() => setLinked(false));
-  }, []);
-
-  return linked;
+  return data ?? null;
 }
 
 function ConnectedBadge() {

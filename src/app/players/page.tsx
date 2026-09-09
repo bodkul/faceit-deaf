@@ -32,54 +32,6 @@ function parsePage(raw: string | undefined): number {
   return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 1;
 }
 
-function PlayerRankRow({
-  player,
-  rank,
-}: {
-  player: Awaited<ReturnType<typeof getPlayerRankings>>["players"][number];
-  rank: number;
-}) {
-  return (
-    <Item
-      variant="outline"
-      size="sm"
-      className="bg-muted/50 [a]:hover:bg-muted/70"
-      render={<Link href={`/player/${player.nickname}`} />}
-    >
-      <span className="tabular-nums">#{rank}</span>
-
-      <ItemMedia variant="image">
-        <Avatar size="lg" className="after:rounded-lg">
-          <AvatarImage src={player.avatar ?? undefined} alt={player.nickname} />
-          <AvatarFallback>{player.nickname.charAt(0)}</AvatarFallback>
-        </Avatar>
-      </ItemMedia>
-
-      <ItemContent>
-        <ItemTitle>
-          {player.nickname}
-          {player.country && (
-            <Image
-              className="rounded-xs"
-              src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
-              width={15}
-              height={10}
-              alt={player.country}
-            />
-          )}
-        </ItemTitle>
-      </ItemContent>
-
-      <ItemContent className="flex-row items-center">
-        <span className="text-right font-bold font-mono text-neutral-200 text-sm tabular-nums md:text-base">
-          {player.faceit_elo}
-        </span>
-        <FaceitLevelIcon elo={player.faceit_elo} className="size-5 shrink-0" />
-      </ItemContent>
-    </Item>
-  );
-}
-
 export default async function PlayersPage({
   searchParams,
 }: {
@@ -94,7 +46,7 @@ export default async function PlayersPage({
 
   if (players.length === 0) {
     return (
-      <Card>
+      <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
         <CardContent>
           <Empty>
             <EmptyHeader>
@@ -120,13 +72,58 @@ export default async function PlayersPage({
       animate={{ opacity: 1 }}
     >
       <ItemGroup>
-        {players.map((player, index) => (
-          <PlayerRankRow
-            key={player.id}
-            player={player}
-            rank={(currentPage - 1) * PAGE_SIZE + index + 1}
-          />
-        ))}
+        {players.map((player, index) => {
+          const rank = (currentPage - 1) * PAGE_SIZE + index + 1;
+
+          return (
+            <Item
+              key={player.id}
+              size="sm"
+              variant="outline"
+              className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm [a]:hover:bg-neutral-900/30"
+              render={<Link href={`/player/${player.nickname}`} />}
+            >
+              <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/3 blur-3xl" />
+
+              <span className="tabular-nums">#{rank}</span>
+
+              <ItemMedia variant="image">
+                <Avatar size="lg" className="after:rounded-lg">
+                  <AvatarImage
+                    src={player.avatar ?? undefined}
+                    alt={player.nickname}
+                  />
+                  <AvatarFallback>{player.nickname.charAt(0)}</AvatarFallback>
+                </Avatar>
+              </ItemMedia>
+
+              <ItemContent>
+                <ItemTitle>
+                  <span className="transition-colors group-hover/item:text-red-500">
+                    {player.nickname}
+                  </span>
+                  {player.country && (
+                    <Image
+                      className="rounded-xs"
+                      src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
+                      width={15}
+                      height={10}
+                      alt={player.country}
+                    />
+                  )}
+                </ItemTitle>
+              </ItemContent>
+
+              <ItemContent className="flex-row items-center">
+                <span className="text-right font-bold font-mono text-neutral-200 text-sm tabular-nums md:text-base">
+                  {player.faceit_elo}
+                </span>
+                <FaceitLevelIcon elo={player.faceit_elo} className="size-5" />
+              </ItemContent>
+            </Item>
+          );
+        })}
       </ItemGroup>
 
       {totalPages > 1 && (

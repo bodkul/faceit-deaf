@@ -50,9 +50,9 @@ export function PlayersPagination({
           />
         </PaginationItem>
 
-        {range.map((item, i) =>
+        {range.map((item) =>
           item === "ellipsis" ? (
-            <PaginationItem key={`ellipsis-${i}`}>
+            <PaginationItem key={`ellipsis-${item}`}>
               <PaginationEllipsis />
             </PaginationItem>
           ) : (

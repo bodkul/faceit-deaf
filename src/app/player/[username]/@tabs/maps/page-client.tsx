@@ -4,6 +4,13 @@ import { IconMap } from "@tabler/icons-react";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
@@ -16,6 +23,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePlayerMaps } from "@/hooks/usePlayerMaps";
 
 const chartConfig = {
@@ -25,7 +33,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const SKELETON_BARS = [
+const _SKELETON_BARS = [
   { key: "mirage", h: 40 },
   { key: "inferno", h: 70 },
   { key: "dust2", h: 55 },
@@ -37,17 +45,19 @@ const SKELETON_BARS = [
 
 function MapsWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
+    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
       <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
       <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-      <div className="border-neutral-800 border-b px-5 py-4">
-        <h3 className="font-bold text-white">Maps Statistics</h3>
-        <p className="text-neutral-500 text-sm">
+
+      <CardHeader>
+        <CardTitle>Map Statistics</CardTitle>
+        <CardDescription>
           Distribution of maps played by this player
-        </p>
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>{children}</CardContent>
+    </Card>
   );
 }
 
@@ -80,7 +90,11 @@ function MapsContent({
             <LabelList
               position="top"
               offset={10}
-              style={{ fill: "#737373", fontSize: 11, fontFamily: "monospace" }}
+              style={{
+                fill: "#737373",
+                fontSize: 11,
+                fontFamily: "monospace",
+              }}
             />
           </Bar>
         </BarChart>
@@ -92,17 +106,7 @@ function MapsContent({
 export function MapsSkeleton() {
   return (
     <MapsWrapper>
-      <div className="flex h-64 items-end gap-3 px-4">
-        {SKELETON_BARS.map(({ key, h }) => (
-          <div key={key} className="flex flex-1 flex-col items-center gap-2">
-            <div
-              className="w-full animate-pulse rounded-md bg-neutral-800"
-              style={{ height: `${h}%` }}
-            />
-            <div className="h-3 w-8 animate-pulse rounded bg-neutral-800" />
-          </div>
-        ))}
-      </div>
+      <Skeleton className="h-64 w-full bg-neutral-900" />
     </MapsWrapper>
   );
 }

@@ -7,12 +7,21 @@ import {
   IconChevronsRight,
   IconHistory,
 } from "@tabler/icons-react";
+import { cn } from "cn";
+import { format, isThisYear } from "date-fns";
+import { isBoolean, isNil, isNumber, range } from "es-toolkit";
+import { gt, lt } from "es-toolkit/compat";
+import { useRouter } from "next/navigation";
 
-import {
-  MatchesTableHead,
-  MatchesTableRow,
-} from "@/app/player/[username]/@tabs/_components/matches";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -22,17 +31,25 @@ import {
 } from "@/components/ui/empty";
 import { PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useMatchHistory } from "@/hooks/useMatchHistory";
+import { formatNumberWithSign } from "@/lib/faceit/utils";
 
-const SKELETON_COLS = [
-  "date",
-  "map",
-  "score",
-  "kd",
-  "kdr",
-  "adr",
-  "hs",
-  "elo",
+const TABLE_COLUMNS = [
+  { key: "date", label: "Date", skeletonWidth: "6rem" },
+  { key: "map", label: "Map", skeletonWidth: "3rem" },
+  { key: "score", label: "Score", skeletonWidth: "2.5rem" },
+  { key: "kd", label: "K - D", skeletonWidth: "3rem" },
+  { key: "kdr", label: "K / D", skeletonWidth: "2rem" },
+  { key: "adr", label: "ADR", skeletonWidth: "2rem" },
+  { key: "hs", label: "HS%", skeletonWidth: "2rem" },
+  { key: "elo", label: "Elo +/-", skeletonWidth: "2rem" },
 ] as const;
 
 function MatchHistoryWrapper({
@@ -43,53 +60,64 @@ function MatchHistoryWrapper({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
+    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
       <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="border-neutral-800 border-b px-5 py-4">
-        <h3 className="font-bold text-white">Match History</h3>
-        <p className="text-neutral-500 text-sm">
+      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
+
+      <CardHeader>
+        <CardTitle>Match History</CardTitle>
+        <CardDescription>
           Complete list of all played matches with detailed statistics
-        </p>
-      </div>
-      <div className="w-full overflow-x-auto">
-        <table className="w-max min-w-full">
-          <thead>
-            <MatchesTableHead />
-          </thead>
-          <tbody>{children}</tbody>
-        </table>
-      </div>
-      {footer && (
-        <div className="flex items-center justify-between border-neutral-800 border-t px-5 py-3">
-          {footer}
-        </div>
-      )}
-    </div>
+        </CardDescription>
+      </CardHeader>
+
+      {children}
+
+      {footer && <CardFooter className="justify-between">{footer}</CardFooter>}
+    </Card>
+  );
+}
+
+function MatchHistoryTable({ children }: { children: React.ReactNode }) {
+  return (
+    <Table className="w-full overflow-x-auto border-t font-mono">
+      <TableHeader>
+        <TableRow className="text-xs uppercase tracking-wide">
+          {TABLE_COLUMNS.map(({ key, label }) => (
+            <TableHead key={key} className="text-center text-neutral-600">
+              {label}
+            </TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <tbody data-slot="table-body">{children}</tbody>
+    </Table>
   );
 }
 
 export function MatchHistorySkeleton() {
-  const SKELETON_ROWS = Array.from({ length: 20 }, (_, i) => `row-${i}`);
-
   return (
     <MatchHistoryWrapper>
-      {SKELETON_ROWS.map((rowKey) => (
-        <tr
-          key={rowKey}
-          className="border-neutral-800/50 border-b last:border-0"
-        >
-          {SKELETON_COLS.map((col) => (
-            <td key={col} className="px-4 py-3">
-              <Skeleton className="mx-auto h-4 bg-neutral-800" />
-            </td>
-          ))}
-        </tr>
-      ))}
+      <MatchHistoryTable>
+        {range(20).map((index) => (
+          <TableRow key={index} className="h-12">
+            {TABLE_COLUMNS.map(({ key, skeletonWidth }) => (
+              <TableCell key={key}>
+                <Skeleton
+                  className="mx-auto h-5"
+                  style={{ width: skeletonWidth }}
+                />
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </MatchHistoryTable>
     </MatchHistoryWrapper>
   );
 }
 
-export default function MatchHistory({ playerId }: { playerId: string }) {
+export default function MatchHistoryPage({ playerId }: { playerId: string }) {
+  const router = useRouter();
   const {
     data: matches,
     isLoading,
@@ -103,27 +131,23 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
 
   if (isLoading) return <MatchHistorySkeleton />;
 
-  if (!matches) {
+  if (!matches?.length) {
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-        <div className="mb-4">
-          <h3 className="font-bold text-white">Match History</h3>
-          <p className="text-neutral-500 text-sm">
-            Complete list of all played matches with detailed statistics
-          </p>
-        </div>
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <IconHistory />
-            </EmptyMedia>
-            <EmptyTitle>No matches yet</EmptyTitle>
-            <EmptyDescription>
-              Match history will appear here once played.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      </div>
+      <MatchHistoryWrapper>
+        <CardContent>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconHistory />
+              </EmptyMedia>
+              <EmptyTitle>No matches yet</EmptyTitle>
+              <EmptyDescription>
+                Match history will appear here once played.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </CardContent>
+      </MatchHistoryWrapper>
     );
   }
 
@@ -160,7 +184,7 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
               variant="dark"
               size="icon-sm"
               onClick={() => action?.()}
-              disabled={action === null}
+              disabled={!action}
               className="disabled:opacity-30"
             >
               <span className="sr-only">{label}</span>
@@ -174,9 +198,99 @@ export default function MatchHistory({ playerId }: { playerId: string }) {
 
   return (
     <MatchHistoryWrapper footer={footer}>
-      {matches.map((match) => (
-        <MatchesTableRow key={match.id} match={match} />
-      ))}
+      <MatchHistoryTable>
+        {matches.map((match) => {
+          const matchUrl = `/match/1-${match.id}`;
+
+          return (
+            <TableRow
+              key={match.id}
+              tabIndex={0}
+              role="link"
+              aria-label={`View match on ${match.map?.replace("de_", "")}`}
+              onClick={() => router.push(matchUrl)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  router.push(matchUrl);
+                }
+              }}
+              className={cn(
+                "h-12 cursor-pointer border-l-2 [&>td]:text-center",
+                {
+                  "border-l-emerald-500/40": match.win === true,
+                  "border-l-red-500/40": match.win === false,
+                  "border-l-transparent": !isBoolean(match.win),
+                },
+              )}
+            >
+              <TableCell className="text-neutral-500 text-xs">
+                {match.finished_at &&
+                  format(
+                    match.finished_at,
+                    isThisYear(match.finished_at)
+                      ? "d. MMM HH:mm"
+                      : "d. MMM yyyy",
+                  )}
+              </TableCell>
+              <TableCell className="text-[#87a3bf] text-xs capitalize">
+                {match.map?.replace("de_", "")}
+              </TableCell>
+              <TableCell className="text-center">
+                <span
+                  className={cn("rounded px-2 py-0.5 font-bold text-xs", {
+                    "bg-emerald-500/10 text-emerald-400": match.win === true,
+                    "bg-red-500/10 text-red-400": match.win === false,
+                    "bg-neutral-800 text-neutral-400": !isBoolean(match.win),
+                  })}
+                >
+                  {match.round_score}
+                </span>
+              </TableCell>
+              <TableCell className="text-neutral-300">
+                {!isNil(match.kills) && !isNil(match.deaths)
+                  ? `${match.kills} - ${match.deaths}`
+                  : "—"}
+              </TableCell>
+              <TableCell
+                className={cn(
+                  "font-mono",
+                  lt(match.kd_ratio, 0.95)
+                    ? "text-red-400"
+                    : gt(match.kd_ratio, 1.05)
+                      ? "text-emerald-400"
+                      : "text-neutral-500",
+                )}
+              >
+                {match.kd_ratio?.toFixed(2) ?? "—"}
+              </TableCell>
+              <TableCell className="text-neutral-400">
+                {match.adr?.toFixed(1) ?? "—"}
+              </TableCell>
+              <TableCell className="text-neutral-400">
+                {isNumber(match.headshots_percent) &&
+                gt(match.headshots_percent, 0)
+                  ? `${match.headshots_percent}%`
+                  : "—"}
+              </TableCell>
+              <TableCell className="font-mono">
+                {match.elo_diff !== null ? (
+                  <span
+                    className={cn({
+                      "text-emerald-400": match.elo_diff > 0,
+                      "text-red-400": match.elo_diff < 0,
+                      "text-neutral-400": match.elo_diff === 0,
+                    })}
+                  >
+                    {formatNumberWithSign(match.elo_diff)}
+                  </span>
+                ) : (
+                  "—"
+                )}
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </MatchHistoryTable>
     </MatchHistoryWrapper>
   );
 }

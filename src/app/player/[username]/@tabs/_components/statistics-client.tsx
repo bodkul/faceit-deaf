@@ -7,6 +7,7 @@ import { meanBy, sumBy } from "es-toolkit/compat";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
 
+import { CardContent, CardFooter } from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
@@ -20,43 +21,18 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 import {
   type PlayerStatisticsRange,
   usePlayerStatistics,
 } from "@/hooks/usePlayerStatistics";
 
+import { StatisticsLayout } from "./statistics-layout";
+import { StatisticsSkeleton } from "./statistics-skeleton";
+
 const chartConfig = {
   elo: { color: "var(--chart-2)" },
 } satisfies ChartConfig;
-
-const STAT_LABELS = [
-  "K/D/A",
-  "K/D",
-  "K/R",
-  "Headshots %",
-  "ADR",
-  "Winrate",
-  "Matches",
-  "W/L History",
-] as const;
-
-const TIME_RANGES = [
-  { value: "currentSession", label: "Current session" },
-  { value: "last20Matches", label: "Last 20 matches" },
-  { value: "last7Days", label: "Last 7 days" },
-  { value: "last30Days", label: "Last 30 days" },
-  { value: "allTime", label: "All time" },
-] as const;
 
 export type PlayerMatch = NonNullable<
   Awaited<ReturnType<typeof usePlayerStatistics>>["data"]
@@ -80,17 +56,6 @@ function StatCard({
         <span className="font-bold font-mono text-white text-xl">{value}</span>
       )}
       {children}
-    </div>
-  );
-}
-
-function StatCardSkeleton({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-4">
-      <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-        {label}
-      </span>
-      <Skeleton className="mt-1 h-6 w-16 bg-neutral-800" />
     </div>
   );
 }
@@ -199,93 +164,10 @@ function useStatisticsCalculation(data: PlayerMatch[] | undefined) {
   }, [data]);
 }
 
-function StatisticsHeader({
-  statisticsRange,
-  onRangeChange,
-}: {
-  statisticsRange: PlayerStatisticsRange;
-  onRangeChange: (value: PlayerStatisticsRange) => void;
-}) {
+function StatisticsEmpty() {
   return (
-    <div className="flex items-center justify-between">
-      <div>
-        <h3 className="font-bold text-white">Statistics</h3>
-        <p className="text-neutral-500 text-sm">
-          Performance metrics and ELO progression
-        </p>
-      </div>
-      <Select
-        items={TIME_RANGES}
-        value={statisticsRange}
-        onValueChange={(value) => {
-          if (value) onRangeChange(value);
-        }}
-      >
-        <SelectTrigger className="w-40 border-neutral-800 bg-neutral-900 text-neutral-300">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent className="border-neutral-800 bg-neutral-950">
-          <SelectGroup>
-            {TIME_RANGES.map((range, index) => (
-              <div key={range.value}>
-                {(index === 1 || index === 4) && (
-                  <SelectSeparator className="bg-neutral-800" />
-                )}
-                <SelectItem
-                  value={range.value}
-                  className="text-neutral-300 focus:bg-neutral-800 focus:text-white"
-                >
-                  {range.label}
-                </SelectItem>
-              </div>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
-
-export function StatisticsSkeleton() {
-  return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="mb-5 flex items-center justify-between">
-        <div className="flex flex-col gap-1.5">
-          <Skeleton className="h-5 w-24 bg-neutral-800" />
-          <Skeleton className="h-4 w-48 bg-neutral-800" />
-        </div>
-        <Skeleton className="h-9 w-40 bg-neutral-800" />
-      </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {STAT_LABELS.map((label) => (
-          <StatCardSkeleton key={label} label={label} />
-        ))}
-      </div>
-      <div className="my-5 h-px bg-neutral-800" />
-      <Skeleton className="h-40 w-full bg-neutral-900" />
-    </div>
-  );
-}
-
-export default function Statistics({ playerId }: { playerId: string }) {
-  const [statisticsRange, setStatisticsRange] =
-    useState<PlayerStatisticsRange>("last20Matches");
-  const { data, isLoading } = usePlayerStatistics(playerId, statisticsRange);
-  const stats = useStatisticsCalculation(data);
-
-  if (isLoading) return <StatisticsSkeleton />;
-
-  if (!stats) {
-    return (
-      <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-        <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-        <div className="mb-5">
-          <StatisticsHeader
-            statisticsRange={statisticsRange}
-            onRangeChange={setStatisticsRange}
-          />
-        </div>
+    <StatisticsLayout>
+      <CardContent>
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -297,9 +179,20 @@ export default function Statistics({ playerId }: { playerId: string }) {
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-      </div>
-    );
-  }
+      </CardContent>
+    </StatisticsLayout>
+  );
+}
+
+export default function Statistics({ playerId }: { playerId: string }) {
+  const [statisticsRange, setStatisticsRange] =
+    useState<PlayerStatisticsRange>("last20Matches");
+  const { data, isLoading } = usePlayerStatistics(playerId, statisticsRange);
+  const stats = useStatisticsCalculation(data);
+
+  if (isLoading) return <StatisticsSkeleton />;
+
+  if (!stats) return <StatisticsEmpty />;
 
   const statisticsData = [
     {
@@ -315,18 +208,11 @@ export default function Statistics({ playerId }: { playerId: string }) {
   ];
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-5">
-      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-
-      <div className="mb-5">
-        <StatisticsHeader
-          statisticsRange={statisticsRange}
-          onRangeChange={setStatisticsRange}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <StatisticsLayout
+      statisticsRange={statisticsRange}
+      onRangeChange={setStatisticsRange}
+    >
+      <CardContent className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {statisticsData.map(({ label, value }) => (
           <StatCard key={label} label={label} value={value} />
         ))}
@@ -345,10 +231,13 @@ export default function Statistics({ playerId }: { playerId: string }) {
             ))}
           </div>
         </StatCard>
-      </div>
+      </CardContent>
 
-      <div className="my-5 h-px bg-neutral-800" />
-      <EloChart data={stats.eloChartData} />
-    </div>
+      <Separator />
+
+      <CardFooter>
+        <EloChart data={stats.eloChartData} />
+      </CardFooter>
+    </StatisticsLayout>
   );
 }

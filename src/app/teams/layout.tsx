@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import {
   PageHeader,
   PageHeaderDescription,
@@ -5,7 +7,7 @@ import {
   PageHeaderTitle,
 } from "@/components/page-header";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Teams",
   description: "Browse teams and their rosters",
 };
@@ -15,7 +17,7 @@ export default function TeamsLayout(props: LayoutProps<"/teams">) {
     <div className="space-y-8">
       <PageHeader>
         <PageHeaderHeading>
-          <PageHeaderTitle>{metadata.title}</PageHeaderTitle>
+          <PageHeaderTitle>{metadata.title?.toString()}</PageHeaderTitle>
           <PageHeaderDescription>{metadata.description}</PageHeaderDescription>
         </PageHeaderHeading>
       </PageHeader>

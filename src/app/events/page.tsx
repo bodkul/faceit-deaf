@@ -18,7 +18,7 @@ export const metadata = {
 
 export default function EventsPage() {
   return (
-    <>
+    <div className="space-y-8">
       <PageHeader>
         <PageHeaderHeading>
           <PageHeaderTitle>{metadata.title}</PageHeaderTitle>
@@ -29,6 +29,6 @@ export default function EventsPage() {
       <Suspense fallback={<EventsListSkeleton />}>
         <EventsList />
       </Suspense>
-    </>
+    </div>
   );
 }

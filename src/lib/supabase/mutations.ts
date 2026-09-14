@@ -1,4 +1,4 @@
-import type { TablesInsert, TablesUpdate } from "@/types/database";
+import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 
 import { supabaseClient } from "./client";
 

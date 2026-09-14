@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5";
+    PostgrestVersion: "14.5";
   };
   next_auth: {
     Tables: {
@@ -794,6 +794,41 @@ export type Database = {
           twitch_username?: string | null;
         };
         Relationships: [];
+      };
+      teams: {
+        Row: {
+          avatar: string | null;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          name: string;
+          tag: string | null;
+        };
+        Insert: {
+          avatar?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          name: string;
+          tag?: string | null;
+        };
+        Update: {
+          avatar?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          name?: string;
+          tag?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "teams_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: true;
+            referencedRelation: "players";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       users: {
         Row: {

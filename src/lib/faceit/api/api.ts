@@ -6,7 +6,7 @@ import type { Match, MatchStats, Player } from "./types";
 
 export const GAME = "cs2";
 
-const fetchPlayer = async (playerId: string) => {
+export const fetchPlayer = async (playerId: string) => {
   try {
     return await faceitClient<Player>(`players/${playerId}`).json();
   } catch (error) {

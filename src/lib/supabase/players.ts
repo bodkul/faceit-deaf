@@ -1,3 +1,4 @@
+import { fetchPlayer } from "@/lib/faceit/api";
 import { supabaseClient } from "@/lib/supabase";
 import { isUUID } from "@/lib/utils";
 
@@ -41,29 +42,15 @@ export async function getPlayerByUsername(nickname: string) {
     if (playerData) return playerData;
   }
 
-  const { data: matchPlayerData } = await supabaseClient
-    .from("match_team_players")
-    .select(
-      "player_id_mandatory, nickname, game_skill_level, match_teams!inner(matches!inner(started_at))",
-    )
-    .eq("player_id_mandatory", nickname)
-    .order("started_at", {
-      ascending: false,
-      referencedTable: "match_teams.matches",
-    })
-    .limit(1)
-    .single();
-
-  if (!matchPlayerData) return null;
+  const playerDetails = await fetchPlayer(nickname);
 
   return {
-    id: matchPlayerData.player_id_mandatory,
-    nickname: matchPlayerData.nickname,
-    skill_level: matchPlayerData.game_skill_level ?? 0,
-    avatar: "",
-    steam_id_64: "",
+    id: playerDetails.player_id,
+    nickname: playerDetails.nickname,
+    avatar: playerDetails.avatar,
+    steam_id_64: playerDetails.steam_id_64,
     twitch_username: null,
-    country: null,
-    faceit_elo: 0,
+    country: playerDetails.country,
+    faceit_elo: playerDetails.games.cs2.faceit_elo,
   };
 }

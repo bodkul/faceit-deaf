@@ -1,6 +1,6 @@
 "use client";
 
-import { IconArrowLeft, IconMapPin } from "@tabler/icons-react";
+import { IconMapPin } from "@tabler/icons-react";
 import { cn } from "cn";
 import { format } from "date-fns";
 import { flatMap, groupBy, orderBy, sumBy } from "es-toolkit";
@@ -10,7 +10,6 @@ import { use, useState } from "react";
 
 import { MapBackground } from "@/components/map-background";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type EventMatch, useEventData } from "@/hooks/use-event-data";
 
@@ -458,14 +457,6 @@ export default function EventMatchPage(
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Link
-          href={`/events/${slug}/matches`}
-          className={buttonVariants({ variant: "dark" })}
-        >
-          <IconArrowLeft size={14} />
-          Back to Event
-        </Link>
-
         {!isBo1 && sortedMaps.length > 0 && (
           <div className="flex w-fit gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1">
             <button

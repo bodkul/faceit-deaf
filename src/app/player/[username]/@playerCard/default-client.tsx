@@ -87,7 +87,7 @@ export function PlayerCard({ username }: { username: string }) {
             alt={player.nickname}
           />
           <AvatarFallback className="rounded-md">
-            <IconUser size="32" />
+            <IconUser size={32} />
           </AvatarFallback>
         </Avatar>
 

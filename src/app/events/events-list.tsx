@@ -1,3 +1,4 @@
+import { TZDate } from "@date-fns/tz";
 import {
   IconCalendar,
   IconCalendarX,
@@ -24,22 +25,15 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
+import { normalizeTeamName } from "@/lib/normalize-team-name";
 import { supabaseClient } from "@/lib/supabase";
 
-type EventStatus = "upcoming" | "ongoing" | "finished";
-
-function getEventStatus(
-  startDate: string,
-  endDate: string | null,
-): EventStatus {
-  const now = new Date();
-  const start = new Date(startDate);
-  const end = endDate ? new Date(endDate) : null;
-
-  if (now < start) return "upcoming";
-  if (end && now > end) return "finished";
-  return "ongoing";
-}
+import { Meta } from "./_components/meta";
+import {
+  EVENT_TZ,
+  type EventStatus,
+  getEventStatus,
+} from "./[slug]/_lib/event-status";
 
 function StatusIndicator({ status }: { status: EventStatus }) {
   if (status === "ongoing") {
@@ -78,20 +72,6 @@ function StatusIndicator({ status }: { status: EventStatus }) {
       </span>
     </div>
   );
-}
-
-const TEAM_NAME_OVERRIDES: Record<string, string> = {
-  Silent_Team: "Silent Team",
-  SILENT_TEAM: "Silent Team",
-  DAVI_JUNIOR: "DAVI JUNIOR",
-  MIS: "Made in Sauna",
-  Made_in_Sauna: "Made in Sauna",
-  team_Primedeaf: "PrimeDeaf",
-  SHARKPOWER: "SharkPower",
-};
-
-function normalizeTeamName(name: string): string {
-  return TEAM_NAME_OVERRIDES[name] ?? name;
 }
 
 export async function EventsList() {
@@ -134,20 +114,24 @@ export async function EventsList() {
           const yearFormat = (date: string) =>
             getYear(date) === getYear(new Date()) ? "d MMM" : "d MMM yyyy";
 
-          const start = format(event.start_date, yearFormat(event.start_date), {
-            locale: enUS,
-          });
+          const start = format(
+            new TZDate(event.start_date, EVENT_TZ),
+            yearFormat(event.start_date),
+            { locale: enUS },
+          );
           const end = event.end_date
-            ? format(event.end_date, yearFormat(event.end_date), {
-                locale: enUS,
-              })
+            ? format(
+                new TZDate(event.end_date, EVENT_TZ),
+                yearFormat(event.end_date),
+                { locale: enUS },
+              )
             : null;
 
           const status = getEventStatus(event.start_date, event.end_date);
 
           const teams = uniqBy(
             event.event_matches.flatMap((match) => match.event_match_teams),
-            (team) => normalizeTeamName(team.team_name!),
+            (team) => normalizeTeamName(team.team_name),
           );
 
           return (
@@ -178,16 +162,10 @@ export async function EventsList() {
                   <StatusIndicator status={status} />
                 </div>
                 <div className="line-clamp-2 flex gap-2 text-left font-normal text-muted-foreground text-sm leading-normal">
-                  <div className="flex items-center gap-1">
-                    <IconUsersGroup size="16" />
-                    <span>{teams.length} teams</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <IconCalendar size="16" />
-                    <span>
-                      {start} {end ? ` — ${end}` : ""}
-                    </span>
-                  </div>
+                  <Meta icon={IconCalendar}>
+                    {end ? `${start} — ${end}` : start}
+                  </Meta>
+                  <Meta icon={IconUsersGroup}>{teams.length} teams</Meta>
                 </div>
               </ItemContent>
             </Item>

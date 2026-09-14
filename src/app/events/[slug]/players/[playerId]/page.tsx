@@ -1,6 +1,5 @@
 "use client";
 
-import { IconArrowLeft } from "@tabler/icons-react";
 import { cn } from "cn";
 import { format } from "date-fns";
 import { orderBy, sumBy } from "es-toolkit";
@@ -9,7 +8,6 @@ import { notFound } from "next/navigation";
 import { use } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEventData } from "@/hooks/use-event-data";
 
@@ -36,7 +34,7 @@ export default function EventPlayerPage(
   const mapRows = orderBy(
     matches.flatMap((match) =>
       match.maps.flatMap((mapData) => {
-        const ps = mapData.player_stats[0];
+        const ps = mapData.player_stats.find((p) => p.player_id === playerId);
         if (!ps) return [];
 
         const kills = ps.kills ?? 0;
@@ -116,14 +114,6 @@ export default function EventPlayerPage(
 
   return (
     <div className="space-y-6">
-      <Link
-        href={`/events/${slug}/players`}
-        className={buttonVariants({ variant: "dark" })}
-      >
-        <IconArrowLeft size={14} />
-        Back to Event
-      </Link>
-
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="flex items-center gap-4 px-6 py-5">
           <Avatar className="size-14 rounded-xl">

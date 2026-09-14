@@ -1,22 +1,26 @@
-import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
-import { getEventBySlug } from "@/lib/db/events";
+import { ensureEventExists } from "@/app/events/[slug]/_lib/get-event";
 
-import { EventHeader } from "../_components/event-header";
-import { EventTabs } from "../_components/event-tabs";
+import { EventMatchesClient } from "./page-client";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/events/[slug]/matches">): Promise<Metadata> {
+  const { slug } = await params;
+  const event = await ensureEventExists(slug);
+
+  return {
+    title: event.name,
+    description: `Event ${event.name} on csdeaf.pro`,
+  };
+}
 
 export default async function EventMatchesPage({
   params,
 }: PageProps<"/events/[slug]/matches">) {
   const { slug } = await params;
-  const event = await getEventBySlug(slug);
+  const event = await ensureEventExists(slug);
 
-  if (!event) notFound();
-
-  return (
-    <div className="space-y-6">
-      <EventHeader event={event} />
-      <EventTabs slug={slug} activeTab="matches" />
-    </div>
-  );
+  return <EventMatchesClient event={event} />;
 }

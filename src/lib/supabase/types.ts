@@ -356,7 +356,7 @@ export type Database = {
           id: string;
           is_winner: boolean | null;
           match_id: string;
-          team_name: string | null;
+          team_name: string;
         };
         Insert: {
           faction_id: string;

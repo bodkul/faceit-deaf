@@ -1,6 +1,5 @@
 "use client";
 
-import { IconArrowLeft } from "@tabler/icons-react";
 import { cn } from "cn";
 import { format } from "date-fns";
 import { groupBy, orderBy, sumBy } from "es-toolkit";
@@ -9,9 +8,9 @@ import { notFound } from "next/navigation";
 import { use } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEventData } from "@/hooks/use-event-data";
+import { normalizeTeamName } from "@/lib/normalize-team-name";
 
 function Loading() {
   return (
@@ -27,26 +26,33 @@ function Loading() {
 export default function EventTeamPage(
   props: PageProps<"/events/[slug]/teams/[teamId]">,
 ) {
-  const { slug, teamId } = use(props.params);
+  const { slug, teamId: rawTeamName } = use(props.params);
+  const teamName = decodeURIComponent(rawTeamName);
 
   const { data: matches = [], isLoading } = useEventData(slug);
 
   if (isLoading) return <Loading />;
 
-  const teamName =
-    matches.flatMap((m) => m.teams).find((t) => t.faction_id === teamId)
-      ?.team_name ?? teamId;
-
   const history = orderBy(
     matches
-      .filter((match) => match.teams.some((t) => t.faction_id === teamId))
+      .filter((match) =>
+        match.teams.some((t) => normalizeTeamName(t.team_name) === teamName),
+      )
       .map((match) => {
-        const enemyTeam = match.teams.find((t) => t.faction_id !== teamId);
+        const myTeam = match.teams.find(
+          (t) => normalizeTeamName(t.team_name) === teamName,
+        );
+        const enemyTeam = match.teams.find(
+          (t) => normalizeTeamName(t.team_name) !== teamName,
+        );
+
         const mapsWon = match.maps.filter(
-          (m) => m.winner_faction_id === teamId,
+          (m) => m.winner_faction_id === myTeam?.faction_id,
         ).length;
         const mapsLost = match.maps.filter(
-          (m) => m.winner_faction_id != null && m.winner_faction_id !== teamId,
+          (m) =>
+            m.winner_faction_id != null &&
+            m.winner_faction_id !== myTeam?.faction_id,
         ).length;
 
         return {
@@ -68,11 +74,18 @@ export default function EventTeamPage(
   const losses = history.filter((r) => r.win === false).length;
 
   const playerGroups = groupBy(
-    matches.flatMap((match) =>
-      match.maps.flatMap((mapData) =>
-        mapData.player_stats.filter((ps) => ps.faction_id === teamId),
-      ),
-    ),
+    matches.flatMap((match) => {
+      const myTeam = match.teams.find(
+        (t) => normalizeTeamName(t.team_name) === teamName,
+      );
+      if (!myTeam) return [];
+
+      return match.maps.flatMap((mapData) =>
+        mapData.player_stats.filter(
+          (ps) => ps.faction_id === myTeam.faction_id,
+        ),
+      );
+    }),
     (ps) => ps.player_id,
   );
 
@@ -96,14 +109,6 @@ export default function EventTeamPage(
 
   return (
     <div className="space-y-6">
-      <Link
-        href={`/events/${slug}/teams`}
-        className={buttonVariants({ variant: "dark" })}
-      >
-        <IconArrowLeft size={14} />
-        Back to Event
-      </Link>
-
       <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
         <div className="flex items-center gap-4 px-6 py-5">
           <Avatar className="size-14 rounded-xl">

@@ -20,7 +20,10 @@ export function StatisticsSkeleton() {
     <StatisticsLayout>
       <CardContent className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {STAT_LABELS.map((label) => (
-          <div className="flex flex-col items-center gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-4">
+          <div
+            key={label}
+            className="flex flex-col items-center gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-4"
+          >
             <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
               {label}
             </span>

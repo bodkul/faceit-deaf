@@ -1,5 +1,12 @@
-import { PlayerTabs } from "./_components/player-tabs";
+import { TabsNav } from "@/components/tabs-nav";
+
 import { ensurePlayerExists } from "./_lib/get-player";
+
+const PLAYER_TABS = [
+  { value: "overview", label: "Overview", path: "" },
+  { value: "matches", label: "Matches", path: "/matches" },
+  { value: "maps", label: "Maps", path: "/maps" },
+] as const;
 
 export default async function PlayerLayout({
   playerCard,
@@ -12,10 +19,8 @@ export default async function PlayerLayout({
   return (
     <div className="flex flex-col gap-4">
       {playerCard}
-      <div className="flex flex-col gap-4 lg:col-span-2">
-        <PlayerTabs username={username} />
-        <div className="flex flex-col gap-4">{tabs}</div>
-      </div>
+      <TabsNav basePath={`/player/${username}`} tabs={PLAYER_TABS} />
+      {tabs}
     </div>
   );
 }

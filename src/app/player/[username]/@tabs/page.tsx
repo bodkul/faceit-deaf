@@ -5,7 +5,7 @@ import {
   ensurePlayerExists,
   getPlayerMetadata,
 } from "@/app/player/[username]/_lib/get-player";
-import { getPlayerIdByNickname } from "@/lib/supabase";
+import { getPlayerIdByNickname } from "@/lib/supabase/players";
 
 import Statistics from "./_components/statistics-client";
 

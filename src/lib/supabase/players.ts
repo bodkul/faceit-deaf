@@ -1,6 +1,7 @@
 import { fetchPlayer } from "@/lib/faceit/api";
-import { supabaseClient } from "@/lib/supabase";
 import { isUUID } from "@/lib/utils";
+
+import { supabaseClient } from "./client";
 
 export async function getPlayerIdByNickname(nickname: string) {
   if (!isUUID(nickname)) {

@@ -6,39 +6,21 @@ import {
   IconBrandTwitch,
   IconUser,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { useMemo } from "react";
 
-import { PlayerCardSkeleton } from "@/app/player/[username]/_components/player-card-skeleton";
 import { FaceitIcon, FaceitLevelIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import useRealtimeChannel from "@/hooks/useRealtimeChannel";
 import { getCountryFlagUrl } from "@/lib/country";
-import { getPlayerByUsername } from "@/lib/supabase";
-// import { useTwitchLiveStatus } from "@/lib/twitch/use-twitch-live-status";
+import type { getPlayerByUsername } from "@/lib/supabase/players";
 
-export function PlayerCard({ username }: { username: string }) {
-  const queryKey = ["player-card", username];
+type Player = Awaited<ReturnType<typeof getPlayerByUsername>>;
 
-  const {
-    data: player,
-    isPending,
-    isSuccess,
-  } = useQuery({
-    queryKey,
-    queryFn: () => getPlayerByUsername(username),
-  });
-
-  useRealtimeChannel(queryKey);
-
+export function PlayerCard({ player }: { player: Player }) {
   const socials = useMemo(() => {
-    if (!player) return [];
-
     const items = [
       {
         key: "faceit",
@@ -70,9 +52,6 @@ export function PlayerCard({ username }: { username: string }) {
 
     return items;
   }, [player]);
-
-  if (isSuccess && !player) notFound();
-  if (isPending || !player) return <PlayerCardSkeleton />;
 
   return (
     <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 p-6 backdrop-blur-sm md:flex-row md:justify-between md:p-8">

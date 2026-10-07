@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import Statistics from "@/features/player/components/statistics/statistics-client";
 import {
   ensurePlayerExists,
+  getPlayerIdByNickname,
   getPlayerMetadata,
-} from "@/app/player/[username]/_lib/get-player";
-import { getPlayerIdByNickname } from "@/lib/supabase/players";
-
-import Statistics from "./_components/statistics-client";
+} from "@/features/player/queries";
 
 export async function generateMetadata({
   params,

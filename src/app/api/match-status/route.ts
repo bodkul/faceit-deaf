@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { isAuthorized } from "@/lib/api-auth";
-import { GAME } from "@/lib/faceit/api";
+import { GAME } from "@/lib/faceit/utils";
 import {
   handleMatchStatusCancelled,
   handleMatchStatusReady,
-} from "@/lib/faceit/handlers";
+} from "@/lib/faceit/webhooks/handlers";
 import { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
 
 export async function POST(request: NextRequest) {

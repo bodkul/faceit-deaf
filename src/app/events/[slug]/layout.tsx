@@ -1,7 +1,6 @@
-import { TabsNav } from "@/components/tabs-nav";
-
-import { EventCard } from "./_components/event-card";
-import { ensureEventExists } from "./_lib/get-event";
+import { TabsNav } from "@/components/layout/tabs-nav";
+import { EventCard } from "@/features/events/components/event-card";
+import { ensureEventExists } from "@/features/events/queries";
 
 const EVENT_TABS = [
   { value: "matches", label: "Matches", path: "/matches" },

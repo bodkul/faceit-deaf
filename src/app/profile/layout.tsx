@@ -2,7 +2,7 @@ import {
   PageHeader,
   PageHeaderHeading,
   PageHeaderTitle,
-} from "@/components/page-header";
+} from "@/components/layout/page-header";
 
 export default function ProfileLayout({ children }: LayoutProps<"/profile">) {
   return (

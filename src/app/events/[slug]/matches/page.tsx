@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
-import { ensureEventExists } from "@/app/events/[slug]/_lib/get-event";
-
-import { EventMatchesClient } from "./page-client";
+import { EventMatchesClient } from "@/features/events/components/event-matches";
+import { ensureEventExists } from "@/features/events/queries";
 
 export async function generateMetadata({
   params,

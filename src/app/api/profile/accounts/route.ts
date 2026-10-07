@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/lib/auth";
-import { supabaseAuth } from "@/lib/supabase/auth";
+import { auth } from "@/features/auth";
+import { supabaseAuth } from "@/lib/supabase/admin";
 
 export async function GET() {
   const session = await auth();

@@ -1,7 +1,8 @@
-import { ensurePlayerExists } from "@/app/player/[username]/_lib/get-player";
-import { getPlayerByUsername } from "@/lib/supabase/players";
-
-import { PlayerCard } from "./default-client";
+import { PlayerCard } from "@/features/player/components/player-card";
+import {
+  ensurePlayerExists,
+  getPlayerByUsername,
+} from "@/features/player/queries";
 
 export default async function PlayerCardDefault({
   params,

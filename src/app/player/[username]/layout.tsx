@@ -1,6 +1,5 @@
-import { TabsNav } from "@/components/tabs-nav";
-
-import { ensurePlayerExists } from "./_lib/get-player";
+import { TabsNav } from "@/components/layout/tabs-nav";
+import { ensurePlayerExists } from "@/features/player/queries";
 
 const PLAYER_TABS = [
   { value: "overview", label: "Overview", path: "" },

@@ -5,7 +5,7 @@ import {
   PageHeaderDescription,
   PageHeaderHeading,
   PageHeaderTitle,
-} from "@/components/page-header";
+} from "@/components/layout/page-header";
 
 export const metadata: Metadata = {
   title: "Teams",

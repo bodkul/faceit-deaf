@@ -2,7 +2,7 @@ import { fromUnixTime } from "date-fns";
 import { mapAsync } from "es-toolkit";
 import { NextResponse } from "next/server";
 
-import { fetchMatches } from "@/lib/faceit/api";
+import { faceit } from "@/lib/faceit/client";
 import { getMatchId } from "@/lib/faceit/utils";
 import { supabaseClient } from "@/lib/supabase";
 import {
@@ -18,7 +18,7 @@ export async function GET() {
     return NextResponse.json({ message: "No matches found" });
   }
 
-  const matches = await fetchMatches(
+  const matches = await faceit.matches.getMatchesDetails(
     activeMatches.map((match) => `1-${match.id}`),
   );
 

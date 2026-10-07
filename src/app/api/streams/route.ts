@@ -2,7 +2,7 @@ import ky from "ky";
 import { NextResponse } from "next/server";
 
 import { supabaseClient } from "@/lib/supabase";
-import { supabaseAuth } from "@/lib/supabase/auth";
+import { supabaseAuth } from "@/lib/supabase/admin";
 
 async function getTwitchAppToken() {
   const res = await ky

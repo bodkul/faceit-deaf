@@ -20,10 +20,9 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
+import { PlayersPagination } from "@/features/player/components/players-pagination";
+import { getPlayerRankings } from "@/features/player/queries";
 import { getCountryFlagUrl } from "@/lib/country";
-import { getPlayerRankings } from "@/lib/db/players/queries";
-
-import { PlayersPagination } from "./players-pagination";
 
 const PAGE_SIZE = 20;
 

@@ -1,3 +1,3 @@
-import { MatchHistorySkeleton } from "./page-client";
+import { MatchHistorySkeleton } from "@/features/player/components/player-matches";
 
 export default MatchHistorySkeleton;

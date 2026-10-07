@@ -1,3 +1,3 @@
-import { EventMatchesSkeleton } from "./_components/event-matches-skeleton";
+import { EventMatchesSkeleton } from "@/features/events/components/event-matches-skeleton";
 
 export default EventMatchesSkeleton;

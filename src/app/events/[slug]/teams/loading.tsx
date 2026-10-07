@@ -1,3 +1,3 @@
-import { Loading } from "@/app/events/[slug]/_components/loading";
+import { Loading } from "@/features/events/components/event-table-skeleton";
 
 export default Loading;

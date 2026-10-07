@@ -1,8 +1,8 @@
 "use client";
 
-import { LiveMatches } from "@/components/live-matches";
 import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/config/site";
+import { LiveMatches } from "@/features/match/components/live-matches";
 
 export default function Page() {
   return (

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import MatchHistory from "@/features/player/components/player-matches";
 import {
   ensurePlayerExists,
+  getPlayerIdByNickname,
   getPlayerMetadata,
-} from "@/app/player/[username]/_lib/get-player";
-import { getPlayerIdByNickname } from "@/lib/supabase/players";
-
-import MatchHistory from "./page-client";
+} from "@/features/player/queries";
 
 export async function generateMetadata({
   params,

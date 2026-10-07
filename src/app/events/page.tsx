@@ -5,10 +5,9 @@ import {
   PageHeaderDescription,
   PageHeaderHeading,
   PageHeaderTitle,
-} from "@/components/page-header";
-
-import { EventsList } from "./events-list";
-import { EventsListSkeleton } from "./events-list-skeleton";
+} from "@/components/layout/page-header";
+import { EventsList } from "@/features/events/components/events-list";
+import { EventsListSkeleton } from "@/features/events/components/events-list-skeleton";
 
 // The list is prerendered at build time; refresh it periodically.
 export const revalidate = 300;

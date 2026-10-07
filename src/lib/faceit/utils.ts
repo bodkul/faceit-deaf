@@ -1,6 +1,6 @@
-import type { MatchPayload } from "./match-events";
+import type { MatchPayload } from "./webhooks/types";
 
-export const formatNumberWithSign = (n: number) => (n > 0 ? `+${n}` : `${n}`);
+export const GAME = "cs2";
 
 /** Strips the FACEIT region prefix: "1-<uuid>" → "<uuid>". */
 export function getMatchId({ id }: { id: string }) {

@@ -7,9 +7,9 @@ import { domAnimation, LazyMotion } from "motion/react";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 
-import { BGPattern } from "@/components/bg-pattern";
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
+import { BGPattern } from "@/components/layout/bg-pattern";
+import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 import { siteConfig } from "@/config/site";
 import { AuthProvider } from "@/providers/auth";
 import { ReactQueryProvider } from "@/providers/react-query";

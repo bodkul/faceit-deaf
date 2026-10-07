@@ -2,14 +2,10 @@ import { logger, task } from "@trigger.dev/sdk";
 import { fromUnixTime } from "date-fns";
 import { keyBy, mapAsync, sumBy } from "es-toolkit";
 
-import {
-  fetchMatch,
-  fetchMatchStats,
-  fetchPlayers,
-  type MatchStats,
-} from "@/lib/faceit/api";
-import type { MatchPayload } from "@/lib/faceit/match-events";
+import { faceit } from "@/lib/faceit/client";
+import type { MatchStats } from "@/lib/faceit/types";
 import { getMatchId, getPlayerIds } from "@/lib/faceit/utils";
+import type { MatchPayload } from "@/lib/faceit/webhooks/types";
 import { supabaseClient } from "@/lib/supabase";
 import {
   getExistingPlayers,
@@ -18,7 +14,7 @@ import {
   upsertMatchTeamPlayers,
   upsertPlayers,
 } from "@/lib/supabase/mutations";
-import type { TablesInsert } from "@/lib/supabase/types";
+import type { TablesInsert } from "@/types/database";
 
 type PlayerStats =
   MatchStats["rounds"][number]["teams"][number]["players"][number]["player_stats"];
@@ -99,7 +95,7 @@ export const syncFinishedMatchTask = task({
       totalPlayers: playerIds.length,
     });
 
-    const match = await fetchMatch(payload.id);
+    const match = await faceit.matches.getMatchDetails(payload.id);
 
     if (match.calculate_elo !== true) {
       return { message: "Ignored: not a valid match" };
@@ -107,7 +103,7 @@ export const syncFinishedMatchTask = task({
 
     const [existingPlayers, matchStats] = await Promise.all([
       getExistingPlayers(playerIds),
-      fetchMatchStats(payload.id),
+      faceit.matches.getMatchStats(payload.id),
     ]);
 
     const round = matchStats.rounds[0];
@@ -123,7 +119,9 @@ export const syncFinishedMatchTask = task({
     });
 
     // Refresh profiles of tracked players to capture their post-match ELO.
-    const players = await fetchPlayers(existingPlayers.map((p) => p.id));
+    const players = await faceit.players.getPlayersDetails(
+      existingPlayers.map((p) => p.id),
+    );
 
     await upsertPlayers(
       players.map((player) => ({

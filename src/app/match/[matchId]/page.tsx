@@ -101,6 +101,9 @@ function Loading() {
 
 function MatchHeader({ match }: { match: MatchType }) {
   const [team1, team2] = match.teams;
+  const locationCode = match.location_pick
+    ? getCountryCode(match.location_pick)
+    : undefined;
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
@@ -204,13 +207,15 @@ function MatchHeader({ match }: { match: MatchType }) {
             )}
             {match.location_pick && (
               <div className="flex items-center gap-1.5">
-                <Image
-                  src={getFlagUrl(getCountryCode(match.location_pick), "sm")}
-                  alt="Server location"
-                  width={16}
-                  height={11}
-                  className="rounded-xs"
-                />
+                {locationCode && (
+                  <Image
+                    src={getFlagUrl(locationCode, "sm")}
+                    alt="Server location"
+                    width={16}
+                    height={11}
+                    className="rounded-xs"
+                  />
+                )}
                 <span className="font-mono text-neutral-600 text-xs">
                   {match.location_pick}
                 </span>
@@ -293,11 +298,11 @@ function PlayerStatsRow({
       ? subtract(player.kills, player.deaths)
       : null;
   const kd =
-    !isNil(player.kills) && !isNil(player.deaths)
+    !isNil(player.kills) && !isNil(player.deaths) && player.deaths > 0
       ? divide(player.kills, player.deaths)
       : null;
   const hpr =
-    isNumber(player.headshots) && isNumber(player.kills)
+    isNumber(player.headshots) && isNumber(player.kills) && player.kills > 0
       ? multiply(divide(player.headshots, player.kills), 100)
       : null;
 
@@ -540,7 +545,7 @@ export default function MatchPage(props: PageProps<"/match/[matchId]">) {
 
   if (!matchId.startsWith("1-")) return notFound();
   if (isLoading) return <Loading />;
-  if (!match) return notFound();
+  if (!match || match.teams.length < 2) return notFound();
 
   const totalScore = sumBy(match.teams, (team) => team.final_score ?? 0);
 

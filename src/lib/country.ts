@@ -12,7 +12,7 @@ const countryMap: Record<string, string> = {
   Dubai: "AE",
 };
 
-export function getCountryCode(country: string) {
+export function getCountryCode(country: string): string | undefined {
   return countryMap[country];
 }
 

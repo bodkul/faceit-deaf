@@ -1,8 +1,15 @@
 import { IconBrandTwitch } from "@tabler/icons-react";
 
+// Twitch only renders the embed on domains listed as `parent`.
+const EMBED_PARENTS = ["csdeaf.pro", "www.csdeaf.pro", "localhost"];
+
 export function TwitchPlayer({ login }: { login: string }) {
-  const domain =
-    process.env.NODE_ENV === "development" ? "localhost" : "csdeaf.pro";
+  const params = new URLSearchParams({
+    channel: login,
+    autoplay: "true",
+    muted: "true",
+  });
+  for (const parent of EMBED_PARENTS) params.append("parent", parent);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[#9146ff]/20 bg-neutral-950">
@@ -16,13 +23,14 @@ export function TwitchPlayer({ login }: { login: string }) {
       </div>
       <div className="aspect-video w-full">
         <iframe
-          src={`https://player.twitch.tv/?channel=${login}&parent=${domain}&autoplay=true&muted=true`}
+          src={`https://player.twitch.tv/?${params}`}
           height="100%"
           width="100%"
           allowFullScreen
           title={`${login} live stream`}
           className="block"
-          sandbox="allow-forms allow-popups"
+          // The Twitch player needs scripts and its own origin to run.
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
         />
       </div>
     </div>

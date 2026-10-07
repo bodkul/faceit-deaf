@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { isAuthorized } from "@/lib/api-auth";
 import { GAME } from "@/lib/faceit/api";
 import {
   handleMatchStatusCancelled,
@@ -8,9 +9,19 @@ import {
 import { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
 
 export async function POST(request: NextRequest) {
+  if (
+    !isAuthorized(
+      request,
+      "x-webhook-secret",
+      process.env.FACEIT_WEBHOOK_SECRET,
+    )
+  ) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   const { payload, event } = await request.json();
 
-  console.log(`Received:`, { event, payload });
+  console.log(`Received:`, { event, matchId: payload?.id });
 
   if (payload?.game !== GAME) {
     return NextResponse.json({ message: "Ignored: not a valid match" });

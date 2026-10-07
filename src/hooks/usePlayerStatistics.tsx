@@ -143,7 +143,7 @@ export function usePlayerStatistics(
     enabled: !!playerId,
   });
 
-  const enhancedData = data?.flatMap((match) => {
+  const enhancedData = data?.map((match) => {
     const team = match.match_teams[0];
     const player = team.match_team_players[0];
 

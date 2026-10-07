@@ -10,6 +10,9 @@ import {
 import { EventsList } from "./events-list";
 import { EventsListSkeleton } from "./events-list-skeleton";
 
+// The list is prerendered at build time; refresh it periodically.
+export const revalidate = 300;
+
 export const metadata = {
   title: "Events",
   description:

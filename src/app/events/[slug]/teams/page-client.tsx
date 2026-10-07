@@ -74,7 +74,7 @@ export function EventTeamsClient({ event }: { event: EventBySlug }) {
             deaths: 0,
           };
 
-          stats.maps++;
+          stats.maps += match.maps.length;
 
           for (const map of match.maps) {
             for (const player of map.player_stats) {

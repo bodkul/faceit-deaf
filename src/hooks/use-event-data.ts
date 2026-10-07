@@ -63,7 +63,7 @@ export function useEventData(slug: string) {
               clutch_kills
             )
           ),
-          events()
+          events!inner()
         `,
         )
         .eq("events.slug", slug)

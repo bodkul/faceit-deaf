@@ -29,20 +29,21 @@ export const { handlers, auth } = NextAuth({
     url: process.env.NEXT_PUBLIC_SUPABASE_URL,
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY,
   }),
-  callbacks: {
+  events: {
+    // Runs after the adapter has created/loaded the user, so `user.id` is the
+    // database id. In `callbacks.signIn` it is still the provider profile id
+    // (FACEIT guid) on a user's first login.
     async signIn({ user, account, profile }) {
-      if (account?.provider === "faceit") {
-        const userId = profile?.guid;
-        if (userId) {
-          await supabaseClient
-            .from("players")
-            .update({ auth_user_id: user.id })
-            .eq("id", userId);
-        }
-      }
+      const playerId = profile?.guid;
+      if (account?.provider !== "faceit" || !playerId || !user.id) return;
 
-      return true;
+      await supabaseClient
+        .from("players")
+        .update({ auth_user_id: user.id })
+        .eq("id", playerId);
     },
+  },
+  callbacks: {
     async session({ session, user }) {
       session.user.id = user.id;
       return session;

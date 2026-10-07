@@ -1,61 +1,129 @@
-import { logger, task } from "@trigger.dev/sdk/v3";
+import { logger, task } from "@trigger.dev/sdk";
 import { fromUnixTime } from "date-fns";
-import { mapAsync, sumBy } from "es-toolkit";
+import { keyBy, mapAsync, sumBy } from "es-toolkit";
 
-import { fetchMatch, fetchMatchStats, fetchPlayers } from "@/lib/faceit/api";
+import {
+  fetchMatch,
+  fetchMatchStats,
+  fetchPlayers,
+  type MatchStats,
+} from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/match-events";
 import { getMatchId, getPlayerIds } from "@/lib/faceit/utils";
+import { supabaseClient } from "@/lib/supabase";
 import {
   getExistingPlayers,
-  supabaseClient,
   upsertMatch,
   upsertMatchTeam,
-  upsertMatchTeamPlayer,
+  upsertMatchTeamPlayers,
   upsertPlayers,
-} from "@/lib/supabase";
+} from "@/lib/supabase/mutations";
+import type { TablesInsert } from "@/lib/supabase/types";
+
+type PlayerStats =
+  MatchStats["rounds"][number]["teams"][number]["players"][number]["player_stats"];
+
+const num = (val: unknown) => Number(val) || 0;
+
+function mapPlayerStats(
+  stats: PlayerStats | undefined,
+): Partial<TablesInsert<"match_team_players">> {
+  return {
+    adr: num(stats?.ADR),
+    mvps: num(stats?.MVPs),
+    kills: num(stats?.Kills),
+    damage: num(stats?.Damage),
+    deaths: num(stats?.Deaths),
+    "1v1wins": num(stats?.["1v1Wins"]),
+    "1v2wins": num(stats?.["1v2Wins"]),
+    assists: num(stats?.Assists),
+    "1v1count": num(stats?.["1v1Count"]),
+    "1v2count": num(stats?.["1v2Count"]),
+    headshots: num(stats?.Headshots),
+    kd_ratio: num(stats?.["K/D Ratio"]),
+    kr_ratio: num(stats?.["K/R Ratio"]),
+    entry_wins: num(stats?.["Entry Wins"]),
+    entry_count: num(stats?.["Entry Count"]),
+    first_kills: num(stats?.["First Kills"]),
+    flash_count: num(stats?.["Flash Count"]),
+    headshots_percent: num(stats?.["Headshots %"]),
+    clutch_kills: num(stats?.["Clutch Kills"]),
+    double_kills: num(stats?.["Double Kills"]),
+    pistol_kills: num(stats?.["Pistol Kills"]),
+    quadro_kills: num(stats?.["Quadro Kills"]),
+    triple_kills: num(stats?.["Triple Kills"]),
+    utility_count: num(stats?.["Utility Count"]),
+    utility_damage: num(stats?.["Utility Damage"]),
+    enemies_flashed: num(stats?.["Enemies Flashed"]),
+    flash_successes: num(stats?.["Flash Successes"]),
+    utility_enemies: num(stats?.["Utility Enemies"]),
+    match_entry_rate: num(stats?.["Match Entry Rate"]),
+    utility_successes: num(stats?.["Utility Successes"]),
+    match_1v1_win_rate: num(stats?.["Match 1v1 Win Rate"]),
+    match_1v2_win_rate: num(stats?.["Match 1v2 Win Rate"]),
+    utility_usage_per_round: num(stats?.["Utility Usage per Round"]),
+    match_entry_success_rate: num(stats?.["Match Entry Success Rate"]),
+    flash_success_rate_per_match: num(stats?.["Flash Success Rate per Match"]),
+    flashes_per_round_in_a_match: num(stats?.["Flashes per Round in a Match"]),
+    utility_success_rate_per_match: num(
+      stats?.["Utility Success Rate per Match"],
+    ),
+    utility_damage_per_round_in_a_match: num(
+      stats?.["Utility Damage per Round in a Match"],
+    ),
+    enemies_flashed_per_round_in_a_match: num(
+      stats?.["Enemies Flashed per Round in a Match"],
+    ),
+    utility_damage_success_rate_per_match: num(
+      stats?.["Utility Damage Success Rate per Match"],
+    ),
+    zeus_kills: num(stats?.["Zeus Kills"]),
+    knife_kills: num(stats?.["Knife Kills"]),
+    penta_kills: num(stats?.["Penta Kills"]),
+    sniper_kills: num(stats?.["Sniper Kills"]),
+    sniper_kill_rate_per_match: num(stats?.["Sniper Kill Rate per Match"]),
+    sniper_kill_rate_per_round: num(stats?.["Sniper Kill Rate per Round"]),
+  };
+}
 
 export const syncFinishedMatchTask = task({
   id: "sync-finished-match",
   maxDuration: 300,
   run: async (payload: MatchPayload) => {
+    const matchId = getMatchId(payload);
+    const playerIds = getPlayerIds(payload);
+
     logger.info("Starting sync of finished match", {
-      matchId: payload.id,
+      matchId,
       teamsCount: payload.teams.length,
-      totalPlayers: sumBy(payload.teams, (t) => t.roster.length),
+      totalPlayers: playerIds.length,
     });
 
     const match = await fetchMatch(payload.id);
 
-    if (match.calculate_elo !== true)
+    if (match.calculate_elo !== true) {
       return { message: "Ignored: not a valid match" };
-
-    const matchId = getMatchId(payload);
-    const playerIds = getPlayerIds(payload);
-
-    logger.debug("Fetching match data and existing players", {
-      matchId,
-      playerIds,
-    });
+    }
 
     const [existingPlayers, matchStats] = await Promise.all([
       getExistingPlayers(playerIds),
       fetchMatchStats(payload.id),
     ]);
 
+    const round = matchStats.rounds[0];
+    if (!round) {
+      throw new Error(`Match ${matchId} has no round stats yet`);
+    }
+
     logger.info("Fetched initial data", {
       matchId,
       existingPlayersCount: existingPlayers.length,
       matchStatus: match.status,
-      roundsCount: matchStats.rounds.length,
+      roundScore: round.round_stats.Score,
     });
 
-    const existingPlayerIds = existingPlayers.map((p) => p.id);
-    const players = await fetchPlayers(existingPlayerIds);
-
-    logger.debug("Fetched player details", {
-      matchId,
-      fetchedPlayersCount: players.length,
-    });
+    // Refresh profiles of tracked players to capture their post-match ELO.
+    const players = await fetchPlayers(existingPlayers.map((p) => p.id));
 
     await upsertPlayers(
       players.map((player) => ({
@@ -69,18 +137,7 @@ export const syncFinishedMatchTask = task({
       })),
     );
 
-    logger.info("Upserted players", {
-      matchId,
-      playersCount: players.length,
-    });
-
-    const round = matchStats.rounds[0];
-
-    logger.debug("Match round stats", {
-      matchId,
-      roundScore: round.round_stats.Score,
-      teamsInRound: round.teams.length,
-    });
+    logger.info("Upserted players", { matchId, playersCount: players.length });
 
     await upsertMatch({
       id: matchId,
@@ -94,159 +151,51 @@ export const syncFinishedMatchTask = task({
       round_score: round.round_stats.Score,
     });
 
-    logger.info("Upserted match", {
-      matchId,
-      map: match.voting.map?.pick[0],
-      status: match.status,
-    });
+    const existingPlayerById = keyBy(existingPlayers, (p) => p.id);
+    const refreshedPlayerById = keyBy(players, (p) => p.player_id);
 
     await mapAsync(
       payload.teams,
       async (team) => {
         const roundTeam = round.teams.find((rt) => rt.team_id === team.id);
-        const stats = (roundTeam?.team_stats ?? {}) as Record<string, string>;
+        const teamStats = (roundTeam?.team_stats ?? {}) as Record<
+          string,
+          string
+        >;
+        const statsByPlayerId = keyBy(
+          roundTeam?.players ?? [],
+          (p) => p.player_id,
+        );
 
-        logger.debug("Processing team", {
-          matchId,
-          teamId: team.id,
-          teamName: team.name,
-          rosterSize: team.roster.length,
-          hasRoundTeam: !!roundTeam,
-        });
+        if (!roundTeam) {
+          logger.warn("No round stats for team", { matchId, teamId: team.id });
+        }
 
         const resTeam = await upsertMatchTeam({
           match_id: matchId,
           team_id: team.id,
           name: team.name,
           avatar: team.avatar,
-          first_half_score: Number(stats["First Half Score"]),
-          second_half_score: Number(stats["Second Half Score"]),
-          overtime_score: Number(stats["Overtime score"]),
-          final_score: Number(stats["Final Score"]),
-          team_win: stats["Team Win"] === "1",
+          first_half_score: Number(teamStats["First Half Score"]),
+          second_half_score: Number(teamStats["Second Half Score"]),
+          overtime_score: Number(teamStats["Overtime score"]),
+          final_score: Number(teamStats["Final Score"]),
+          team_win: teamStats["Team Win"] === "1",
         });
 
-        if (!resTeam) {
-          logger.warn("Failed to upsert team", {
-            matchId,
-            teamId: team.id,
-            teamName: team.name,
-          });
-          return;
-        }
-
-        logger.debug("Upserted team, processing players", {
-          matchId,
-          teamId: resTeam.id,
-          teamName: team.name,
-          finalScore: stats["Final Score"],
-          teamWin: stats["Team Win"] === "1",
-        });
-
-        await mapAsync(
-          team.roster,
-          async (player) => {
-            const qwe = roundTeam?.players.find(
-              (p) => p.player_id === player.id,
-            );
-
-            logger.debug("Processing player stats", {
-              matchId,
-              playerId: player.id,
-              nickname: player.nickname,
-              hasStats: !!qwe?.player_stats,
-              isExistingPlayer: existingPlayerIds.includes(player.id),
-              sampleStats: qwe?.player_stats
-                ? {
-                    kills: qwe.player_stats.Kills,
-                    deaths: qwe.player_stats.Deaths,
-                    adr: qwe.player_stats.ADR,
-                  }
-                : null,
-            });
-
-            const stats = qwe?.player_stats;
-            const num = (val: unknown) => Number(val) || 0;
-
-            await upsertMatchTeamPlayer({
-              match_team_id: resTeam.id,
-              player_id_nullable: existingPlayerIds.includes(player.id)
-                ? player.id
-                : null,
-              player_id_mandatory: player.id,
-              nickname: player.nickname,
-              game_skill_level: player.game_skill_level,
-              elo_before: existingPlayers.find((p) => p.id === player.id)
-                ?.faceit_elo,
-              elo_after: players.find((p) => p.player_id === player.id)?.games
-                .cs2.faceit_elo,
-              adr: num(stats?.ADR),
-              mvps: num(stats?.MVPs),
-              kills: num(stats?.Kills),
-              damage: num(stats?.Damage),
-              deaths: num(stats?.Deaths),
-              "1v1wins": num(stats?.["1v1Wins"]),
-              "1v2wins": num(stats?.["1v2Wins"]),
-              assists: num(stats?.Assists),
-              "1v1count": num(stats?.["1v1Count"]),
-              "1v2count": num(stats?.["1v2Count"]),
-              headshots: num(stats?.Headshots),
-              kd_ratio: num(stats?.["K/D Ratio"]),
-              kr_ratio: num(stats?.["K/R Ratio"]),
-              entry_wins: num(stats?.["Entry Wins"]),
-              entry_count: num(stats?.["Entry Count"]),
-              first_kills: num(stats?.["First Kills"]),
-              flash_count: num(stats?.["Flash Count"]),
-              headshots_percent: num(stats?.["Headshots %"]),
-              clutch_kills: num(stats?.["Clutch Kills"]),
-              double_kills: num(stats?.["Double Kills"]),
-              pistol_kills: num(stats?.["Pistol Kills"]),
-              quadro_kills: num(stats?.["Quadro Kills"]),
-              triple_kills: num(stats?.["Triple Kills"]),
-              utility_count: num(stats?.["Utility Count"]),
-              utility_damage: num(stats?.["Utility Damage"]),
-              enemies_flashed: num(stats?.["Enemies Flashed"]),
-              flash_successes: num(stats?.["Flash Successes"]),
-              utility_enemies: num(stats?.["Utility Enemies"]),
-              match_entry_rate: num(stats?.["Match Entry Rate"]),
-              utility_successes: num(stats?.["Utility Successes"]),
-              match_1v1_win_rate: num(stats?.["Match 1v1 Win Rate"]),
-              match_1v2_win_rate: num(stats?.["Match 1v2 Win Rate"]),
-              utility_usage_per_round: num(stats?.["Utility Usage per Round"]),
-              match_entry_success_rate: num(
-                stats?.["Match Entry Success Rate"],
-              ),
-              flash_success_rate_per_match: num(
-                stats?.["Flash Success Rate per Match"],
-              ),
-              flashes_per_round_in_a_match: num(
-                stats?.["Flashes per Round in a Match"],
-              ),
-              utility_success_rate_per_match: num(
-                stats?.["Utility Success Rate per Match"],
-              ),
-              utility_damage_per_round_in_a_match: num(
-                stats?.["Utility Damage per Round in a Match"],
-              ),
-              enemies_flashed_per_round_in_a_match: num(
-                stats?.["Enemies Flashed per Round in a Match"],
-              ),
-              utility_damage_success_rate_per_match: num(
-                stats?.["Utility Damage Success Rate per Match"],
-              ),
-              zeus_kills: num(stats?.["Zeus Kills"]),
-              knife_kills: num(stats?.["Knife Kills"]),
-              penta_kills: num(stats?.["Penta Kills"]),
-              sniper_kills: num(stats?.["Sniper Kills"]),
-              sniper_kill_rate_per_match: num(
-                stats?.["Sniper Kill Rate per Match"],
-              ),
-              sniper_kill_rate_per_round: num(
-                stats?.["Sniper Kill Rate per Round"],
-              ),
-            });
-          },
-          { concurrency: 5 },
+        await upsertMatchTeamPlayers(
+          team.roster.map((player) => ({
+            match_team_id: resTeam.id,
+            player_id_nullable: existingPlayerById[player.id]
+              ? player.id
+              : null,
+            player_id_mandatory: player.id,
+            nickname: player.nickname,
+            game_skill_level: player.game_skill_level,
+            elo_before: existingPlayerById[player.id]?.faceit_elo,
+            elo_after: refreshedPlayerById[player.id]?.games.cs2.faceit_elo,
+            ...mapPlayerStats(statsByPlayerId[player.id]?.player_stats),
+          })),
         );
       },
       { concurrency: 2 },
@@ -256,11 +205,7 @@ export const syncFinishedMatchTask = task({
 
     logger.info("Finished syncing match successfully", {
       matchId,
-      teamsProcessed: payload.teams.length,
-      totalPlayersProcessed: payload.teams.reduce(
-        (acc, t) => acc + t.roster.length,
-        0,
-      ),
+      totalPlayersProcessed: sumBy(payload.teams, (t) => t.roster.length),
     });
 
     return { message: `Match ${matchId} synced successfully` };

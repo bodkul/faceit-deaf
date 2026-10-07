@@ -1,29 +1,25 @@
 import { keyBy, mapAsync } from "es-toolkit";
-import { NextResponse } from "next/server";
 
 import { fetchMatch } from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/match-events";
+import { supabaseClient } from "@/lib/supabase";
 import {
   deleteMatch,
   getExistingPlayers,
-  supabaseClient,
   upsertMatch,
   upsertMatchTeam,
   upsertMatchTeamPlayers,
-} from "@/lib/supabase";
+} from "@/lib/supabase/mutations";
 
 import { getMatchId, getPlayerIds } from "./utils";
 
 export async function handleMatchStatusReady(payload: MatchPayload) {
-  const matchId = getMatchId(payload);
-  const playerIds = getPlayerIds(payload);
-
   const match = await fetchMatch(payload.id);
 
-  if (match.calculate_elo !== true)
-    return NextResponse.json({ message: "Ignored: not a valid match" });
+  if (match.calculate_elo !== true) return;
 
-  const existingPlayers = await getExistingPlayers(playerIds);
+  const matchId = getMatchId(payload);
+  const existingPlayers = await getExistingPlayers(getPlayerIds(payload));
   const existingPlayerById = keyBy(existingPlayers, (p) => p.id);
 
   await upsertMatch({
@@ -46,20 +42,16 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
         faction: index === 0 ? 1 : 2,
       });
 
-      if (resTeam) {
-        await upsertMatchTeamPlayers(
-          team.roster.map((player) => ({
-            match_team_id: resTeam.id,
-            player_id_nullable: existingPlayerById[player.id]
-              ? player.id
-              : null,
-            player_id_mandatory: player.id,
-            nickname: player.nickname,
-            game_skill_level: player.game_skill_level,
-            elo_before: existingPlayerById[player.id]?.faceit_elo,
-          })),
-        );
-      }
+      await upsertMatchTeamPlayers(
+        team.roster.map((player) => ({
+          match_team_id: resTeam.id,
+          player_id_nullable: existingPlayerById[player.id] ? player.id : null,
+          player_id_mandatory: player.id,
+          nickname: player.nickname,
+          game_skill_level: player.game_skill_level,
+          elo_before: existingPlayerById[player.id]?.faceit_elo,
+        })),
+      );
     },
     { concurrency: 3 },
   );
@@ -68,6 +60,5 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
 }
 
 export async function handleMatchStatusCancelled(payload: MatchPayload) {
-  const matchId = getMatchId(payload);
-  await deleteMatch(matchId);
+  await deleteMatch(getMatchId(payload));
 }

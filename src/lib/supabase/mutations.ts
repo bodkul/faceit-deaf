@@ -62,15 +62,6 @@ export async function upsertMatchTeam(team: TablesInsert<"match_teams">) {
   return data;
 }
 
-export async function upsertMatchTeamPlayer(
-  player: TablesInsert<"match_team_players">,
-) {
-  await supabaseClient
-    .from("match_team_players")
-    .upsert(player, { onConflict: onConflictConfig.matchTeamPlayers })
-    .throwOnError();
-}
-
 export async function upsertMatchTeamPlayers(
   players: TablesInsert<"match_team_players">[],
 ) {

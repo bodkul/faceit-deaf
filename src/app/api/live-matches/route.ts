@@ -3,22 +3,24 @@ import { mapAsync } from "es-toolkit";
 import { NextResponse } from "next/server";
 
 import { fetchMatches } from "@/lib/faceit/api";
+import { getMatchId } from "@/lib/faceit/utils";
+import { supabaseClient } from "@/lib/supabase";
 import {
   getActiveMatches,
-  supabaseClient,
   updateMatch,
   updateMatchTeam,
-} from "@/lib/supabase";
+} from "@/lib/supabase/mutations";
 
 export async function GET() {
-  const data = await getActiveMatches();
-  const matchIds = data?.map((match) => `1-${match.id}`) || [];
+  const activeMatches = await getActiveMatches();
 
-  if (!matchIds.length) {
+  if (!activeMatches.length) {
     return NextResponse.json({ message: "No matches found" });
   }
 
-  const matches = await fetchMatches(matchIds);
+  const matches = await fetchMatches(
+    activeMatches.map((match) => `1-${match.id}`),
+  );
 
   const relevantMatches = matches.filter((m) =>
     ["ONGOING", "READY"].includes(m.status),
@@ -27,7 +29,7 @@ export async function GET() {
   await mapAsync(
     relevantMatches,
     async ({ match_id, voting, started_at, status, results, teams }) => {
-      const id = match_id.replace(/^1-/, "");
+      const id = getMatchId({ id: match_id });
 
       await updateMatch(id, {
         location_pick: voting.location?.pick[0],
@@ -55,7 +57,7 @@ export async function GET() {
     { concurrency: 3 },
   );
 
-  await supabaseClient.channel(`live-matches`).httpSend("*", {});
+  await supabaseClient.channel("live-matches").httpSend("*", {});
 
   return NextResponse.json({ message: "OK" });
 }

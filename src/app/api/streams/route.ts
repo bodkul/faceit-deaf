@@ -23,13 +23,14 @@ export async function GET() {
     .select("providerAccountId, userId")
     .eq("provider", "twitch");
 
-  if (!accounts?.length) return NextResponse.json({ streams: [] });
+  if (!accounts?.length) return NextResponse.json({ streamingPlayers: [] });
 
-  const twitchIds = accounts.map((a) => a.providerAccountId);
   const token = await getTwitchAppToken();
 
   const params = new URLSearchParams();
-  for (const id of twitchIds) params.append("user_id", id);
+  for (const { providerAccountId } of accounts) {
+    params.append("user_id", providerAccountId);
+  }
 
   const { data: liveStreams } = await ky
     .get("https://api.twitch.tv/helix/streams", {
@@ -41,27 +42,28 @@ export async function GET() {
     })
     .json<{ data: { user_id: string; user_login: string }[] }>();
 
-  const liveIds = liveStreams.map((s) => s.user_id);
+  // auth user id → twitch login of a currently live stream
+  const loginByUserId = new Map<string, string>();
+  for (const stream of liveStreams) {
+    const account = accounts.find(
+      (a) => a.providerAccountId === stream.user_id,
+    );
+    if (account) loginByUserId.set(account.userId, stream.user_login);
+  }
+
+  if (!loginByUserId.size) return NextResponse.json({ streamingPlayers: [] });
 
   const { data: players } = await supabaseClient
     .from("players")
-    .select("id, nickname")
-    .in(
-      "auth_user_id",
-      accounts
-        .filter((a) => liveIds.includes(a.providerAccountId))
-        .map((a) => a.userId),
-    );
+    .select("id, nickname, auth_user_id")
+    .in("auth_user_id", [...loginByUserId.keys()]);
 
-  const streamingPlayers = (players ?? []).map((p) => {
-    const account = accounts.find((a) =>
-      liveIds.includes(a.providerAccountId ?? ""),
-    );
-    const stream = liveStreams.find(
-      (s) => s.user_id === account?.providerAccountId,
-    );
-    return { ...p, twitch_login: stream?.user_login ?? null };
-  });
+  const streamingPlayers = (players ?? []).map(
+    ({ auth_user_id, ...player }) => ({
+      ...player,
+      twitch_login: (auth_user_id && loginByUserId.get(auth_user_id)) ?? null,
+    }),
+  );
 
   return NextResponse.json({ streamingPlayers });
 }

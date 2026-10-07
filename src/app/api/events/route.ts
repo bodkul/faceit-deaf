@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { supabaseClient } from "@/lib/supabase";
 
 export async function GET() {
-  const { data } = await supabaseClient.from("events").select(`
+  const { data, error } = await supabaseClient.from("events").select(`
     *,
     event_matches (
       *,
@@ -15,6 +15,14 @@ export async function GET() {
       )
     )
   `);
+
+  if (error) {
+    console.error("Failed to fetch events:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch events" },
+      { status: 500 },
+    );
+  }
 
   return NextResponse.json(data);
 }

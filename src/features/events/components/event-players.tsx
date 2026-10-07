@@ -25,13 +25,15 @@ import { Loading } from "@/features/events/components/event-table-skeleton";
 import type { EventBySlug } from "@/features/events/queries";
 import { formatNumberWithSign } from "@/lib/format";
 import { queryKeys } from "@/lib/query-keys";
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export function EventPlayersClient({ event }: { event: EventBySlug }) {
   const { data: players, isLoading } = useQuery({
     queryKey: queryKeys.events.players(event.id),
     queryFn: async () => {
-      const { data: matches } = await supabaseClient
+      const { data: matches } = await supabase
         .from("event_matches")
         .select(`
         match_id,
@@ -93,7 +95,7 @@ export function EventPlayersClient({ event }: { event: EventBySlug }) {
 
       const playerIds = [...playerStats.keys()];
 
-      const { data: avatars } = await supabaseClient
+      const { data: avatars } = await supabase
         .from("players")
         .select("id, avatar")
         .in("id", playerIds)

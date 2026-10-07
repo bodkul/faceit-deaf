@@ -3,7 +3,9 @@ import NextAuth from "next-auth";
 import FaceItProvider from "next-auth/providers/faceit";
 import TwitchProvider from "next-auth/providers/twitch";
 
-import { supabaseClient } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+const supabase = createAdminClient();
 
 export const { handlers, auth } = NextAuth({
   providers: [
@@ -37,7 +39,7 @@ export const { handlers, auth } = NextAuth({
       const playerId = profile?.guid;
       if (account?.provider !== "faceit" || !playerId || !user.id) return;
 
-      await supabaseClient
+      await supabase
         .from("players")
         .update({ auth_user_id: user.id })
         .eq("id", playerId);

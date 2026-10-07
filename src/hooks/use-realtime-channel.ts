@@ -1,7 +1,9 @@
 import { type QueryKey, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 /**
  * Invalidates `queryKey` whenever a broadcast arrives on the channel named
@@ -19,7 +21,7 @@ export default function useRealtimeChannel(
   queryKeyRef.current = queryKey;
 
   useEffect(() => {
-    const channel = supabaseClient
+    const channel = supabase
       .channel(channelName)
       .on("broadcast", { event }, () => {
         queryClient.invalidateQueries({ queryKey: queryKeyRef.current });
@@ -27,7 +29,7 @@ export default function useRealtimeChannel(
       .subscribe();
 
     return () => {
-      supabaseClient.removeChannel(channel);
+      supabase.removeChannel(channel);
     };
   }, [queryClient, channelName, event]);
 }

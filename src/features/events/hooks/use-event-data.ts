@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export function useEventData(slug: string) {
   return useQuery({
     queryKey: ["event", slug],
     queryFn: async () => {
-      const { data } = await supabaseClient
+      const { data } = await supabase
         .from("event_matches")
         .select(
           `

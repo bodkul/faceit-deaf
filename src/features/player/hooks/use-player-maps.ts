@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { countBy, map, orderBy } from "es-toolkit/compat";
 
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export function usePlayerMaps(player_id: string) {
   return useQuery({
     queryKey: ["player-matches", player_id],
     queryFn: async () => {
-      const { data } = await supabaseClient
+      const { data } = await supabase
         .from("player_matches")
         .select("map")
         .notIn("map", ["de_train", "de_vertigo"])

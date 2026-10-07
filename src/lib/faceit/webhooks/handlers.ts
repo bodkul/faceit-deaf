@@ -2,7 +2,7 @@ import { keyBy, mapAsync } from "es-toolkit";
 
 import { faceit } from "@/lib/faceit/client";
 import type { MatchPayload } from "@/lib/faceit/webhooks/types";
-import { supabaseClient } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   deleteMatch,
   getExistingPlayers,
@@ -12,6 +12,8 @@ import {
 } from "@/lib/supabase/mutations";
 
 import { getMatchId, getPlayerIds } from "../utils";
+
+const supabase = createAdminClient();
 
 export async function handleMatchStatusReady(payload: MatchPayload) {
   const match = await faceit.matches.getMatchDetails(payload.id);
@@ -56,7 +58,7 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
     { concurrency: 3 },
   );
 
-  await supabaseClient.channel(`match:${matchId}`).httpSend("*", {});
+  await supabase.channel(`match:${matchId}`).httpSend("*", {});
 }
 
 export async function handleMatchStatusCancelled(payload: MatchPayload) {

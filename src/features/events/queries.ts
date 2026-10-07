@@ -2,14 +2,19 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import type { TypedSupabaseClient } from "@/lib/supabase/types";
 
 export type EventBySlug = NonNullable<
   Awaited<ReturnType<typeof getEventBySlug>>
 >;
 
-export const getEventBySlug = cache(async (slug: string) => {
-  const { data } = await supabaseClient
+/** Shared by server code and the client-side event card, so the caller picks the client. */
+export async function getEventBySlug(
+  supabase: TypedSupabaseClient,
+  slug: string,
+) {
+  const { data } = await supabase
     .from("events")
     .select("*, matches:event_matches(teams:event_match_teams(team_name))")
     .match({ slug })
@@ -32,10 +37,10 @@ export const getEventBySlug = cache(async (slug: string) => {
     ...event,
     teams: { count: items.length, items },
   };
-});
+}
 
 export const ensureEventExists = cache(async (slug: string) => {
-  const event = await getEventBySlug(slug);
+  const event = await getEventBySlug(createClient(), slug);
   if (!event) notFound();
   return event;
 });

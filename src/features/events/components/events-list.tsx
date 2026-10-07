@@ -32,7 +32,9 @@ import {
   getEventStatus,
 } from "@/features/events/lib/event-status";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+
+const supabase = createClient();
 
 function StatusIndicator({ status }: { status: EventStatus }) {
   if (status === "ongoing") {
@@ -74,7 +76,7 @@ function StatusIndicator({ status }: { status: EventStatus }) {
 }
 
 export async function EventsList() {
-  const { data } = await supabaseClient
+  const { data } = await supabase
     .from("events")
     .select(
       "id, name, logo_url, start_date, end_date, slug, event_matches(event_match_teams(team_name))",

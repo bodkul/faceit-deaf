@@ -1,8 +1,10 @@
 import ky from "ky";
 import { NextResponse } from "next/server";
 
-import { supabaseClient } from "@/lib/supabase";
-import { supabaseAuth } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+
+const supabase = createClient();
 
 async function getTwitchAppToken() {
   const res = await ky
@@ -18,7 +20,8 @@ async function getTwitchAppToken() {
 }
 
 export async function GET() {
-  const { data: accounts } = await supabaseAuth
+  const { data: accounts } = await createAdminClient()
+    .schema("next_auth")
     .from("accounts")
     .select("providerAccountId, userId")
     .eq("provider", "twitch");
@@ -48,12 +51,12 @@ export async function GET() {
     const account = accounts.find(
       (a) => a.providerAccountId === stream.user_id,
     );
-    if (account) loginByUserId.set(account.userId, stream.user_login);
+    if (account?.userId) loginByUserId.set(account.userId, stream.user_login);
   }
 
   if (!loginByUserId.size) return NextResponse.json({ streamingPlayers: [] });
 
-  const { data: players } = await supabaseClient
+  const { data: players } = await supabase
     .from("players")
     .select("id, nickname, auth_user_id")
     .in("auth_user_id", [...loginByUserId.keys()]);

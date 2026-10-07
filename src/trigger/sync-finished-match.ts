@@ -6,7 +6,7 @@ import { faceit } from "@/lib/faceit/client";
 import type { MatchStats } from "@/lib/faceit/types";
 import { getMatchId, getPlayerIds } from "@/lib/faceit/utils";
 import type { MatchPayload } from "@/lib/faceit/webhooks/types";
-import { supabaseClient } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getExistingPlayers,
   upsertMatch,
@@ -15,6 +15,8 @@ import {
   upsertPlayers,
 } from "@/lib/supabase/mutations";
 import type { TablesInsert } from "@/types/database";
+
+const supabase = createAdminClient();
 
 type PlayerStats =
   MatchStats["rounds"][number]["teams"][number]["players"][number]["player_stats"];
@@ -199,7 +201,7 @@ export const syncFinishedMatchTask = task({
       { concurrency: 2 },
     );
 
-    await supabaseClient.channel(`match:${matchId}`).httpSend("*", {});
+    await supabase.channel(`match:${matchId}`).httpSend("*", {});
 
     logger.info("Finished syncing match successfully", {
       matchId,

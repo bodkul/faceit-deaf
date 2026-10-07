@@ -24,6 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Meta } from "@/features/events/components/event-meta";
 import { getEventBySlug } from "@/features/events/queries";
 import useRealtimeChannel from "@/hooks/use-realtime-channel";
+import { createClient } from "@/lib/supabase/client";
 
 export function EventCard({ slug }: { slug: string }) {
   const queryKey = ["event-card", slug];
@@ -34,7 +35,7 @@ export function EventCard({ slug }: { slug: string }) {
     isSuccess,
   } = useQuery({
     queryKey,
-    queryFn: () => getEventBySlug(slug),
+    queryFn: () => getEventBySlug(createClient(), slug),
   });
 
   useRealtimeChannel(queryKey);

@@ -3,12 +3,14 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import { faceit } from "@/lib/faceit/client";
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { isUUID } from "@/lib/utils";
+
+const supabase = createClient();
 
 export const ensurePlayerExists = cache(async (nickname: string) => {
   if (!isUUID(nickname)) {
-    const { data } = await supabaseClient
+    const { data } = await supabase
       .from("players")
       .select("nickname")
       .match({ nickname })
@@ -17,7 +19,7 @@ export const ensurePlayerExists = cache(async (nickname: string) => {
     if (data) return data.nickname;
   }
 
-  const { data } = await supabaseClient
+  const { data } = await supabase
     .from("match_team_players")
     .select("nickname")
     .eq("player_id_mandatory", nickname)
@@ -44,7 +46,7 @@ export async function getPlayerMetadata(
 
 export async function getPlayerIdByNickname(nickname: string) {
   if (!isUUID(nickname)) {
-    const { data: playerData } = await supabaseClient
+    const { data: playerData } = await supabase
       .from("players")
       .select("id")
       .match({ nickname })
@@ -53,7 +55,7 @@ export async function getPlayerIdByNickname(nickname: string) {
     if (playerData) return playerData.id;
   }
 
-  const { data: matchPlayerData } = await supabaseClient
+  const { data: matchPlayerData } = await supabase
     .from("match_team_players")
     .select("player_id_mandatory, match_teams!inner(matches!inner(started_at))")
     .eq("player_id_mandatory", nickname)
@@ -71,7 +73,7 @@ export async function getPlayerIdByNickname(nickname: string) {
 
 export async function getPlayerByUsername(nickname: string) {
   if (!isUUID(nickname)) {
-    const { data: playerData } = await supabaseClient
+    const { data: playerData } = await supabase
       .from("players")
       .select(
         "id, avatar, nickname, steam_id_64, twitch_username, country, faceit_elo",
@@ -96,7 +98,7 @@ export async function getPlayerByUsername(nickname: string) {
 }
 
 export async function getPlayerRankings(limit = 20, offset = 0) {
-  const { data, count } = await supabaseClient
+  const { data, count } = await supabase
     .from("players")
     .select("id, nickname, avatar, faceit_elo, country", {
       count: "exact",

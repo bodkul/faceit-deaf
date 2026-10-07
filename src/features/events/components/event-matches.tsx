@@ -26,13 +26,15 @@ import { EventMatchesSkeleton } from "@/features/events/components/event-matches
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import type { EventBySlug } from "@/features/events/queries";
 import { queryKeys } from "@/lib/query-keys";
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export function EventMatchesClient({ event }: { event: EventBySlug }) {
   const { data: matches, isLoading } = useQuery({
     queryKey: queryKeys.events.matches(event.id),
     queryFn: async () => {
-      const { data } = await supabaseClient
+      const { data } = await supabase
         .from("event_matches")
         .select(
           `
@@ -62,7 +64,7 @@ export function EventMatchesClient({ event }: { event: EventBySlug }) {
         ),
       ];
 
-      const { data: teamAvatars } = await supabaseClient
+      const { data: teamAvatars } = await supabase
         .from("teams")
         .select("name, avatar")
         .in("name", teamNames)

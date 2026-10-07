@@ -26,13 +26,15 @@ import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import type { EventBySlug } from "@/features/events/queries";
 import { formatNumberWithSign } from "@/lib/format";
 import { queryKeys } from "@/lib/query-keys";
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export function EventTeamsClient({ event }: { event: EventBySlug }) {
   const { data: teams, isLoading } = useQuery({
     queryKey: queryKeys.events.teams(event.id),
     queryFn: async () => {
-      const { data: matches } = await supabaseClient
+      const { data: matches } = await supabase
         .from("event_matches")
         .select(`
         match_id,
@@ -91,7 +93,7 @@ export function EventTeamsClient({ event }: { event: EventBySlug }) {
 
       const teamNames = [...teamStats.keys()];
 
-      const { data: teamAvatars } = await supabaseClient
+      const { data: teamAvatars } = await supabase
         .from("teams")
         .select("name, avatar")
         .in("name", teamNames)

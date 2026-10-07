@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export function useEventsCount() {
   return useQuery({
@@ -8,7 +10,7 @@ export function useEventsCount() {
     queryFn: async () => {
       const now = new Date().toISOString();
 
-      const { count } = await supabaseClient
+      const { count } = await supabase
         .from("events")
         .select("*", { count: "exact", head: true })
         .or(`end_date.gte.${now},end_date.is.null`)

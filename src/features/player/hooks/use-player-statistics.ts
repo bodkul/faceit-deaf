@@ -7,7 +7,9 @@ import {
 } from "date-fns";
 import { nth } from "es-toolkit/compat";
 
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export type PlayerStatisticsRange =
   | "currentSession"
@@ -34,7 +36,7 @@ function getDateFromRange(range: PlayerStatisticsRange): Date | undefined {
 async function getCurrentSessionStart(
   playerId: string,
 ): Promise<Date | undefined> {
-  const { data } = await supabaseClient
+  const { data } = await supabase
     .from("matches")
     .select(`
       finished_at,
@@ -100,7 +102,7 @@ export function usePlayerStatistics(
   const { data, isLoading } = useQuery({
     queryKey: ["playerStatistics", playerId, range],
     queryFn: async () => {
-      let query = supabaseClient
+      let query = supabase
         .from("matches")
         .select(`
           match_teams!inner(

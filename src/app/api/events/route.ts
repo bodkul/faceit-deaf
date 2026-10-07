@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+
+const supabase = createClient();
 
 export async function GET() {
-  const { data, error } = await supabaseClient.from("events").select(`
+  const { data, error } = await supabase.from("events").select(`
     *,
     event_matches (
       *,

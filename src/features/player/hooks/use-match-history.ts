@@ -3,7 +3,9 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { usePagination } from "@/hooks/use-pagination";
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 const PAGE_SIZE = 20;
 
@@ -12,7 +14,7 @@ export function useMatchHistory(player_id: string) {
     queryKey: ["player_matches_count", player_id],
     enabled: !!player_id,
     queryFn: async () => {
-      const { count } = await supabaseClient
+      const { count } = await supabase
         .from("match_team_players")
         .select("*", { count: "exact", head: true })
         .eq("player_id_mandatory", player_id);
@@ -28,7 +30,7 @@ export function useMatchHistory(player_id: string) {
     queryFn: async () => {
       const start = pagination.pageOffset * PAGE_SIZE;
       const end = (pagination.pageOffset + 1) * PAGE_SIZE - 1;
-      const { data } = await supabaseClient
+      const { data } = await supabase
         .from("player_matches")
         .select()
         .match({ player_id })

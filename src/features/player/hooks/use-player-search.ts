@@ -2,14 +2,16 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export function usePlayerSearch(query: string) {
   return useQuery({
     queryKey: ["player_search", query],
     queryFn: async () => {
       if (query.length < 2) return [];
-      const { data } = await supabaseClient
+      const { data } = await supabase
         .from("players")
         .select("id, nickname, avatar, faceit_elo, country")
         .ilike("nickname", `%${query}%`)

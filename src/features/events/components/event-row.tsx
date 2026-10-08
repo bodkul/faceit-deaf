@@ -19,7 +19,7 @@ export function EventRow({ event }: { event: EventListItem }) {
   return (
     <Link
       href={`/events/${event.slug}/matches`}
-      className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-(--highlight) transition-colors hover:border-border-shover:bg-foreground/[0.03]trong"
+      className="group flex items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-(--highlight) transition-colors hover:border-border-strong hover:bg-foreground/3"
     >
       <Avatar className="size-12 shrink-0 rounded-lg after:rounded-lg after:border-border">
         <AvatarImage

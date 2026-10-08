@@ -7,7 +7,7 @@ import { domAnimation, LazyMotion } from "motion/react";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 
-import { BGPattern } from "@/components/layout/bg-pattern";
+import { BackgroundGlow } from "@/components/layout/background-glow";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { siteConfig } from "@/config/site";
@@ -36,14 +36,14 @@ export default function RootLayout({
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableColorScheme>
+        <ThemeProvider attribute="class" forcedTheme="dark" enableColorScheme>
           <AuthProvider>
             <ReactQueryProvider>
               <LazyMotion features={domAnimation}>
-                <div className="relative flex min-h-screen w-full flex-col">
-                  <BGPattern variant="grid" mask="fade-edges" />
+                <div className="relative isolate flex min-h-screen w-full flex-col">
+                  <BackgroundGlow />
                   <Header />
-                  <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-12">
+                  <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-8 sm:pt-10">
                     {children}
                   </main>
                   <Footer />

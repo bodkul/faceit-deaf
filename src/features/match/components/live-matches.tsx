@@ -2,19 +2,13 @@
 
 import NumberFlow from "@number-flow/react";
 import { IconBrandTwitch, IconDeviceGamepad2 } from "@tabler/icons-react";
-import { differenceInMinutes } from "date-fns";
-import { now } from "es-toolkit/compat";
-import * as m from "motion/react-m";
+import { cn } from "cn";
+import { differenceInMinutes, formatDistanceToNowStrict } from "date-fns";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { MapBackground } from "@/components/map-background";
+import { SectionHeader } from "@/components/section-header";
+import { StatusPill } from "@/components/status-pill";
 import {
   Empty,
   EmptyDescription,
@@ -22,36 +16,60 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFinishedMatches } from "@/features/match/hooks/use-finished-matches";
 import { useLiveMatches } from "@/features/match/hooks/use-live-matches";
 import { useLiveStreams } from "@/features/match/hooks/use-live-streams";
 
+type LiveMatch = NonNullable<ReturnType<typeof useLiveMatches>["data"]>[number];
+type FinishedMatch = NonNullable<
+  ReturnType<typeof useFinishedMatches>["data"]
+>[number];
+type Match = LiveMatch | FinishedMatch;
 type MatchStatus = "live" | "soon" | "finished";
 
-type LiveMatch = NonNullable<ReturnType<typeof useLiveMatches>["data"]>[number];
-
-const MotionBadge = m.create(Badge);
-
-function getMatchStatus(match: LiveMatch): MatchStatus {
+function getMatchStatus(match: Match): MatchStatus {
   if (match.finished_at) return "finished";
   if (match.started_at) return "live";
   return "soon";
 }
 
-function MatchCard({ match }: { match: LiveMatch }) {
+function formatMap(map: string | null) {
+  return map?.replace("de_", "") ?? "Map vote";
+}
+
+function MatchStatusPill({ match }: { match: Match }) {
+  const status = getMatchStatus(match);
+
+  if (status === "live") {
+    const minutes = match.started_at
+      ? differenceInMinutes(new Date(), match.started_at)
+      : null;
+    return (
+      <StatusPill tone="live" pulse>
+        Live{minutes !== null && ` · ${minutes}m`}
+      </StatusPill>
+    );
+  }
+  if (status === "soon") {
+    return <StatusPill tone="warning">Starting</StatusPill>;
+  }
+  return (
+    <StatusPill tone="muted">
+      Finished
+      {match.finished_at &&
+        ` · ${formatDistanceToNowStrict(match.finished_at, { addSuffix: true })}`}
+    </StatusPill>
+  );
+}
+
+function MatchCard({ match }: { match: Match }) {
   const { data: streamingPlayers = [] } = useLiveStreams();
 
   const status = getMatchStatus(match);
-  const isLive = status === "live";
-  const isSoon = status === "soon";
-  const mapName = match.map_pick?.replace("de_", "") ?? "unknown";
   const [scoreA, scoreB] = (match.round_score ?? "0 / 0")
     .split("/")
-    .map((s) => s.trim());
-  const minutes =
-    isLive && match.started_at
-      ? differenceInMinutes(now(), match.started_at)
-      : null;
+    .map((s) => Number(s.trim()) || 0);
   const hasStream = match.players?.some((nickname) =>
     streamingPlayers.some((p) => p.nickname === nickname),
   );
@@ -59,153 +77,117 @@ function MatchCard({ match }: { match: LiveMatch }) {
   return (
     <Link
       href={`/match/1-${match.id}`}
-      className={[
-        "group relative cursor-pointer overflow-hidden rounded-xl border transition-all duration-300",
-        "hover:-translate-y-0.5 hover:shadow-xl",
-        isLive
-          ? "border-red-500/30 bg-linear-to-b from-red-950/30 to-neutral-900 shadow-red-950/20"
-          : isSoon
-            ? "border-yellow-500/20 bg-linear-to-b from-yellow-950/20 to-neutral-900"
-            : "border-neutral-800 bg-neutral-900",
-      ].join(" ")}
+      className={cn(
+        "group relative isolate flex flex-col gap-4 overflow-hidden rounded-xl border bg-card p-4 transition-all duration-200",
+        "hover:-translate-y-0.5 hover:border-border-strong hover:shadow-black/40 hover:shadow-lg",
+        status === "live" ? "border-live/30" : "border-border",
+      )}
     >
-      <div
-        className={[
-          "absolute inset-x-0 top-0 h-px",
-          isLive
-            ? "bg-linear-to-r from-transparent via-red-500/60 to-transparent"
-            : isSoon
-              ? "bg-linear-to-r from-transparent via-yellow-500/40 to-transparent"
-              : "bg-linear-to-r from-transparent via-neutral-700/40 to-transparent",
-        ].join(" ")}
-      />
+      <MapBackground map={match.map_pick} />
+      {status === "live" && (
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-live/70 to-transparent" />
+      )}
 
-      <div className="p-4">
-        <div className="mb-3 flex items-center justify-between">
-          {isLive ? (
-            <>
-              <div className="flex items-center gap-1.5">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex size-2 rounded-full bg-red-500" />
-                </span>
-                <span className="font-bold font-mono text-red-400 text-xs uppercase tracking-widest">
-                  {minutes}m
-                </span>
-              </div>
-              {hasStream && (
-                <div className="flex items-center gap-1 rounded-full border border-[#9146ff]/20 bg-[#9146ff]/10 px-2 py-0.5">
-                  <IconBrandTwitch size={11} className="text-[#9146ff]" />
-                  <span className="font-mono text-[#9146ff] text-xs">Live</span>
-                </div>
-              )}
-            </>
-          ) : isSoon ? (
-            <div className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-yellow-400/80" />
-              <span className="font-bold font-mono text-xs text-yellow-400/80 uppercase tracking-widest">
-                Soon
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-neutral-600" />
-              <span className="font-bold font-mono text-neutral-500 text-xs uppercase tracking-widest">
-                Finished
-              </span>
-            </div>
+      <div className="flex items-center justify-between gap-2">
+        <MatchStatusPill match={match} />
+        <div className="flex items-center gap-2">
+          {hasStream && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#9146ff]/15 px-2 py-0.5 font-medium text-[#b58cff] text-[11px]">
+              <IconBrandTwitch className="size-3" />
+              Stream
+            </span>
           )}
-
-          <span className="rounded-md border border-neutral-700/50 bg-neutral-800/60 px-2 py-0.5 font-mono text-neutral-400 text-xs capitalize">
-            {mapName}
+          <span className="font-medium text-muted-foreground text-sm capitalize">
+            {formatMap(match.map_pick)}
           </span>
         </div>
-
-        <div className="mb-4 flex items-center justify-center gap-3">
-          <span className="font-black font-mono text-3xl text-white tabular-nums">
-            <NumberFlow value={Number(scoreA)} />
-          </span>
-          <span className="font-mono text-lg text-neutral-600">:</span>
-          <span className="font-black font-mono text-3xl text-white tabular-nums">
-            <NumberFlow value={Number(scoreB)} />
-          </span>
-        </div>
-
-        {match.players && match.players.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {match.players.map((nickname) => (
-              <span
-                key={`${match.id}_${nickname}`}
-                className="rounded border border-neutral-700/50 bg-neutral-800/50 px-1.5 py-0.5 font-mono text-neutral-400 text-xs transition-colors group-hover:border-neutral-600 group-hover:text-neutral-300"
-              >
-                {nickname}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
+
+      <div className="flex items-center justify-center gap-4 font-black font-mono text-4xl tabular-nums">
+        <NumberFlow
+          value={scoreA}
+          className={cn(scoreA > scoreB && status === "finished" && "text-win")}
+        />
+        <span className="text-faint text-xl">:</span>
+        <NumberFlow
+          value={scoreB}
+          className={cn(scoreB > scoreA && status === "finished" && "text-win")}
+        />
+      </div>
+
+      {match.players && match.players.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {match.players.map((nickname) => (
+            <span
+              key={nickname}
+              className="rounded-md bg-black/40 px-2 py-0.5 font-medium text-foreground/90 text-xs ring-1 ring-white/10 ring-inset backdrop-blur-sm"
+            >
+              {nickname}
+            </span>
+          ))}
+        </div>
+      )}
     </Link>
   );
 }
 
-export function LiveMatches() {
-  const { data: matches, isLoading } = useLiveMatches();
+function MatchGrid({ matches }: { matches: Match[] }) {
+  return (
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {matches.map((match) => (
+        <MatchCard key={match.id} match={match} />
+      ))}
+    </div>
+  );
+}
 
-  const liveCount =
-    matches?.filter((m) => !m.finished_at && m.started_at).length ?? 0;
+export function LiveMatches() {
+  const { data: active = [], isLoading } = useLiveMatches();
+  const { data: finished = [] } = useFinishedMatches();
 
   return (
-    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/3 blur-3xl" />
-      <CardHeader className="pb-4">
-        <div className="flex items-center gap-2">
-          <CardTitle className="text-white">Live Matches</CardTitle>
-          {liveCount > 0 && (
-            <MotionBadge
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              variant="outline"
-              className="border-red-500/20 bg-red-500/10 font-bold font-mono text-red-400"
-            >
-              {liveCount} live
-            </MotionBadge>
+    <section className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
+        <SectionHeader
+          title="Live now"
+          description="Matches deaf players are playing on FACEIT right now"
+        >
+          {active.length > 0 && (
+            <span className="rounded-full bg-live/15 px-2 py-0.5 font-mono font-semibold text-live text-xs tabular-nums">
+              {active.length}
+            </span>
           )}
-        </div>
-        <CardDescription>
-          Active FACEIT matches in the deaf community
-        </CardDescription>
-      </CardHeader>
+        </SectionHeader>
 
-      <CardContent>
         {isLoading ? (
-          <div className="flex h-38 items-center justify-center">
-            <Spinner />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Skeleton className="h-40 rounded-xl" />
+            <Skeleton className="hidden h-40 rounded-xl sm:block" />
+            <Skeleton className="hidden h-40 rounded-xl lg:block" />
           </div>
-        ) : matches?.length ? (
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {matches.map((match) => (
-              <MatchCard key={match.id} match={match} />
-            ))}
-          </m.div>
+        ) : active.length > 0 ? (
+          <MatchGrid matches={active} />
         ) : (
-          <Empty>
+          <Empty className="rounded-xl border border-border border-dashed p-6 md:p-8">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <IconDeviceGamepad2 />
               </EmptyMedia>
-              <EmptyTitle>No live matches</EmptyTitle>
+              <EmptyTitle>Nobody is playing right now</EmptyTitle>
               <EmptyDescription>
-                There are no active matches right now. Check back later!
+                Matches appear here the moment they start — no refresh needed.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      {finished.length > 0 && (
+        <div className="flex flex-col gap-4">
+          <SectionHeader title="Just finished" />
+          <MatchGrid matches={finished} />
+        </div>
+      )}
+    </section>
   );
 }

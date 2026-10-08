@@ -1,33 +1,22 @@
 import { range } from "es-toolkit/math";
 
-import { Item, ItemContent, ItemGroup, ItemMedia } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function EventsListSkeleton() {
+export function EventsListSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div className="flex flex-col gap-4">
-      <ItemGroup>
-        {range(4).map((index) => (
-          <Item
-            key={index}
-            variant="outline"
-            className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm"
-          >
-            <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/3 blur-3xl" />
-            <ItemMedia>
-              <Skeleton className="size-10" />
-            </ItemMedia>
-            <ItemContent>
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-[19.25px] w-56" />
-                <Skeleton className="h-4 w-20.5" />
-              </div>
-              <Skeleton className="h-5.25 w-52" />
-            </ItemContent>
-          </Item>
-        ))}
-      </ItemGroup>
+    <div className="flex flex-col gap-3">
+      {range(count).map((index) => (
+        <div
+          key={index}
+          className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-(--highlight)"
+        >
+          <Skeleton className="size-12 rounded-lg" />
+          <div className="flex flex-1 flex-col gap-2">
+            <Skeleton className="h-5 w-64 max-w-full" />
+            <Skeleton className="h-4 w-48 max-w-full" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

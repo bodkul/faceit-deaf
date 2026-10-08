@@ -19,9 +19,10 @@ export function useLiveMatches() {
       const { data } = await supabase
         .from("live_matches")
         .select("id, map_pick, round_score, started_at, finished_at, players")
+        .is("finished_at", null)
         .order("status", { ascending: false })
         .order("started_at", { ascending: false });
-      return data;
+      return data ?? [];
     },
   });
 }

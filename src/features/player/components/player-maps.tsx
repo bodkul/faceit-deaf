@@ -1,21 +1,11 @@
 "use client";
 
 import { IconMap } from "@tabler/icons-react";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import { cn } from "cn";
+import { range } from "es-toolkit/math";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { MapBackground } from "@/components/map-background";
+import { SectionHeader } from "@/components/section-header";
 import {
   Empty,
   EmptyDescription,
@@ -24,90 +14,86 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import { usePlayerMaps } from "@/features/player/hooks/use-player-maps";
+import {
+  type PlayerMapStats,
+  usePlayerMaps,
+} from "@/features/player/hooks/use-player-maps";
 
-const chartConfig = {
-  map: {
-    label: "Map",
-    color: "oklch(70.5% 0.213 47.604)",
-  },
-} satisfies ChartConfig;
-
-const _SKELETON_BARS = [
-  { key: "mirage", h: 40 },
-  { key: "inferno", h: 70 },
-  { key: "dust2", h: 55 },
-  { key: "nuke", h: 90 },
-  { key: "anubis", h: 35 },
-  { key: "ancient", h: 60 },
-  { key: "vertigo", h: 45 },
-] as const;
-
-function MapsWrapper({ children }: { children: React.ReactNode }) {
+function MapsSection({ children }: { children: React.ReactNode }) {
   return (
-    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-
-      <CardHeader>
-        <CardTitle>Map Statistics</CardTitle>
-        <CardDescription>
-          Distribution of maps played by this player
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent>{children}</CardContent>
-    </Card>
+    <section className="flex flex-col gap-4">
+      <SectionHeader
+        title="Maps"
+        description="Every match played, grouped by map"
+      />
+      {children}
+    </section>
   );
 }
 
-function MapsContent({
-  maps,
-}: {
-  maps: NonNullable<ReturnType<typeof usePlayerMaps>["data"]>;
-}) {
+function MapCard({ stats, share }: { stats: PlayerMapStats; share: number }) {
+  const name = stats.map.replace("de_", "");
+
   return (
-    <MapsWrapper>
-      <ChartContainer config={chartConfig} className="h-64 w-full">
-        <BarChart accessibilityLayer data={maps}>
-          <CartesianGrid vertical={false} stroke="#262626" />
-          <XAxis
-            dataKey="map"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tick={{ fill: "#525252", fontSize: 11, fontFamily: "monospace" }}
-            tickFormatter={(value) => {
-              const short = value.slice(3);
-              return short.charAt(0).toUpperCase() + short.slice(1);
-            }}
+    <div className="relative isolate flex flex-col gap-4 overflow-hidden rounded-xl border border-border bg-card p-4 shadow-(--highlight)">
+      <MapBackground map={stats.map} className="opacity-35" />
+
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="font-bold text-lg capitalize">{name}</span>
+        <span className="font-mono text-muted-foreground text-sm tabular-nums">
+          {stats.matches} {stats.matches === 1 ? "match" : "matches"}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col">
+          <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+            Win rate
+          </span>
+          <span
+            className={cn(
+              "font-bold font-mono text-xl tabular-nums",
+              stats.winrate >= 55 && "text-win",
+              stats.winrate < 45 && "text-loss",
+            )}
+          >
+            {stats.winrate.toFixed(0)}%
+          </span>
+        </div>
+        <div className="flex flex-col">
+          <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+            Avg K/D
+          </span>
+          <span className="font-bold font-mono text-xl tabular-nums">
+            {stats.kd?.toFixed(2) ?? "—"}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full rounded-full bg-primary"
+            style={{ width: `${Math.max(share, 2)}%` }}
           />
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent hideLabel />}
-          />
-          <Bar dataKey="count" fill="var(--color-map)" radius={6}>
-            <LabelList
-              position="top"
-              offset={10}
-              style={{
-                fill: "#737373",
-                fontSize: 11,
-                fontFamily: "monospace",
-              }}
-            />
-          </Bar>
-        </BarChart>
-      </ChartContainer>
-    </MapsWrapper>
+        </div>
+        <span className="text-faint text-xs">
+          {share.toFixed(0)}% of all matches
+        </span>
+      </div>
+    </div>
   );
 }
 
 export function MapsSkeleton() {
   return (
-    <MapsWrapper>
-      <Skeleton className="h-64 w-full bg-neutral-900" />
-    </MapsWrapper>
+    <MapsSection>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {range(6).map((index) => (
+          <Skeleton key={index} className="h-44 rounded-xl" />
+        ))}
+      </div>
+    </MapsSection>
   );
 }
 
@@ -116,23 +102,37 @@ export function Maps({ playerId }: { playerId: string }) {
 
   if (isLoading) return <MapsSkeleton />;
 
-  if (!maps) {
+  if (!maps?.length) {
     return (
-      <MapsWrapper>
-        <Empty>
+      <MapsSection>
+        <Empty className="rounded-xl border border-border border-dashed">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <IconMap />
             </EmptyMedia>
-            <EmptyTitle>No map data</EmptyTitle>
+            <EmptyTitle>No map data yet</EmptyTitle>
             <EmptyDescription>
-              Map statistics will appear here once matches are played.
+              Map statistics appear once matches are played.
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-      </MapsWrapper>
+      </MapsSection>
     );
   }
 
-  return <MapsContent maps={maps} />;
+  const total = maps.reduce((sum, m) => sum + m.matches, 0);
+
+  return (
+    <MapsSection>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {maps.map((stats) => (
+          <MapCard
+            key={stats.map}
+            stats={stats}
+            share={(stats.matches / total) * 100}
+          />
+        ))}
+      </div>
+    </MapsSection>
+  );
 }

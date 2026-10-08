@@ -3,25 +3,18 @@
 import { IconTrophy } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "cn";
-import { getTime } from "date-fns";
-import { orderBy } from "es-toolkit";
+import { format, getTime } from "date-fns";
+import { groupBy, orderBy } from "es-toolkit";
 import Link from "next/link";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
+import { TeamAvatar } from "@/components/team-avatar";
 import {
   Empty,
+  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Item,
-  ItemContent,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
 import { EventMatchesSkeleton } from "@/features/events/components/event-matches-skeleton";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import type { EventBySlug } from "@/features/events/queries";
@@ -32,16 +25,11 @@ import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
-export function EventMatchesClient({ event }: { event: EventBySlug }) {
-  useRealtime(queryKeys.events.matches(event.id), eventSources);
-
-  const { data: matches, isLoading } = useQuery({
-    queryKey: queryKeys.events.matches(event.id),
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("event_matches")
-        .select(
-          `
+async function fetchEventMatches(eventId: string) {
+  const { data } = await supabase
+    .from("event_matches")
+    .select(
+      `
         match_id,
         status,
         started_at,
@@ -56,153 +44,151 @@ export function EventMatchesClient({ event }: { event: EventBySlug }) {
           id
         )
       `,
-        )
-        .eq("event_id", event.id)
-        .throwOnError();
+    )
+    .eq("event_id", eventId)
+    .throwOnError();
 
-      const teamNames = [
-        ...new Set(
-          data?.flatMap((match) =>
-            match.teams.map((t) => normalizeTeamName(t.team_name)),
-          ) ?? [],
-        ),
-      ];
+  const teamNames = [
+    ...new Set(
+      data.flatMap((match) =>
+        match.teams.map((t) => normalizeTeamName(t.team_name)),
+      ),
+    ),
+  ];
 
-      const { data: teamAvatars } = await supabase
-        .from("teams")
-        .select("name, avatar")
-        .in("name", teamNames)
-        .throwOnError();
+  const { data: teamAvatars } = await supabase
+    .from("teams")
+    .select("name, avatar")
+    .in("name", teamNames)
+    .throwOnError();
 
-      const matchesWithAvatars = data?.map((match) => ({
-        ...match,
-        teams: match.teams.map((team) => {
-          const normalizedName = normalizeTeamName(team.team_name);
-          return {
-            ...team,
-            avatar:
-              teamAvatars?.find((t) => t.name === normalizedName)?.avatar ??
-              null,
-          };
-        }),
-      }));
+  const avatarByName = new Map(teamAvatars.map((t) => [t.name, t.avatar]));
 
-      const sortedMatches = orderBy(
-        matchesWithAvatars ?? [],
-        [(match) => getTime(match.started_at ?? 0)],
-        ["desc"],
-      );
+  const matches = data.map((match) => ({
+    ...match,
+    teams: match.teams.map((team) => {
+      const name = normalizeTeamName(team.team_name);
+      return { ...team, name, avatar: avatarByName.get(name) ?? null };
+    }),
+  }));
 
-      return sortedMatches;
-    },
+  return orderBy(matches, [(m) => getTime(m.started_at ?? 0)], ["desc"]);
+}
+
+type EventMatch = Awaited<ReturnType<typeof fetchEventMatches>>[number];
+type MatchTeam = EventMatch["teams"][number];
+
+function TeamCell({
+  team,
+  align,
+}: {
+  team: MatchTeam;
+  align: "left" | "right";
+}) {
+  return (
+    <div
+      className={cn(
+        "flex min-w-0 items-center gap-3",
+        align === "left" ? "flex-row-reverse text-right" : "text-left",
+      )}
+    >
+      <TeamAvatar name={team.name} src={team.avatar} className="size-8" />
+      <span
+        className={cn(
+          "truncate font-semibold text-sm sm:text-base",
+          team.is_winner === false && "text-muted-foreground",
+        )}
+      >
+        {team.name}
+      </span>
+    </div>
+  );
+}
+
+function MatchRow({ match, slug }: { match: EventMatch; slug: string }) {
+  const [team1, team2] = match.teams;
+  if (!team1 || !team2) return null;
+
+  return (
+    <Link
+      href={`/events/${slug}/matches/${match.match_id}`}
+      className="group grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-3 transition-colors hover:bg-foreground/[0.03] sm:gap-6 sm:px-4"
+    >
+      <TeamCell team={team1} align="left" />
+
+      <div className="flex flex-col items-center gap-0.5">
+        <div className="flex items-center gap-2 font-black font-mono text-xl tabular-nums">
+          <span
+            className={cn(team1.is_winner ? "text-win" : "text-foreground/70")}
+          >
+            {match.score_faction1 ?? "–"}
+          </span>
+          <span className="text-faint">:</span>
+          <span
+            className={cn(team2.is_winner ? "text-win" : "text-foreground/70")}
+          >
+            {match.score_faction2 ?? "–"}
+          </span>
+        </div>
+        <span className="font-mono text-[10px] text-faint uppercase tracking-wider">
+          Bo{match.best_of ?? match.maps.length}
+          {match.started_at && ` · ${format(match.started_at, "HH:mm")}`}
+        </span>
+      </div>
+
+      <TeamCell team={team2} align="right" />
+    </Link>
+  );
+}
+
+export function EventMatchesClient({ event }: { event: EventBySlug }) {
+  const queryKey = queryKeys.events.matches(event.id);
+  useRealtime(queryKey, eventSources);
+
+  const { data: matches, isLoading } = useQuery({
+    queryKey,
+    queryFn: () => fetchEventMatches(event.id),
   });
 
   if (isLoading) return <EventMatchesSkeleton />;
 
-  if (!matches || matches.length === 0) {
+  if (!matches?.length) {
     return (
-      <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-        <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-        <CardContent>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconTrophy className="text-yellow-400/60" />
-              </EmptyMedia>
-              <EmptyTitle>No Matches Yet</EmptyTitle>
-            </EmptyHeader>
-          </Empty>
-        </CardContent>
-      </Card>
+      <Empty className="rounded-xl border border-border border-dashed">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <IconTrophy />
+          </EmptyMedia>
+          <EmptyTitle>No matches yet</EmptyTitle>
+          <EmptyDescription>
+            Matches appear here as soon as the event starts.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
+  const byDay = Object.entries(
+    groupBy(matches, (m) =>
+      m.started_at ? format(m.started_at, "yyyy-MM-dd") : "tbd",
+    ),
+  );
+
   return (
-    <ItemGroup>
-      {matches.map((match) => {
-        const faction1 = match.teams[0];
-        const faction2 = match.teams[1];
-
-        return (
-          <Item
-            key={match.match_id}
-            variant="outline"
-            className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm [a]:hover:bg-neutral-900/30"
-            render={
-              <Link href={`/events/${event.slug}/matches/${match.match_id}`} />
-            }
-          >
-            <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/3 blur-3xl" />
-
-            <div className="grid w-full grid-cols-[auto_1fr_auto_1fr_auto] items-center gap-4">
-              <ItemMedia variant="image">
-                <Avatar size="lg" className="rounded-md after:rounded-md">
-                  <AvatarImage
-                    className="rounded-md"
-                    src={faction1.avatar ?? undefined}
-                  />
-                  <AvatarFallback className="rounded-md">
-                    {normalizeTeamName(faction1.team_name).charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </ItemMedia>
-
-              <ItemContent>
-                <ItemTitle className="transition-colors group-hover/item:text-red-500">
-                  {normalizeTeamName(faction1.team_name)}
-                </ItemTitle>
-              </ItemContent>
-
-              <ItemContent className="shrink-0 items-center">
-                <div className="flex items-center gap-2 font-black font-mono text-xl tabular-nums">
-                  <span
-                    className={cn({
-                      "text-emerald-400": faction1?.is_winner === true,
-                      "text-red-400": faction1?.is_winner === false,
-                      "text-neutral-300": faction1?.is_winner == null,
-                    })}
-                  >
-                    {match.score_faction1 ?? "—"}
-                  </span>
-                  <span className="text-neutral-700">:</span>
-                  <span
-                    className={cn({
-                      "text-emerald-400": faction2?.is_winner === true,
-                      "text-red-400": faction2?.is_winner === false,
-                      "text-neutral-300": faction2?.is_winner == null,
-                    })}
-                  >
-                    {match.score_faction2 ?? "—"}
-                  </span>
-                </div>
-                <span className="font-mono text-[10px] text-neutral-600 uppercase tracking-wide">
-                  {match.status} · Bo{match.best_of ?? match.maps.length}
-                </span>
-              </ItemContent>
-
-              <ItemContent className="items-end text-right">
-                <ItemTitle className="transition-colors group-hover/item:text-red-500">
-                  {normalizeTeamName(faction2.team_name)}
-                </ItemTitle>
-              </ItemContent>
-
-              <ItemMedia variant="image">
-                <Avatar size="lg" className="rounded-md after:rounded-md">
-                  <AvatarImage
-                    className="rounded-md"
-                    src={faction2.avatar ?? undefined}
-                  />
-                  <AvatarFallback className="rounded-md">
-                    {normalizeTeamName(faction2.team_name).charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </ItemMedia>
-            </div>
-          </Item>
-        );
-      })}
-    </ItemGroup>
+    <div className="flex flex-col gap-6">
+      {byDay.map(([day, dayMatches]) => (
+        <section key={day} className="flex flex-col gap-3">
+          <h2 className="font-mono text-[11px] text-faint uppercase tracking-wider">
+            {day === "tbd" ? "Not scheduled" : format(day, "EEEE, d MMMM")}
+            <span className="ml-2 text-faint/70">· {dayMatches.length}</span>
+          </h2>
+          <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+            {dayMatches.map((match) => (
+              <MatchRow key={match.match_id} match={match} slug={event.slug} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
   );
 }

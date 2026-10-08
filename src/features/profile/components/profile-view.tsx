@@ -9,6 +9,13 @@ import { FaceitIcon } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -24,7 +31,7 @@ function useTwitchLinked() {
 
 function ConnectedBadge() {
   return (
-    <Badge className="border-none bg-green-600/10 text-green-600 focus-visible:outline-none focus-visible:ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:focus-visible:ring-green-400/40 [a]:hover:bg-green-600/5 dark:[a]:hover:bg-green-400/5">
+    <Badge className="border-none bg-win/10 text-win focus-visible:outline-none focus-visible:ring-win/20 dark:bg-win/10 dark:text-win dark:focus-visible:ring-win/40 [a]:hover:bg-win/5 dark:[a]:hover:bg-win/5">
       <IconCheck size={12} />
       Connected
     </Badge>
@@ -38,17 +45,30 @@ export function ProfileView() {
   if (status === "loading") {
     return (
       <>
-        <Skeleton className="h-26 w-full rounded-2xl bg-neutral-900" />
-        <Skeleton className="h-48 w-full rounded-2xl bg-neutral-900" />
+        <Skeleton className="h-26 w-full rounded-xl" />
+        <Skeleton className="h-48 w-full rounded-xl" />
       </>
     );
   }
 
   if (!session?.user) {
     return (
-      <div className="mx-auto px-4 py-10 text-center text-neutral-500 text-sm">
-        Not logged in.
-      </div>
+      <Empty className="rounded-xl border border-border border-dashed">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <FaceitIcon />
+          </EmptyMedia>
+          <EmptyTitle>Log in to manage your account</EmptyTitle>
+          <EmptyDescription>
+            Sign in with FACEIT to link Twitch and show your stream on match
+            pages.
+          </EmptyDescription>
+        </EmptyHeader>
+        <Button variant="faceit" onClick={() => signIn("faceit")}>
+          <FaceitIcon />
+          Log in with FACEIT
+        </Button>
+      </Empty>
     );
   }
 
@@ -56,8 +76,7 @@ export function ProfileView() {
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/50 to-transparent" />
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
         <div className="flex items-center gap-4 px-6 py-5">
           <Avatar className="size-16 rounded-xl">
             <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
@@ -66,15 +85,15 @@ export function ProfileView() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h2 className="font-black text-white text-xl">{user.name}</h2>
-            <p className="text-neutral-500 text-sm">{user.email}</p>
+            <h2 className="font-black text-foreground text-xl">{user.name}</h2>
+            <p className="text-muted-foreground text-sm">{user.email}</p>
           </div>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-        <div className="border-neutral-800 border-b px-5 py-4">
-          <h3 className="font-bold text-white">Connected accounts</h3>
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+        <div className="border-border border-b px-5 py-4">
+          <h3 className="font-bold text-foreground">Connected accounts</h3>
         </div>
 
         <div className="space-y-4 py-4">
@@ -84,7 +103,7 @@ export function ProfileView() {
                 <FaceitIcon className="size-4 text-[#ff5500]" />
               </div>
               <div>
-                <h4 className="font-medium text-sm">Faceit</h4>
+                <h4 className="font-medium text-sm">FACEIT</h4>
                 <p className="text-muted-foreground text-xs">{user.name}</p>
               </div>
             </div>
@@ -108,7 +127,7 @@ export function ProfileView() {
               </div>
             </div>
             {twitchLinked === null ? (
-              <Skeleton className="h-7 w-20 rounded-lg bg-neutral-800" />
+              <Skeleton className="h-7 w-20 rounded-lg bg-muted" />
             ) : twitchLinked ? (
               <ConnectedBadge />
             ) : (

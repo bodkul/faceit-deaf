@@ -11,15 +11,17 @@ const buttonVariants = cva(
         outline:
           "border-border bg-background shadow-xs hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-foreground/[0.06] text-foreground ring-1 ring-foreground/10 ring-inset hover:bg-foreground/10 aria-expanded:bg-foreground/10",
+        contrast:
+          "bg-foreground font-semibold text-background hover:bg-foreground/85",
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "hover:bg-foreground/[0.06] hover:text-foreground aria-expanded:bg-foreground/[0.06] aria-expanded:text-foreground",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 dark:hover:bg-destructive/30",
         link: "text-primary underline-offset-4 hover:underline",
-        dark: "border border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:bg-neutral-800 hover:text-white",
+        dark: "border border-border text-muted-foreground hover:border-border-strong hover:bg-foreground/[0.04] hover:text-foreground",
         faceit:
-          "border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-400",
+          "bg-primary font-semibold text-primary-foreground shadow-primary/20 shadow-sm hover:bg-primary/90",
       },
       size: {
         default:

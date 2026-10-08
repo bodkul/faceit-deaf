@@ -9,12 +9,12 @@ import {
 
 export const metadata: Metadata = {
   title: "Teams",
-  description: "Browse teams and their rosters",
+  description: "Deaf CS2 teams, their rosters and results.",
 };
 
 export default function TeamsLayout(props: LayoutProps<"/teams">) {
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-6">
       <PageHeader>
         <PageHeaderHeading>
           <PageHeaderTitle>{metadata.title?.toString()}</PageHeaderTitle>

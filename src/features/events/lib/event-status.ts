@@ -1,4 +1,6 @@
 import { TZDate } from "@date-fns/tz";
+import { format, getYear } from "date-fns";
+import { enUS } from "date-fns/locale";
 
 export const EVENT_TZ = "Europe/Berlin";
 
@@ -15,4 +17,16 @@ export function getEventStatus(
   if (now < start) return "upcoming";
   if (end && now > end) return "finished";
   return "ongoing";
+}
+
+/** "12 Sep — 13 Sep", with the year only when it isn't the current one. */
+export function formatEventDates(startDate: string, endDate: string | null) {
+  const fmt = (date: string) =>
+    format(
+      new TZDate(date, EVENT_TZ),
+      getYear(date) === getYear(new Date()) ? "d MMM" : "d MMM yyyy",
+      { locale: enUS },
+    );
+
+  return endDate ? `${fmt(startDate)} — ${fmt(endDate)}` : fmt(startDate);
 }

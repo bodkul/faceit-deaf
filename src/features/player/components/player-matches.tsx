@@ -9,19 +9,18 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "cn";
 import { format, isThisYear } from "date-fns";
-import { isBoolean, isNil, isNumber, range } from "es-toolkit";
-import { gt, lt } from "es-toolkit/compat";
-import { useRouter } from "next/navigation";
+import { isNil, isNumber, range } from "es-toolkit";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { SectionHeader } from "@/components/section-header";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  diffTone,
+  ratioTone,
+  StatsTable,
+  StatsTd,
+  StatsTh,
+} from "@/components/stats-table";
+import { Button } from "@/components/ui/button";
 import {
   Empty,
   EmptyDescription,
@@ -29,30 +28,13 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useMatchHistory } from "@/features/player/hooks/use-match-history";
 import { formatNumberWithSign } from "@/lib/format";
 
-const TABLE_COLUMNS = [
-  { key: "date", label: "Date", skeletonWidth: "6rem" },
-  { key: "map", label: "Map", skeletonWidth: "3rem" },
-  { key: "score", label: "Score", skeletonWidth: "2.5rem" },
-  { key: "kd", label: "K - D", skeletonWidth: "3rem" },
-  { key: "kdr", label: "K / D", skeletonWidth: "2rem" },
-  { key: "adr", label: "ADR", skeletonWidth: "2rem" },
-  { key: "hs", label: "HS%", skeletonWidth: "2rem" },
-  { key: "elo", label: "Elo +/-", skeletonWidth: "2rem" },
-] as const;
+const COLUMNS = ["Date", "Map", "Score", "K – D", "K/D", "ADR", "HS%", "ELO"];
 
-function MatchHistoryWrapper({
+function MatchHistorySection({
   children,
   footer,
 }: {
@@ -60,64 +42,62 @@ function MatchHistoryWrapper({
   footer?: React.ReactNode;
 }) {
   return (
-    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-
-      <CardHeader>
-        <CardTitle>Match History</CardTitle>
-        <CardDescription>
-          Complete list of all played matches with detailed statistics
-        </CardDescription>
-      </CardHeader>
-
-      {children}
-
-      {footer && <CardFooter className="justify-between">{footer}</CardFooter>}
-    </Card>
+    <section className="flex flex-col gap-4">
+      <SectionHeader
+        title="Match history"
+        description="Every tracked match, newest first"
+      />
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+        {children}
+        {footer && (
+          <div className="flex items-center justify-between gap-3 border-border border-t px-4 py-3">
+            {footer}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 
 function MatchHistoryTable({ children }: { children: React.ReactNode }) {
   return (
-    <Table className="w-full overflow-x-auto border-t font-mono">
-      <TableHeader>
-        <TableRow className="text-xs uppercase tracking-wide">
-          {TABLE_COLUMNS.map(({ key, label }) => (
-            <TableHead key={key} className="text-center text-neutral-600">
+    <StatsTable minWidth={680}>
+      <thead className="border-border border-b">
+        <tr>
+          {COLUMNS.map((label, index) => (
+            <StatsTh
+              key={label}
+              align={index < 2 ? "left" : index === 2 ? "center" : "right"}
+            >
               {label}
-            </TableHead>
+            </StatsTh>
           ))}
-        </TableRow>
-      </TableHeader>
-      <tbody data-slot="table-body">{children}</tbody>
-    </Table>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-border">{children}</tbody>
+    </StatsTable>
   );
 }
 
 export function MatchHistorySkeleton() {
   return (
-    <MatchHistoryWrapper>
+    <MatchHistorySection>
       <MatchHistoryTable>
-        {range(20).map((index) => (
-          <TableRow key={index} className="h-12">
-            {TABLE_COLUMNS.map(({ key, skeletonWidth }) => (
-              <TableCell key={key}>
-                <Skeleton
-                  className="mx-auto h-5"
-                  style={{ width: skeletonWidth }}
-                />
-              </TableCell>
+        {range(12).map((index) => (
+          <tr key={index}>
+            {COLUMNS.map((label) => (
+              <td key={label} className="h-11 px-3 first:pl-4 last:pr-4">
+                <Skeleton className="h-4 w-full max-w-16" />
+              </td>
             ))}
-          </TableRow>
+          </tr>
         ))}
       </MatchHistoryTable>
-    </MatchHistoryWrapper>
+    </MatchHistorySection>
   );
 }
 
 export default function MatchHistoryPage({ playerId }: { playerId: string }) {
-  const router = useRouter();
   const {
     data: matches,
     isLoading,
@@ -133,164 +113,132 @@ export default function MatchHistoryPage({ playerId }: { playerId: string }) {
 
   if (!matches?.length) {
     return (
-      <MatchHistoryWrapper>
-        <CardContent>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconHistory />
-              </EmptyMedia>
-              <EmptyTitle>No matches yet</EmptyTitle>
-              <EmptyDescription>
-                Match history will appear here once played.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </CardContent>
-      </MatchHistoryWrapper>
+      <section className="flex flex-col gap-4">
+        <SectionHeader title="Match history" />
+        <Empty className="rounded-xl border border-border border-dashed">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <IconHistory />
+            </EmptyMedia>
+            <EmptyTitle>No matches yet</EmptyTitle>
+            <EmptyDescription>
+              Matches show up here as soon as they are played.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </section>
     );
   }
 
+  const pager = [
+    { icon: IconChevronsLeft, action: firstPage, label: "First page" },
+    { icon: IconChevronLeft, action: previousPage, label: "Previous page" },
+    { icon: IconChevronRight, action: nextPage, label: "Next page" },
+    { icon: IconChevronsRight, action: lastPage, label: "Last page" },
+  ];
+
   const footer = (
     <>
-      <span className="font-mono text-neutral-600 text-xs">
-        Page {pageIndex} of {totalPages}
+      <span className="text-muted-foreground text-sm">
+        Page <span className="font-mono text-foreground">{pageIndex}</span> of{" "}
+        <span className="font-mono text-foreground">{totalPages}</span>
       </span>
-      <PaginationContent className="gap-1">
-        {[
-          {
-            icon: <IconChevronsLeft size={14} />,
-            action: firstPage,
-            label: "First",
-          },
-          {
-            icon: <IconChevronLeft size={14} />,
-            action: previousPage,
-            label: "Prev",
-          },
-          {
-            icon: <IconChevronRight size={14} />,
-            action: nextPage,
-            label: "Next",
-          },
-          {
-            icon: <IconChevronsRight size={14} />,
-            action: lastPage,
-            label: "Last",
-          },
-        ].map(({ icon, action, label }) => (
-          <PaginationItem key={label}>
-            <Button
-              variant="dark"
-              size="icon-sm"
-              onClick={() => action?.()}
-              disabled={!action}
-              className="disabled:opacity-30"
-            >
-              <span className="sr-only">{label}</span>
-              {icon}
-            </Button>
-          </PaginationItem>
+      <div className="flex gap-1">
+        {pager.map(({ icon: Icon, action, label }) => (
+          <Button
+            key={label}
+            variant="outline"
+            size="icon-sm"
+            onClick={() => action?.()}
+            disabled={!action}
+            aria-label={label}
+          >
+            <Icon />
+          </Button>
         ))}
-      </PaginationContent>
+      </div>
     </>
   );
 
   return (
-    <MatchHistoryWrapper footer={footer}>
+    <MatchHistorySection footer={footer}>
       <MatchHistoryTable>
         {matches.map((match) => {
-          const matchUrl = `/match/1-${match.id}`;
-
+          const map = match.map?.replace("de_", "") ?? "—";
           return (
-            <TableRow
+            <tr
               key={match.id}
-              tabIndex={0}
-              role="link"
-              aria-label={`View match on ${match.map?.replace("de_", "")}`}
-              onClick={() => router.push(matchUrl)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  router.push(matchUrl);
-                }
-              }}
               className={cn(
-                "h-12 cursor-pointer border-l-2 [&>td]:text-center",
-                {
-                  "border-l-emerald-500/40": match.win === true,
-                  "border-l-red-500/40": match.win === false,
-                  "border-l-transparent": !isBoolean(match.win),
-                },
+                "group relative transition-colors hover:bg-foreground/[0.03]",
+                // Result stripe on the left edge.
+                "[&>td:first-child]:border-l-2",
+                match.win === true && "[&>td:first-child]:border-l-win",
+                match.win === false && "[&>td:first-child]:border-l-loss",
+                match.win == null && "[&>td:first-child]:border-l-transparent",
               )}
             >
-              <TableCell className="text-neutral-500 text-xs">
-                {match.finished_at &&
-                  format(
-                    match.finished_at,
-                    isThisYear(match.finished_at)
-                      ? "d. MMM HH:mm"
-                      : "d. MMM yyyy",
-                  )}
-              </TableCell>
-              <TableCell className="text-[#87a3bf] text-xs capitalize">
-                {match.map?.replace("de_", "")}
-              </TableCell>
-              <TableCell className="text-center">
+              <StatsTd align="left" tone="muted" numeric={false}>
+                {/* Stretched link: the whole row opens the match. */}
+                <Link
+                  href={`/match/1-${match.id}`}
+                  className="after:absolute after:inset-0"
+                  aria-label={`${match.win ? "Win" : "Loss"} on ${map}, ${match.round_score}`}
+                >
+                  {match.finished_at &&
+                    format(
+                      match.finished_at,
+                      isThisYear(match.finished_at)
+                        ? "d MMM, HH:mm"
+                        : "d MMM yyyy",
+                    )}
+                </Link>
+              </StatsTd>
+              <StatsTd
+                align="left"
+                numeric={false}
+                className="font-medium capitalize"
+              >
+                {map}
+              </StatsTd>
+              <StatsTd align="center">
                 <span
-                  className={cn("rounded px-2 py-0.5 font-bold text-xs", {
-                    "bg-emerald-500/10 text-emerald-400": match.win === true,
-                    "bg-red-500/10 text-red-400": match.win === false,
-                    "bg-neutral-800 text-neutral-400": !isBoolean(match.win),
-                  })}
+                  className={cn(
+                    "rounded-md px-2 py-0.5 font-semibold text-xs",
+                    match.win === true && "bg-win/15 text-win",
+                    match.win === false && "bg-loss/15 text-loss",
+                    match.win == null && "bg-muted text-muted-foreground",
+                  )}
                 >
                   {match.round_score}
                 </span>
-              </TableCell>
-              <TableCell className="text-neutral-300">
+              </StatsTd>
+              <StatsTd tone="strong">
                 {!isNil(match.kills) && !isNil(match.deaths)
-                  ? `${match.kills} - ${match.deaths}`
-                  : "—"}
-              </TableCell>
-              <TableCell
-                className={cn(
-                  "font-mono",
-                  lt(match.kd_ratio, 0.95)
-                    ? "text-red-400"
-                    : gt(match.kd_ratio, 1.05)
-                      ? "text-emerald-400"
-                      : "text-neutral-500",
-                )}
-              >
-                {match.kd_ratio?.toFixed(2) ?? "—"}
-              </TableCell>
-              <TableCell className="text-neutral-400">
-                {match.adr?.toFixed(1) ?? "—"}
-              </TableCell>
-              <TableCell className="text-neutral-400">
+                  ? `${match.kills} – ${match.deaths}`
+                  : null}
+              </StatsTd>
+              <StatsTd tone={ratioTone(match.kd_ratio)}>
+                {match.kd_ratio?.toFixed(2)}
+              </StatsTd>
+              <StatsTd>{match.adr?.toFixed(1)}</StatsTd>
+              <StatsTd>
                 {isNumber(match.headshots_percent) &&
-                gt(match.headshots_percent, 0)
+                match.headshots_percent > 0
                   ? `${match.headshots_percent}%`
-                  : "—"}
-              </TableCell>
-              <TableCell className="font-mono">
-                {match.elo_diff !== null ? (
-                  <span
-                    className={cn({
-                      "text-emerald-400": match.elo_diff > 0,
-                      "text-red-400": match.elo_diff < 0,
-                      "text-neutral-400": match.elo_diff === 0,
-                    })}
-                  >
-                    {formatNumberWithSign(match.elo_diff)}
-                  </span>
-                ) : (
-                  "—"
-                )}
-              </TableCell>
-            </TableRow>
+                  : null}
+              </StatsTd>
+              <StatsTd
+                tone={diffTone(match.elo_diff)}
+                className="font-semibold"
+              >
+                {match.elo_diff != null
+                  ? formatNumberWithSign(match.elo_diff)
+                  : null}
+              </StatsTd>
+            </tr>
           );
         })}
       </MatchHistoryTable>
-    </MatchHistoryWrapper>
+    </MatchHistorySection>
   );
 }

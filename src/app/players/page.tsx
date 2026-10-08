@@ -1,12 +1,6 @@
 import { IconUsers } from "@tabler/icons-react";
-import * as motion from "motion/react-client";
-import Image from "next/image";
-import Link from "next/link";
 
-import { FaceitLevelIcon } from "@/components/icons";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -14,19 +8,12 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Item,
-  ItemContent,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
+import { PlayerRankRow } from "@/features/player/components/player-rank-row";
 import { PlayersPagination } from "@/features/player/components/players-pagination";
 import { getPlayerRankings } from "@/features/player/queries";
-import { getCountryFlagUrl } from "@/lib/country";
 import { topics } from "@/lib/realtime/topics";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 25;
 
 function parsePage(raw: string | undefined): number {
   const parsed = Number(raw ?? "1");
@@ -47,90 +34,52 @@ export default async function PlayersPage({
 
   if (players.length === 0) {
     return (
-      <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-        <CardContent>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconUsers />
-              </EmptyMedia>
-              <EmptyTitle>No players</EmptyTitle>
-              <EmptyDescription>
-                No players found in the rankings.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </CardContent>
-      </Card>
+      <Empty className="rounded-xl border border-border border-dashed">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <IconUsers />
+          </EmptyMedia>
+          <EmptyTitle>No players on this page</EmptyTitle>
+          <EmptyDescription>
+            The rankings have {count} players in total.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
   return (
-    <motion.div
-      key={currentPage}
-      className="flex flex-col space-y-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
+    <div className="flex flex-col gap-6">
       <RealtimeRefresh sources={[topics.players]} />
-      <ItemGroup>
-        {players.map((player, index) => {
-          const rank = (currentPage - 1) * PAGE_SIZE + index + 1;
 
-          return (
-            <Item
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+        <div className="flex items-center gap-3 border-border border-b bg-foreground/[0.02] px-4 py-2.5 font-mono text-[11px] text-faint uppercase tracking-wider">
+          <span className="w-7 text-center">#</span>
+          <span className="flex-1 pl-12">Player</span>
+          <span>FACEIT ELO</span>
+        </div>
+        <div className="divide-y divide-border">
+          {players.map((player, index) => (
+            <PlayerRankRow
               key={player.id}
-              size="sm"
-              variant="outline"
-              className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm [a]:hover:bg-neutral-900/30"
-              render={<Link href={`/player/${player.nickname}`} />}
-            >
-              <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-              <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/3 blur-3xl" />
-
-              <span className="tabular-nums">#{rank}</span>
-
-              <ItemMedia variant="image">
-                <Avatar size="lg" className="after:rounded-lg">
-                  <AvatarImage
-                    src={player.avatar ?? undefined}
-                    alt={player.nickname}
-                  />
-                  <AvatarFallback>{player.nickname.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </ItemMedia>
-
-              <ItemContent>
-                <ItemTitle>
-                  <span className="transition-colors group-hover/item:text-red-500">
-                    {player.nickname}
-                  </span>
-                  {player.country && (
-                    <Image
-                      className="rounded-xs"
-                      src={getCountryFlagUrl(player.country.toLowerCase(), 20)}
-                      width={15}
-                      height={10}
-                      alt={player.country}
-                    />
-                  )}
-                </ItemTitle>
-              </ItemContent>
-
-              <ItemContent className="flex-row items-center">
-                <span className="text-right font-bold font-mono text-neutral-200 text-sm tabular-nums md:text-base">
-                  {player.faceit_elo}
-                </span>
-                <FaceitLevelIcon elo={player.faceit_elo} className="size-5" />
-              </ItemContent>
-            </Item>
-          );
-        })}
-      </ItemGroup>
+              rank={offset + index + 1}
+              player={player}
+            />
+          ))}
+        </div>
+      </div>
 
       {totalPages > 1 && (
-        <PlayersPagination currentPage={currentPage} totalPages={totalPages} />
+        <div className="flex flex-col items-center gap-2">
+          <PlayersPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
+          <p className="text-faint text-xs">
+            {offset + 1}–{offset + players.length} of {count} players
+          </p>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }

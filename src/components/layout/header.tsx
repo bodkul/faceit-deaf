@@ -1,80 +1,87 @@
 "use client";
 
 import { cn } from "cn";
-import * as m from "motion/react-m";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 import LogoIcon from "@/app/icon.svg";
 import { MobileNav } from "@/components/layout/mobile-nav";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { navLinks } from "@/config/nav";
+import { isNavLinkActive, navLinks } from "@/config/nav";
 import { AuthButton } from "@/features/auth/components/auth-button";
 import { useEventsCount } from "@/features/events/hooks/use-events-count";
+import { PlayerSearch } from "@/features/player/components/player-search";
 import { useScroll } from "@/hooks/use-scroll";
 
+export function Logo({ className }: { className?: string }) {
+  return (
+    <Link
+      href="/"
+      className={cn(
+        "flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-foreground/[0.05]",
+        className,
+      )}
+    >
+      <LogoIcon className="size-6" />
+      <span className="font-black text-[15px] tracking-tight">
+        csdeaf<span className="text-faint">.pro</span>
+      </span>
+    </Link>
+  );
+}
+
+export function NavCount({ count }: { count: number | null | undefined }) {
+  if (!count) return null;
+  return (
+    <span className="ml-1.5 inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary px-1 font-mono font-semibold text-[10px] text-primary-foreground tabular-nums">
+      {count}
+    </span>
+  );
+}
+
 export function Header() {
-  const scrolled = useScroll(10);
-  const { status } = useSession();
-
-  const { data: eventsCount, isSuccess: isEventsCountLoaded } =
-    useEventsCount();
-
-  const isHeaderReady = status !== "loading" && isEventsCountLoaded;
-
-  const badgeCountByHref: Partial<Record<string, number | null>> = {
-    "/events": eventsCount,
-  };
+  const scrolled = useScroll(8);
+  const pathname = usePathname();
+  const { data: eventsCount } = useEventsCount();
 
   return (
     <header
-      className={cn("sticky top-0 z-50 w-full border-transparent border-b", {
-        "border-border bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/50":
-          scrolled,
-      })}
+      className={cn(
+        "sticky top-0 z-50 w-full border-b transition-colors duration-200",
+        scrolled
+          ? "border-border bg-background/80 backdrop-blur-md"
+          : "border-transparent",
+      )}
     >
-      <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between px-4">
-        <Link
-          className="flex items-center space-x-2 rounded-md p-2 hover:bg-muted dark:hover:bg-muted/50"
-          href="/"
-        >
-          <LogoIcon className="size-6" />
-          <span className="font-black">
-            csdeaf
-            <span className="text-neutral-600">.pro</span>
-          </span>
-        </Link>
-        <m.div
-          className="flex items-center gap-2"
-          initial={{ opacity: 0 }}
-          animate={isHeaderReady ? { opacity: 1 } : {}}
-        >
-          <nav className="hidden items-center md:flex">
-            {navLinks.map((link) => {
-              const badgeCount = badgeCountByHref[link.href];
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4">
+        <Logo />
 
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className={buttonVariants({
-                    variant: "ghost",
-                    className: "justify-start",
-                  })}
-                >
-                  {link.label}
-                  {!!badgeCount && (
-                    <Badge variant="destructive">{badgeCount}</Badge>
-                  )}
-                </Link>
-              );
-            })}
-            <div className="ms-2 h-6 border-r"></div>
-          </nav>
+        <nav className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => {
+            const active = isNavLinkActive(pathname, link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "inline-flex h-8 items-center rounded-md px-3 font-medium text-sm transition-colors",
+                  active
+                    ? "bg-foreground/[0.07] text-foreground"
+                    : "text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground",
+                )}
+              >
+                {link.label}
+                {link.href === "/events" && <NavCount count={eventsCount} />}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="ml-auto flex items-center gap-2">
+          <PlayerSearch className="hidden w-56 lg:block" />
           <AuthButton />
           <MobileNav />
-        </m.div>
+        </div>
       </div>
     </header>
   );

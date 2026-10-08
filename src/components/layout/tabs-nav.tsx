@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "cn";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,6 +10,7 @@ type TabConfig = {
   path: string;
 };
 
+/** Route-based tabs: an underlined strip that scrolls on narrow screens. */
 export function TabsNav({
   basePath,
   tabs,
@@ -18,33 +20,38 @@ export function TabsNav({
 }) {
   const pathname = usePathname();
 
-  const activeTab = tabs.find(
-    (tab) =>
-      pathname === `${basePath}${tab.path}` ||
-      (tab.path && pathname.startsWith(`${basePath}${tab.path}`)),
-  )?.value;
+  // Longest matching path wins, so the "" (overview) tab never swallows the
+  // others.
+  const activeTab = [...tabs]
+    .sort((a, b) => b.path.length - a.path.length)
+    .find(
+      (tab) =>
+        pathname === `${basePath}${tab.path}` ||
+        (tab.path && pathname.startsWith(`${basePath}${tab.path}/`)),
+    )?.value;
 
   return (
-    <div
-      role="tablist"
-      className="flex gap-1 rounded-xl border border-neutral-800 bg-neutral-900/50 p-1"
-    >
-      {tabs.map((tab) => (
-        <Link
-          key={tab.value}
-          href={`${basePath}${tab.path}`}
-          role="tab"
-          aria-selected={activeTab === tab.value}
-          className={[
-            "flex-1 rounded-lg px-4 py-2 text-center font-medium text-sm transition-all duration-200",
-            activeTab === tab.value
-              ? "bg-neutral-800 text-white"
-              : "text-neutral-500 hover:bg-neutral-800/50 hover:text-neutral-300",
-          ].join(" ")}
-        >
-          {tab.label}
-        </Link>
-      ))}
-    </div>
+    <nav className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      <div className="flex min-w-max gap-1 border-border border-b">
+        {tabs.map((tab) => {
+          const active = activeTab === tab.value;
+          return (
+            <Link
+              key={tab.value}
+              href={`${basePath}${tab.path}`}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "relative -mb-px border-b-2 px-3 py-2.5 font-medium text-sm transition-colors",
+                active
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

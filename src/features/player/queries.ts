@@ -76,7 +76,7 @@ export async function getPlayerByUsername(nickname: string) {
     const { data: playerData } = await supabase
       .from("players")
       .select(
-        "id, avatar, nickname, steam_id_64, twitch_username, country, faceit_elo",
+        "id, avatar, cover_image, nickname, steam_id_64, twitch_username, country, faceit_elo",
       )
       .match({ nickname })
       .single();
@@ -90,6 +90,7 @@ export async function getPlayerByUsername(nickname: string) {
     id: playerDetails.player_id,
     nickname: playerDetails.nickname,
     avatar: playerDetails.avatar,
+    cover_image: playerDetails.cover_image || null,
     steam_id_64: playerDetails.steam_id_64,
     twitch_username: null,
     country: playerDetails.country,

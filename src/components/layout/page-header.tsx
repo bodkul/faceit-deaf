@@ -16,14 +16,16 @@ export function PageHeader({ children, className }: PageHeaderProps) {
 }
 
 export function PageHeaderHeading({ children, className }: PageHeaderProps) {
-  return <div className={cn("flex flex-col gap-2", className)}>{children}</div>;
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>{children}</div>
+  );
 }
 
 export function PageHeaderTitle({ children, className }: PageHeaderProps) {
   return (
     <h1
       className={cn(
-        "scroll-m-20 font-bold font-heading text-3xl xl:text-4xl",
+        "scroll-m-20 font-bold font-heading text-2xl tracking-tight sm:text-3xl",
         className,
       )}
     >
@@ -37,7 +39,7 @@ export function PageHeaderDescription({
   className,
 }: PageHeaderProps) {
   return (
-    <p className={cn("text-muted-foreground sm:text-lg", className)}>
+    <p className={cn("max-w-2xl text-muted-foreground", className)}>
       {children}
     </p>
   );

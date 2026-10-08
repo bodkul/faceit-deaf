@@ -1,5 +1,6 @@
 "use client";
 
+import { IconChartBar, IconLogout, IconUser } from "@tabler/icons-react";
 import Link from "next/link";
 import type { Session } from "next-auth";
 import { signOut } from "next-auth/react";
@@ -18,7 +19,10 @@ import {
 export function UserMenu({ user }: { user: NonNullable<Session["user"]> }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        aria-label="Account menu"
+        className="rounded-lg outline-none ring-1 ring-foreground/10 transition-shadow hover:ring-foreground/25 focus-visible:ring-2 focus-visible:ring-ring data-popup-open:ring-foreground/25"
+      >
         <Avatar className="cursor-pointer rounded-md border-none after:rounded-md after:border-none">
           <AvatarImage
             className="rounded-md"
@@ -30,42 +34,38 @@ export function UserMenu({ user }: { user: NonNullable<Session["user"]> }) {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-56 border-neutral-800 bg-neutral-950"
-      >
+      <DropdownMenuContent align="end" sideOffset={8} className="w-60">
         <DropdownMenuGroup>
-          <DropdownMenuLabel className="flex items-center gap-2">
-            <Avatar>
+          <DropdownMenuLabel className="flex items-center gap-2.5 px-2 py-2">
+            <Avatar className="size-9">
               <AvatarImage
                 src={user.image ?? undefined}
                 alt={user.name ?? undefined}
               />
               <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
             </Avatar>
-            <div className="flex flex-1 flex-col">
-              <span className="font-medium text-sm text-white">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate font-semibold text-foreground text-sm">
                 {user.name}
               </span>
-              <span className="text-neutral-500 text-xs">{user.email}</span>
+              <span className="truncate font-normal text-muted-foreground text-xs">
+                {user.email}
+              </span>
             </div>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator className="bg-neutral-800" />
-        <DropdownMenuItem
-          className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"
-          render={<Link href={`/player/${user.name}`} />}
-        >
-          Profile
+        <DropdownMenuSeparator />
+        <DropdownMenuItem render={<Link href={`/player/${user.name}`} />}>
+          <IconChartBar className="text-muted-foreground" />
+          My stats
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className="text-neutral-300 hover:bg-neutral-900 hover:text-white focus:bg-neutral-900 focus:text-white"
-          render={<Link href={`/profile`} />}
-        >
-          Settings
+        <DropdownMenuItem render={<Link href="/profile" />}>
+          <IconUser className="text-muted-foreground" />
+          Account
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-neutral-800" />
+        <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={() => signOut()}>
+          <IconLogout />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

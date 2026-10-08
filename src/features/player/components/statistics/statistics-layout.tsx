@@ -1,12 +1,24 @@
+"use client";
+
+import { SectionHeader } from "@/components/section-header";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { PlayerStatisticsRange } from "@/features/player/hooks/use-player-statistics";
 
-import { StatisticsHeader } from "./statistics-header";
+const TIME_RANGES = [
+  { value: "currentSession", label: "Current session" },
+  { value: "last20Matches", label: "Last 20 matches" },
+  { value: "last7Days", label: "Last 7 days" },
+  { value: "last30Days", label: "Last 30 days" },
+  { value: "allTime", label: "All time" },
+] as const;
 
 export function StatisticsLayout({
   children,
@@ -18,25 +30,37 @@ export function StatisticsLayout({
   onRangeChange?: (value: PlayerStatisticsRange) => void;
 }) {
   return (
-    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-
-      {statisticsRange && onRangeChange ? (
-        <StatisticsHeader
-          statisticsRange={statisticsRange}
-          onRangeChange={onRangeChange}
+    <section className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <SectionHeader
+          title="Performance"
+          description="Averages and ELO over the selected period"
         />
-      ) : (
-        <CardHeader>
-          <CardTitle>Statistics</CardTitle>
-          <CardDescription>
-            Performance metrics and ELO progression
-          </CardDescription>
-        </CardHeader>
-      )}
+        <Select
+          items={TIME_RANGES}
+          value={statisticsRange ?? "last20Matches"}
+          disabled={!onRangeChange}
+          onValueChange={(value) => {
+            if (value) onRangeChange?.(value);
+          }}
+        >
+          <SelectTrigger className="w-44 bg-card" aria-label="Time range">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {TIME_RANGES.map((range, index) => (
+                <div key={range.value}>
+                  {(index === 1 || index === 4) && <SelectSeparator />}
+                  <SelectItem value={range.value}>{range.label}</SelectItem>
+                </div>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
       {children}
-    </Card>
+    </section>
   );
 }

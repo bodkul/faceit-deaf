@@ -1,15 +1,39 @@
+import { cn } from "cn";
 import Image from "next/image";
 
-export function MapBackground({ map }: { map: string }) {
+const KNOWN_MAPS = new Set([
+  "de_ancient",
+  "de_anubis",
+  "de_cache",
+  "de_dust2",
+  "de_inferno",
+  "de_mirage",
+  "de_nuke",
+  "de_overpass",
+  "de_train",
+  "de_vertigo",
+]);
+
+/** Decorative map screenshot behind a card; renders nothing for unknown maps. */
+export function MapBackground({
+  map,
+  className,
+}: {
+  map: string | null | undefined;
+  className?: string;
+}) {
+  if (!map || !KNOWN_MAPS.has(map)) return null;
+
   return (
-    <div className="absolute inset-0">
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
       <Image
         src={`/img/maps/${map}.webp`}
-        alt={`Map ${map}`}
+        alt=""
         fill
-        className="object-cover opacity-50"
+        sizes="(max-width: 768px) 100vw, 50vw"
+        className={cn("object-cover opacity-40", className)}
       />
-      <div className="absolute inset-0 bg-linear-to-b from-neutral-950/60 via-neutral-950/80 to-neutral-950" />
+      <div className="absolute inset-0 bg-linear-to-b from-card/40 via-card/85 to-card" />
     </div>
   );
 }

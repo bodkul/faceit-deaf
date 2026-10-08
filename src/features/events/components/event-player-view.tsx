@@ -1,22 +1,53 @@
 "use client";
 
+import { IconArrowLeft, IconArrowUpRight } from "@tabler/icons-react";
 import { cn } from "cn";
 import { format } from "date-fns";
 import { orderBy, sumBy } from "es-toolkit";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { SectionHeader } from "@/components/section-header";
+import {
+  ratioTone,
+  StatsTable,
+  StatsTd,
+  StatsTh,
+} from "@/components/stats-table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEventData } from "@/features/events/hooks/use-event-data";
+import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 
 function Loading() {
   return (
-    <div className="flex flex-col gap-4">
-      <Skeleton className="h-8 w-32 bg-neutral-900" />
-      <Skeleton className="h-28 w-full rounded-2xl bg-neutral-900" />
-      <Skeleton className="h-16 w-full rounded-xl bg-neutral-900" />
-      <Skeleton className="h-64 w-full rounded-2xl bg-neutral-900" />
+    <div className="flex flex-col gap-6">
+      <Skeleton className="h-52 rounded-2xl" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  className,
+}: {
+  label: string;
+  value: string | number;
+  className?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5 bg-card px-4 py-3">
+      <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+        {label}
+      </span>
+      <span
+        className={cn("font-bold font-mono text-xl tabular-nums", className)}
+      >
+        {value}
+      </span>
     </div>
   );
 }
@@ -31,7 +62,6 @@ export function EventPlayerView({
   const { data: matches = [], isLoading } = useEventData(slug);
 
   if (isLoading) return <Loading />;
-  if (!matches) return notFound();
 
   const mapRows = orderBy(
     matches.flatMap((match) =>
@@ -64,20 +94,22 @@ export function EventPlayerView({
             kd: kills / Math.max(deaths, 1),
             hs_pct: (headshots / Math.max(kills, 1)) * 100,
             mvps: ps.mvps ?? 0,
-            result: ps.result,
-            team_name: teamInfo?.team_name ?? ps.faction_id,
+            team_name: teamInfo
+              ? normalizeTeamName(teamInfo.team_name)
+              : ps.faction_id,
             is_winner: teamStat?.is_winner,
           },
         ];
       }),
     ),
-    [(r) => r.match_id, (r) => r.match_round],
+    [(r) => r.started_at ?? "", (r) => r.match_round],
     ["desc", "asc"],
   );
 
   if (!mapRows.length) return notFound();
 
   const nickname = mapRows[0]?.nickname ?? decodeURIComponent(playerId);
+  const team = mapRows[0]?.team_name;
   const mapsPlayed = mapRows.length;
   const mapsWon = mapRows.filter((r) => r.is_winner === true).length;
   const totalKills = sumBy(mapRows, (r) => r.kills);
@@ -87,185 +119,146 @@ export function EventPlayerView({
   const totalMvps = sumBy(mapRows, (r) => r.mvps);
 
   const kd = totalKills / Math.max(totalDeaths, 1);
-  const avgK = totalKills / mapsPlayed;
-  const avgD = totalDeaths / mapsPlayed;
-  const avgAdr = totalAdr / mapsPlayed;
-  const hsPercent = (totalHeadshots / Math.max(totalKills, 1)) * 100;
   const winRate = (mapsWon / mapsPlayed) * 100;
 
-  const stats = [
-    {
-      label: "KD",
-      value: kd.toFixed(2),
-      color: kd >= 1 ? "text-emerald-400" : "text-red-400",
-    },
-    { label: "Avg K", value: avgK.toFixed(1), color: "text-neutral-200" },
-    { label: "Avg D", value: avgD.toFixed(1), color: "text-neutral-400" },
-    { label: "ADR", value: avgAdr.toFixed(1), color: "text-neutral-200" },
-    {
-      label: "HS%",
-      value: `${hsPercent.toFixed(1)}%`,
-      color: "text-neutral-400",
-    },
-    {
-      label: "Win Rate",
-      value: `${winRate.toFixed(0)}%`,
-      color: winRate >= 50 ? "text-emerald-400" : "text-red-400",
-    },
-  ];
-
   return (
-    <div className="space-y-6">
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-        <div className="flex items-center gap-4 px-6 py-5">
-          <Avatar className="size-14 rounded-xl">
-            <AvatarFallback className="rounded-xl text-lg">
+    <div className="flex flex-col gap-8">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="flex items-center justify-between gap-3 border-border border-b px-4 py-3 sm:px-6">
+          <Link
+            href={`/events/${slug}/players`}
+            className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+          >
+            <IconArrowLeft className="size-4" />
+            All players
+          </Link>
+          <Link
+            href={`/player/${playerId}`}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            Full profile
+            <IconArrowUpRight />
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-4 px-4 py-5 sm:px-6">
+          <Avatar className="size-14 rounded-xl after:rounded-xl">
+            <AvatarFallback className="rounded-xl font-bold text-lg">
               {nickname.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <div>
-            <h1 className="font-black text-2xl text-white">{nickname}</h1>
-            <p className="text-neutral-500 text-sm">
-              {mapsPlayed} maps · {mapsWon}W {mapsPlayed - mapsWon}L
+          <div className="flex min-w-0 flex-col">
+            <h2 className="truncate font-black text-2xl tracking-tight">
+              {nickname}
+            </h2>
+            <p className="truncate text-muted-foreground text-sm">
+              {team} · {mapsPlayed} maps
             </p>
           </div>
-          <div className="ml-auto text-right">
-            <div className="font-bold font-mono text-3xl text-yellow-400">
-              {totalMvps}
-            </div>
-            <div className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-              MVPs
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-px border-neutral-800 border-t sm:grid-cols-6">
-          {stats.map(({ label, value, color }) => (
-            <div
-              key={label}
-              className="flex flex-col items-center gap-1 bg-neutral-900/40 px-4 py-3"
-            >
-              <span
-                className={cn(
-                  "font-bold font-mono text-lg tabular-nums",
-                  color,
-                )}
-              >
-                {value}
+          {totalMvps > 0 && (
+            <div className="ml-auto flex flex-col items-end">
+              <span className="font-black font-mono text-3xl text-warning tabular-nums">
+                {totalMvps}
               </span>
-              <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                {label}
+              <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+                MVPs
               </span>
             </div>
-          ))}
+          )}
         </div>
-      </div>
 
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-        <div className="border-neutral-800 border-b px-5 py-4">
-          <h3 className="font-bold text-white">Map History</h3>
+        <div className="grid grid-cols-2 gap-px border-border border-t bg-border sm:grid-cols-3 lg:grid-cols-6">
+          <Stat
+            label="K/D"
+            value={kd.toFixed(2)}
+            className={cn(
+              ratioTone(kd) === "win" && "text-win",
+              ratioTone(kd) === "loss" && "text-loss",
+            )}
+          />
+          <Stat
+            label="Avg kills"
+            value={(totalKills / mapsPlayed).toFixed(1)}
+          />
+          <Stat
+            label="Avg deaths"
+            value={(totalDeaths / mapsPlayed).toFixed(1)}
+          />
+          <Stat label="ADR" value={(totalAdr / mapsPlayed).toFixed(1)} />
+          <Stat
+            label="HS%"
+            value={`${((totalHeadshots / Math.max(totalKills, 1)) * 100).toFixed(0)}%`}
+          />
+          <Stat
+            label="Maps won"
+            value={`${winRate.toFixed(0)}%`}
+            className={cn(winRate >= 50 ? "text-win" : "text-loss")}
+          />
         </div>
-        <div className="w-full overflow-x-auto">
-          <table className="w-max min-w-full">
-            <colgroup>
-              <col className="w-4" />
-              <col className="w-28" />
-              <col className="w-36" />
-              <col className="w-14" />
-              <col className="w-14" />
-              <col className="w-14" />
-              <col className="w-16" />
-              <col className="w-16" />
-              <col className="w-20" />
-            </colgroup>
-            <thead>
-              <tr className="border-neutral-800/50 border-b">
-                {(
-                  [
-                    { key: "result", label: "", right: false },
-                    { key: "map", label: "Map", right: false },
-                    { key: "team", label: "Team", right: false },
-                    { key: "k", label: "K", right: true },
-                    { key: "d", label: "D", right: true },
-                    { key: "a", label: "A", right: true },
-                    { key: "kd", label: "KD", right: true },
-                    { key: "adr", label: "ADR", right: true },
-                    { key: "hs", label: "HS%", right: true },
-                  ] as const
-                ).map(({ key, label, right }) => (
-                  <th
-                    key={key}
-                    className={cn(
-                      "px-4 py-2 font-mono text-neutral-600 text-xs uppercase tracking-widest",
-                      right ? "text-right" : "text-left",
-                    )}
-                  >
-                    {label}
-                  </th>
-                ))}
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <SectionHeader
+          title="Maps"
+          description="Every map played at this event"
+        />
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+          <StatsTable minWidth={640}>
+            <thead className="border-border border-b">
+              <tr>
+                <StatsTh sticky align="left">
+                  Map
+                </StatsTh>
+                <StatsTh align="left">Date</StatsTh>
+                <StatsTh>K</StatsTh>
+                <StatsTh>D</StatsTh>
+                <StatsTh>A</StatsTh>
+                <StatsTh>K/D</StatsTh>
+                <StatsTh>ADR</StatsTh>
+                <StatsTh>HS%</StatsTh>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border">
               {mapRows.map((row) => (
                 <tr
                   key={`${row.match_id}-${row.match_round}`}
-                  className="border-neutral-800/50 border-b last:border-0 hover:bg-neutral-800/20"
+                  className="transition-colors hover:bg-foreground/[0.03]"
                 >
-                  <td className="px-4 py-2.5">
-                    <div
-                      className={cn("size-1.5 rounded-full", {
-                        "bg-emerald-400": row.is_winner === true,
-                        "bg-red-400": row.is_winner === false,
-                        "bg-neutral-600": row.is_winner == null,
-                      })}
-                    />
-                  </td>
-                  <td className="px-4 py-2.5">
+                  <StatsTd
+                    sticky
+                    align="left"
+                    numeric={false}
+                    className={cn(
+                      "border-l-2",
+                      row.is_winner === true && "border-l-win",
+                      row.is_winner === false && "border-l-loss",
+                      row.is_winner == null && "border-l-transparent",
+                    )}
+                  >
                     <Link
                       href={`/events/${slug}/matches/${row.match_id}`}
-                      className="font-mono text-neutral-300 text-sm capitalize transition-colors hover:text-white"
+                      className="font-medium capitalize transition-colors hover:text-primary"
                     >
                       {row.map_name?.replace("de_", "")}
                     </Link>
-                    {row.started_at && (
-                      <p className="font-mono text-neutral-600 text-xs">
-                        {format(row.started_at, "d MMM yyyy")}
-                      </p>
-                    )}
-                  </td>
-                  <td className="truncate px-4 py-2.5 text-neutral-500 text-sm">
-                    {row.team_name}
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-neutral-300 text-sm">
-                    {row.kills}
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                    {row.deaths}
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                    {row.assists}
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-sm">
-                    <span
-                      className={
-                        row.kd >= 1 ? "text-emerald-400" : "text-red-400"
-                      }
-                    >
-                      {row.kd.toFixed(2)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                    {row.adr?.toFixed(1) ?? "—"}
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                    {row.hs_pct.toFixed(1)}%
-                  </td>
+                  </StatsTd>
+                  <StatsTd align="left" tone="muted" numeric={false}>
+                    {row.started_at && format(row.started_at, "d MMM, HH:mm")}
+                  </StatsTd>
+                  <StatsTd tone="strong">{row.kills}</StatsTd>
+                  <StatsTd>{row.deaths}</StatsTd>
+                  <StatsTd>{row.assists}</StatsTd>
+                  <StatsTd tone={ratioTone(row.kd)}>
+                    {row.kd.toFixed(2)}
+                  </StatsTd>
+                  <StatsTd>{row.adr?.toFixed(1)}</StatsTd>
+                  <StatsTd>{row.hs_pct.toFixed(0)}%</StatsTd>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </StatsTable>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { IconUsersGroup } from "@tabler/icons-react";
+import Link from "next/link";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Empty,
   EmptyDescription,
@@ -11,23 +12,19 @@ import {
 
 export default function TeamsPage() {
   return (
-    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-
-      <CardContent>
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <IconUsersGroup />
-            </EmptyMedia>
-            <EmptyTitle>No teams yet</EmptyTitle>
-            <EmptyDescription>
-              Create your first team to get started.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      </CardContent>
-    </Card>
+    <Empty className="rounded-xl border border-border border-dashed">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <IconUsersGroup />
+        </EmptyMedia>
+        <EmptyTitle>Team pages are coming soon</EmptyTitle>
+        <EmptyDescription>
+          Until then, team rosters and results live on each event's Teams tab.
+        </EmptyDescription>
+      </EmptyHeader>
+      <Link href="/events" className={buttonVariants({ variant: "secondary" })}>
+        Browse events
+      </Link>
+    </Empty>
   );
 }

@@ -16,7 +16,7 @@ export default async function EventLayout({
   await ensureEventExists(slug);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <EventCard slug={slug} />
       <TabsNav basePath={`/events/${slug}`} tabs={EVENT_TABS} />
       {children}

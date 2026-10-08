@@ -1,6 +1,7 @@
 "use client";
 
 import { IconSearch } from "@tabler/icons-react";
+import { cn } from "cn";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -22,7 +23,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { usePlayerSearch } from "@/features/player/hooks/use-player-search";
 import { getCountryFlagUrl } from "@/lib/country";
 
-export function PlayerSearch() {
+export function PlayerSearch({
+  className,
+  placeholder = "Search players…",
+}: {
+  className?: string;
+  placeholder?: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,11 +58,12 @@ export function PlayerSearch() {
   };
 
   return (
-    <div ref={containerRef} className="relative">
-      <InputGroup>
+    <div ref={containerRef} className={cn("relative", className)}>
+      <InputGroup className="bg-card">
         <InputGroupInput
           ref={inputRef}
-          placeholder="Search player..."
+          placeholder={placeholder}
+          aria-label="Search players"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -63,17 +71,15 @@ export function PlayerSearch() {
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          className="border-neutral-800 bg-neutral-900 text-white placeholder:text-neutral-600 focus:border-neutral-700"
+          className="text-foreground placeholder:text-faint"
         />
-        <InputGroupAddon className="text-neutral-600">
+        <InputGroupAddon className="text-faint">
           <IconSearch size={16} />
         </InputGroupAddon>
       </InputGroup>
 
       {isOpen && query.length >= 2 && (
-        <div className="absolute top-full right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-2xl shadow-black/50">
-          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/40 to-transparent" />
-
+        <div className="absolute inset-x-0 top-full z-50 mt-2 min-w-72 overflow-hidden rounded-xl border border-border bg-popover shadow-2xl shadow-black/50">
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
               <Spinner />
@@ -84,7 +90,7 @@ export function PlayerSearch() {
                 <li key={player.id}>
                   <Link
                     href={`/player/${player.nickname}`}
-                    className="flex w-full items-center gap-3 px-3 py-2.5 transition-colors hover:bg-neutral-900"
+                    className="flex w-full items-center gap-3 px-3 py-2.5 transition-colors hover:bg-foreground/[0.05]"
                     onClick={() => setIsOpen(false)}
                   >
                     <Avatar className="rounded-lg">
@@ -92,7 +98,7 @@ export function PlayerSearch() {
                         src={player.avatar ?? undefined}
                         alt={player.nickname ?? ""}
                       />
-                      <AvatarFallback className="rounded-lg text-neutral-400 text-xs">
+                      <AvatarFallback className="rounded-lg text-muted-foreground text-xs">
                         {player.nickname?.charAt(0) ?? "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -110,13 +116,13 @@ export function PlayerSearch() {
                             alt={`${player.country} flag`}
                           />
                         )}
-                        <span className="font-medium text-sm text-white">
+                        <span className="font-medium text-foreground text-sm">
                           {player.nickname}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-mono text-neutral-500 text-xs">
+                      <span className="font-mono text-muted-foreground text-xs">
                         {player.faceit_elo}
                       </span>
                       <FaceitLevelIcon
@@ -131,10 +137,10 @@ export function PlayerSearch() {
           ) : (
             <Empty>
               <EmptyHeader>
-                <EmptyTitle className="text-neutral-400 text-sm">
+                <EmptyTitle className="text-muted-foreground text-sm">
                   No players found
                 </EmptyTitle>
-                <EmptyDescription className="text-neutral-600 text-xs">
+                <EmptyDescription className="text-faint text-xs">
                   Try searching for a different nickname
                 </EmptyDescription>
               </EmptyHeader>

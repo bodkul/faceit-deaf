@@ -1,28 +1,39 @@
 "use client";
 
 import NumberFlow from "@number-flow/react";
-import { IconClock, IconExternalLink, IconMapPin } from "@tabler/icons-react";
+import {
+  IconArrowUpRight,
+  IconCalendar,
+  IconClock,
+  IconServer,
+} from "@tabler/icons-react";
 import { cn } from "cn";
 import { format, intervalToDuration } from "date-fns";
 import { isNumber, meanBy } from "es-toolkit";
 import { orderBy } from "es-toolkit/array";
-import { divide, gt, lt, multiply, subtract, sumBy } from "es-toolkit/compat";
-import { isNil } from "es-toolkit/predicate";
-import Image from "next/image";
+import { sumBy } from "es-toolkit/compat";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { useMemo } from "react";
 
 import { FaceitLevelIcon } from "@/components/icons";
 import { MapBackground } from "@/components/map-background";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SectionHeader } from "@/components/section-header";
+import {
+  diffTone,
+  ratioTone,
+  StatsTable,
+  StatsTd,
+  StatsTh,
+} from "@/components/stats-table";
+import { StatusPill } from "@/components/status-pill";
+import { TeamAvatar } from "@/components/team-avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TwitchPlayer } from "@/features/match/components/twitch-player";
 import { useLiveStreams } from "@/features/match/hooks/use-live-streams";
 import { useMatch } from "@/features/match/hooks/use-match";
 import { calculateAverageStats } from "@/features/match/lib/calculate-average-stats";
-import { getCountryCode, getFlagUrl } from "@/lib/country";
 import { formatNumberWithSign } from "@/lib/format";
 
 type MatchType = NonNullable<ReturnType<typeof useMatch>["data"]>;
@@ -37,406 +48,205 @@ const formatDuration = (start: string, end: string): string => {
 
 function Loading() {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-        <Skeleton className="h-40 w-full rounded-none" />
-        <div className="grid grid-cols-3 items-center gap-4 px-6 py-6">
-          <div className="flex items-center gap-4">
-            <Skeleton className="size-14 rounded-xl" />
-            <div className="flex flex-col gap-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-8 w-12" />
-            </div>
+    <div className="flex flex-col gap-8">
+      <Skeleton className="h-56 rounded-2xl" />
+      {[0, 1].map((t) => (
+        <div
+          key={t}
+          className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)"
+        >
+          <div className="flex items-center gap-3 border-border border-b px-4 py-3">
+            <Skeleton className="size-8 rounded-lg" />
+            <Skeleton className="h-4 w-32" />
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <Skeleton className="h-6 w-8" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-          <div className="flex items-center justify-end gap-4">
-            <div className="flex flex-col items-end gap-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-8 w-12" />
-            </div>
-            <Skeleton className="size-14 rounded-xl" />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <Skeleton className="h-4 w-32" />
-        {[0, 1].map((t) => (
-          <div
-            key={t}
-            className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950"
-          >
-            <div className="flex items-center gap-3 border-neutral-800 border-b px-4 py-3">
-              <Skeleton className="size-7 rounded-lg" />
+          {[0, 1, 2, 3, 4].map((r) => (
+            <div
+              key={r}
+              className="flex items-center gap-3 border-border border-b px-4 py-3 last:border-0"
+            >
+              <Skeleton className="size-6 rounded-full" />
               <Skeleton className="h-4 w-28" />
-              <Skeleton className="ml-auto h-4 w-10" />
+              <Skeleton className="ml-auto h-4 w-1/2" />
             </div>
-            <div className="px-4">
-              {[0, 1, 2, 3, 4].map((r) => (
-                <div
-                  key={r}
-                  className="flex items-center justify-between border-neutral-800/50 border-b py-3 last:border-0"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Skeleton className="size-6 rounded" />
-                    <Skeleton className="h-4 w-24" />
-                  </div>
-                  <div className="flex gap-6">
-                    {[0, 1, 2, 3, 4, 5, 6, 7].map((c) => (
-                      <Skeleton key={c} className="h-4 w-8" />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MatchStatus({ match }: { match: MatchType }) {
+  if (match.finished_at) return <StatusPill tone="muted">Finished</StatusPill>;
+  if (match.started_at) {
+    return (
+      <StatusPill tone="live" pulse>
+        Live
+      </StatusPill>
+    );
+  }
+  return <StatusPill tone="warning">Starting</StatusPill>;
+}
+
+function TeamSide({
+  team,
+  align,
+}: {
+  team: TeamType;
+  align: "left" | "right";
+}) {
+  return (
+    <div
+      className={cn(
+        "flex min-w-0 flex-col items-center gap-2 text-center sm:flex-row sm:gap-4",
+        align === "left" ? "sm:text-left" : "sm:flex-row-reverse sm:text-right",
+      )}
+    >
+      <TeamAvatar
+        name={team.name}
+        src={team.avatar}
+        className="size-12 rounded-xl sm:size-16"
+      />
+      <div className="flex min-w-0 flex-col gap-1">
+        <span className="w-full truncate font-bold text-sm sm:line-clamp-2 sm:whitespace-normal sm:break-all sm:text-lg">
+          {team.name}
+        </span>
+        {team.team_win != null && (
+          <span
+            className={cn(
+              "font-mono font-semibold text-[11px] uppercase tracking-wider",
+              team.team_win ? "text-win" : "text-loss",
+            )}
+          >
+            {team.team_win ? "Winner" : "Defeat"}
+          </span>
+        )}
       </div>
+    </div>
+  );
+}
+
+function Score({ team }: { team: TeamType }) {
+  return (
+    <NumberFlow
+      value={Number(team.final_score ?? 0)}
+      className={cn(
+        team.team_win === true && "text-win",
+        team.team_win === false && "text-foreground/60",
+      )}
+    />
+  );
+}
+
+function HalfScores({ team1, team2 }: { team1: TeamType; team2: TeamType }) {
+  const parts = [
+    ["1st", team1.first_half_score, team2.first_half_score],
+    ["2nd", team1.second_half_score, team2.second_half_score],
+  ] as const;
+  const hasOvertime = !!team1.overtime_score || !!team2.overtime_score;
+
+  if (parts.every(([, a, b]) => a == null && b == null)) return null;
+
+  return (
+    <div className="flex items-center gap-3 font-mono text-muted-foreground text-xs tabular-nums">
+      {parts.map(([label, a, b]) => (
+        <span key={label}>
+          <span className="text-faint">{label} </span>
+          {a ?? "–"}:{b ?? "–"}
+        </span>
+      ))}
+      {hasOvertime && (
+        <span className="text-warning">
+          <span className="opacity-70">OT </span>
+          {team1.overtime_score ?? 0}:{team2.overtime_score ?? 0}
+        </span>
+      )}
     </div>
   );
 }
 
 function MatchHeader({ match }: { match: MatchType }) {
   const [team1, team2] = match.teams;
-  const locationCode = match.location_pick
-    ? getCountryCode(match.location_pick)
-    : undefined;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-      {match.map_pick && <MapBackground map={match.map_pick} />}
+    <section className="relative isolate overflow-hidden rounded-2xl border border-border bg-card">
+      <MapBackground map={match.map_pick} className="opacity-50" />
 
-      <div className="relative px-6 pt-5 pb-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900/80 px-3 py-1.5 sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-            <IconMapPin size={13} className="text-neutral-500" />
-            <span className="font-medium font-mono text-neutral-300 text-xs capitalize">
-              {match.map_pick?.replace("de_", "") ?? "—"}
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-border/60 border-b px-4 py-3 sm:px-6">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-muted-foreground text-sm">
+          <MatchStatus match={match} />
+          <span className="font-semibold text-foreground capitalize">
+            {match.map_pick?.replace("de_", "") ?? "Map vote"}
+          </span>
+          {match.started_at && (
+            <span className="inline-flex items-center gap-1.5">
+              <IconCalendar className="size-4 text-faint" />
+              {format(match.started_at, "d MMM yyyy, HH:mm")}
             </span>
-          </div>
-          <div className="hidden sm:block" />
-          <div className="flex items-center gap-3">
-            {match.started_at && (
-              <span className="font-mono text-neutral-600 text-xs">
-                {format(match.started_at, "HH:mm · dd/MM/yyyy")}
-              </span>
-            )}
-            {match.finished_at && match.started_at && (
-              <span className="rounded border border-neutral-800 bg-neutral-900/60 px-2 py-1 font-mono text-neutral-500 text-xs">
-                <IconClock size={11} className="mr-1 inline" />
-                {formatDuration(match.started_at, match.finished_at)}
-              </span>
-            )}
-            <Link
-              className={buttonVariants({ variant: "dark", size: "sm" })}
-              href={`https://www.faceit.com/en/cs2/room/1-${match.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              FACEIT
-              <IconExternalLink size={12} />
-            </Link>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 items-center gap-4">
-          <div className="flex items-center gap-4">
-            <Avatar className="size-14 rounded-xl">
-              <AvatarImage src={team1.avatar ?? undefined} />
-              <AvatarFallback className="rounded-xl text-neutral-400">
-                {team1.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-bold text-white">{team1.name}</p>
-              <span
-                className={cn("font-black font-mono text-4xl tabular-nums", {
-                  "text-emerald-400": team1.team_win === true,
-                  "text-red-400": team1.team_win === false,
-                  "text-white": team1.team_win === null,
-                })}
-              >
-                <NumberFlow value={Number(team1.final_score)} />
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center gap-2">
-            <span className="font-bold font-mono text-2xl text-neutral-700">
-              VS
+          )}
+          {match.finished_at && match.started_at && (
+            <span className="inline-flex items-center gap-1.5">
+              <IconClock className="size-4 text-faint" />
+              {formatDuration(match.started_at, match.finished_at)}
             </span>
-            {(team1.first_half_score != null ||
-              team1.second_half_score != null) && (
-              <div className="flex items-center gap-1 text-center">
-                <div className="flex flex-col items-center gap-0.5">
-                  <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                    1H
-                  </span>
-                  <span className="font-mono text-neutral-400 text-xs">
-                    {team1.first_half_score ?? "—"} :{" "}
-                    {team2.first_half_score ?? "—"}
-                  </span>
-                </div>
-                <span className="mx-1 text-neutral-800">·</span>
-                <div className="flex flex-col items-center gap-0.5">
-                  <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                    2H
-                  </span>
-                  <span className="font-mono text-neutral-400 text-xs">
-                    {team1.second_half_score ?? "—"} :{" "}
-                    {team2.second_half_score ?? "—"}
-                  </span>
-                </div>
-                {team1.overtime_score != null && team1.overtime_score > 0 && (
-                  <>
-                    <span className="mx-1 text-neutral-800">·</span>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                        OT
-                      </span>
-                      <span className="font-mono text-xs text-yellow-500/80">
-                        {team1.overtime_score} : {team2.overtime_score}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-            {match.location_pick && (
-              <div className="flex items-center gap-1.5">
-                {locationCode && (
-                  <Image
-                    src={getFlagUrl(locationCode, "sm")}
-                    alt="Server location"
-                    width={16}
-                    height={11}
-                    className="rounded-xs"
-                  />
-                )}
-                <span className="font-mono text-neutral-600 text-xs">
-                  {match.location_pick}
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center justify-end gap-4 text-right">
-            <div>
-              <p className="font-bold text-white">{team2.name}</p>
-              <span
-                className={cn("font-black font-mono text-4xl tabular-nums", {
-                  "text-emerald-400": team2.team_win === true,
-                  "text-red-400": team2.team_win === false,
-                  "text-white": team2.team_win === null,
-                })}
-              >
-                <NumberFlow value={Number(team2.final_score)} />
-              </span>
-            </div>
-            <Avatar className="size-14 rounded-xl">
-              <AvatarImage src={team2.avatar ?? undefined} />
-              <AvatarFallback className="rounded-xl text-neutral-400">
-                {team2.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-          </div>
+          )}
+          {match.location_pick && (
+            <span className="inline-flex items-center gap-1.5">
+              <IconServer className="size-4 text-faint" />
+              {match.location_pick}
+            </span>
+          )}
         </div>
+        <Link
+          className={buttonVariants({ variant: "outline", size: "sm" })}
+          href={`https://www.faceit.com/en/cs2/room/1-${match.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open on FACEIT
+          <IconArrowUpRight />
+        </Link>
       </div>
-    </div>
-  );
-}
 
-function StatCell({
-  value,
-  highlight,
-}: {
-  value: React.ReactNode;
-  highlight?: "green" | "red" | null;
-}) {
-  return (
-    <td
-      className={cn(
-        "px-4 py-2.5 text-right font-mono text-sm tabular-nums",
-        highlight === "green"
-          ? "text-emerald-400"
-          : highlight === "red"
-            ? "text-red-400"
-            : "text-neutral-400",
-      )}
-    >
-      {value ?? "—"}
-    </td>
-  );
-}
-
-function PlayerStatsRow({
-  player,
-  totalScore,
-}: {
-  player: PlayerType;
-  totalScore: number;
-}) {
-  const stats =
-    isNumber(player.assists) &&
-    isNumber(player.deaths) &&
-    isNumber(player.adr) &&
-    isNumber(player.kr_ratio)
-      ? calculateAverageStats({
-          rounds: totalScore,
-          assists: player.assists,
-          deaths: player.deaths,
-          adr: player.adr,
-          kpr: player.kr_ratio,
-        })
-      : undefined;
-
-  const kdDiff =
-    !isNil(player.kills) && !isNil(player.deaths)
-      ? subtract(player.kills, player.deaths)
-      : null;
-  const kd =
-    !isNil(player.kills) && !isNil(player.deaths) && player.deaths > 0
-      ? divide(player.kills, player.deaths)
-      : null;
-  const hpr =
-    isNumber(player.headshots) && isNumber(player.kills) && player.kills > 0
-      ? multiply(divide(player.headshots, player.kills), 100)
-      : null;
-
-  return (
-    <tr className="group border-neutral-800/50 border-b transition-colors last:border-0 hover:bg-neutral-800/20">
-      <td className="px-4 py-2.5">
-        <div className="flex items-center gap-2.5">
-          <FaceitLevelIcon
-            level={player.game_skill_level}
-            className="size-6 shrink-0"
-          />
-          <Link
-            href={
-              player.player_id_nullable
-                ? `/player/${player.nickname}`
-                : `/player/${player.player_id_mandatory}`
-            }
-            className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
-          >
-            {player.nickname}
-          </Link>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8">
+        <TeamSide team={team1} align="left" />
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-3 font-black font-mono text-4xl tabular-nums sm:gap-4 sm:text-6xl">
+            <Score team={team1} />
+            <span className="text-2xl text-faint sm:text-3xl">:</span>
+            <Score team={team2} />
+          </div>
+          <HalfScores team1={team1} team2={team2} />
         </div>
-      </td>
-      <StatCell value={player.kills} />
-      <StatCell value={player.deaths} />
-      <StatCell value={player.assists} />
-      <StatCell
-        value={isNumber(kdDiff) ? formatNumberWithSign(kdDiff) : null}
-        highlight={
-          isNumber(kdDiff)
-            ? gt(kdDiff, 0)
-              ? "green"
-              : lt(kdDiff, 0)
-                ? "red"
-                : null
-            : null
-        }
-      />
-      <StatCell value={kd?.toFixed(2)} />
-      <StatCell value={player.adr?.toFixed(1)} />
-      <StatCell value={hpr != null ? `${hpr.toFixed(1)}%` : null} />
-      <StatCell value={stats?.rating.toFixed(2)} />
-    </tr>
+        <TeamSide team={team2} align="right" />
+      </div>
+    </section>
   );
 }
 
-function TeamTotalsRow({
-  players,
-  totalScore,
-}: {
-  players: PlayerType[];
-  totalScore: number;
-}) {
-  const hasKills = players.some((p) => p.kills != null);
-  const hasDeaths = players.some((p) => p.deaths != null);
-  const hasAssists = players.some((p) => p.assists != null);
-  const hasHeadshots = players.some((p) => p.headshots != null);
-  const hasAdr = players.some((p) => p.adr != null);
-  const hasKrRatio = players.some((p) => p.kr_ratio != null);
-
-  const totalKills = hasKills ? sumBy(players, (p) => p.kills ?? 0) : undefined;
-  const totalDeaths = hasDeaths
-    ? sumBy(players, (p) => p.deaths ?? 0)
-    : undefined;
-  const totalAssists = hasAssists
-    ? sumBy(players, (p) => p.assists ?? 0)
-    : undefined;
-  const totalHeadshots = hasHeadshots
-    ? sumBy(players, (p) => p.headshots ?? 0)
-    : undefined;
-
-  const kdDiff =
-    isNumber(totalKills) && isNumber(totalDeaths)
-      ? subtract(totalKills, totalDeaths)
-      : undefined;
-
-  const avgKD =
-    isNumber(totalKills) && isNumber(totalDeaths) && totalDeaths > 0
-      ? divide(totalKills, totalDeaths)
-      : undefined;
-
-  const avgADR = hasAdr
-    ? meanBy(
-        players.filter((p) => p.adr != null),
-        (p) => p.adr ?? 0,
-      )
-    : undefined;
-
-  const avgHPR =
-    isNumber(totalHeadshots) && isNumber(totalKills) && totalKills > 0
-      ? multiply(divide(totalHeadshots, totalKills), 100)
-      : undefined;
-
-  const avgRating =
-    hasKrRatio && hasAdr
-      ? meanBy(
-          players,
-          (p) =>
-            calculateAverageStats({
-              rounds: totalScore,
-              assists: p.assists ?? 0,
-              deaths: p.deaths ?? 0,
-              adr: p.adr ?? 0,
-              kpr: p.kr_ratio ?? 0,
-            }).rating,
-        )
-      : undefined;
-
-  return (
-    <tr className="border-neutral-800/50 border-t bg-neutral-900/40">
-      <td className="px-4 py-2 text-left font-mono text-neutral-600 text-sm uppercase tracking-widest">
-        Total
-      </td>
-      <StatCell value={totalKills} />
-      <StatCell value={totalDeaths} />
-      <StatCell value={totalAssists} />
-      <StatCell
-        value={isNumber(kdDiff) ? formatNumberWithSign(kdDiff) : null}
-        highlight={
-          isNumber(kdDiff)
-            ? gt(kdDiff, 0)
-              ? "green"
-              : lt(kdDiff, 0)
-                ? "red"
-                : null
-            : null
-        }
-      />
-      <StatCell value={avgKD?.toFixed(2)} />
-      <StatCell value={avgADR?.toFixed(1)} />
-      <StatCell value={avgHPR != null ? `${avgHPR.toFixed(1)}%` : null} />
-      <StatCell value={avgRating?.toFixed(2)} />
-    </tr>
-  );
+function playerStats(player: PlayerType, rounds: number) {
+  const { kills, deaths, assists, adr, kr_ratio, headshots } = player;
+  return {
+    diff: isNumber(kills) && isNumber(deaths) ? kills - deaths : null,
+    kd:
+      isNumber(kills) && isNumber(deaths) && deaths > 0 ? kills / deaths : null,
+    hs:
+      isNumber(headshots) && isNumber(kills) && kills > 0
+        ? (headshots / kills) * 100
+        : null,
+    rating:
+      isNumber(assists) &&
+      isNumber(deaths) &&
+      isNumber(adr) &&
+      isNumber(kr_ratio)
+        ? calculateAverageStats({
+            rounds,
+            assists,
+            deaths,
+            adr,
+            kpr: kr_ratio,
+          }).rating
+        : null,
+  };
 }
 
 function TeamStatsTable({
@@ -448,92 +258,138 @@ function TeamStatsTable({
   totalScore: number;
   isMatchFinished: boolean;
 }) {
-  const sortedPlayers = useMemo(() => {
-    return isMatchFinished
+  const rows = useMemo(() => {
+    const sorted = isMatchFinished
       ? orderBy(team.team_players, ["kills"], ["desc"])
       : orderBy(team.team_players, ["game_skill_level"], ["desc"]);
-  }, [isMatchFinished, team.team_players]);
+    return sorted.map((player) => ({
+      player,
+      ...playerStats(player, totalScore),
+    }));
+  }, [isMatchFinished, team.team_players, totalScore]);
+
+  const has = (key: "kills" | "deaths" | "assists" | "adr" | "headshots") =>
+    team.team_players.some((p) => p[key] != null);
+  const total = (key: "kills" | "deaths" | "assists" | "headshots") =>
+    has(key) ? sumBy(team.team_players, (p) => p[key] ?? 0) : null;
+
+  const totals = {
+    kills: total("kills"),
+    deaths: total("deaths"),
+    assists: total("assists"),
+    headshots: total("headshots"),
+    adr: has("adr")
+      ? meanBy(
+          team.team_players.filter((p) => p.adr != null),
+          (p) => p.adr ?? 0,
+        )
+      : null,
+    rating: rows.some((r) => r.rating != null)
+      ? meanBy(rows, (r) => r.rating ?? 0)
+      : null,
+  };
+  const totalDiff =
+    totals.kills != null && totals.deaths != null
+      ? totals.kills - totals.deaths
+      : null;
+  const totalKd =
+    totals.kills != null && totals.deaths ? totals.kills / totals.deaths : null;
+  const totalHs =
+    totals.headshots != null && totals.kills
+      ? (totals.headshots / totals.kills) * 100
+      : null;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
-      <div className="flex items-center gap-3 border-neutral-800 border-b px-4 py-3">
-        <Avatar className="size-7 rounded-lg">
-          <AvatarImage src={team.avatar ?? undefined} />
-          <AvatarFallback className="rounded-lg text-neutral-500 text-xs">
-            {team.name.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-        <span className="font-semibold text-sm text-white">{team.name}</span>
-        <span
-          className={cn("ml-auto font-bold font-mono text-sm", {
-            "text-emerald-400": team.team_win === true,
-            "text-red-400": team.team_win === false,
-            "text-neutral-400": team.team_win === null,
-          })}
-        >
-          {team.team_win === true
-            ? "WIN"
-            : team.team_win === false
-              ? "LOSS"
-              : null}
-        </span>
+    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+      <div className="flex items-center gap-3 border-border border-b px-4 py-3">
+        <TeamAvatar name={team.name} src={team.avatar} className="size-8" />
+        <span className="min-w-0 truncate font-semibold">{team.name}</span>
+        {team.team_win != null && (
+          <span
+            className={cn(
+              "ml-auto shrink-0 rounded-md px-2 py-0.5 font-mono font-semibold text-xs",
+              team.team_win ? "bg-win/15 text-win" : "bg-loss/15 text-loss",
+            )}
+          >
+            {team.team_win ? "WIN" : "LOSS"}
+          </span>
+        )}
       </div>
 
-      <div className="w-full overflow-x-auto">
-        <table className="w-max min-w-full">
-          <colgroup>
-            <col className="w-48" />
-            <col className="w-16" />
-            <col className="w-16" />
-            <col className="w-16" />
-            <col className="w-16" />
-            <col className="w-20" />
-            <col className="w-20" />
-            <col className="w-20" />
-            <col className="w-20" />
-          </colgroup>
-          <thead>
-            <tr className="border-neutral-800/50 border-b">
-              {[
-                "Player",
-                "K",
-                "D",
-                "A",
-                "+/-",
-                "KD",
-                "ADR",
-                "HS%",
-                "Rating",
-              ].map((h, i) => (
-                <th
-                  key={h}
-                  className={cn(
-                    "px-4 py-2 font-mono text-neutral-600 text-xs uppercase tracking-widest",
-                    i === 0 ? "text-left" : "text-right",
-                  )}
+      <StatsTable minWidth={600} fixed>
+        <thead className="border-border border-b">
+          <tr>
+            <StatsTh sticky align="left" className="w-36 sm:w-60">
+              Player
+            </StatsTh>
+            <StatsTh>K</StatsTh>
+            <StatsTh>D</StatsTh>
+            <StatsTh>A</StatsTh>
+            <StatsTh>+/-</StatsTh>
+            <StatsTh>K/D</StatsTh>
+            <StatsTh>ADR</StatsTh>
+            <StatsTh>HS%</StatsTh>
+            <StatsTh>Rating</StatsTh>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {rows.map(({ player, diff, kd, hs, rating }) => (
+            <tr
+              key={player.id}
+              className="group transition-colors hover:bg-foreground/[0.03]"
+            >
+              <StatsTd sticky align="left" numeric={false}>
+                <Link
+                  href={`/player/${player.player_id_nullable ? player.nickname : player.player_id_mandatory}`}
+                  className="flex items-center gap-2.5 font-medium transition-colors hover:text-primary"
                 >
-                  {h}
-                </th>
-              ))}
+                  <FaceitLevelIcon
+                    level={player.game_skill_level}
+                    className="size-6 shrink-0"
+                  />
+                  <span className="truncate">{player.nickname}</span>
+                </Link>
+              </StatsTd>
+              <StatsTd tone="strong">{player.kills}</StatsTd>
+              <StatsTd>{player.deaths}</StatsTd>
+              <StatsTd>{player.assists}</StatsTd>
+              <StatsTd tone={diffTone(diff)}>
+                {diff != null ? formatNumberWithSign(diff) : null}
+              </StatsTd>
+              <StatsTd tone={ratioTone(kd)}>{kd?.toFixed(2)}</StatsTd>
+              <StatsTd>{player.adr?.toFixed(1)}</StatsTd>
+              <StatsTd>{hs != null ? `${hs.toFixed(0)}%` : null}</StatsTd>
+              <StatsTd tone={ratioTone(rating)} className="font-semibold">
+                {rating?.toFixed(2)}
+              </StatsTd>
             </tr>
-          </thead>
-          <tbody>
-            {sortedPlayers.map((player) => (
-              <PlayerStatsRow
-                key={player.id}
-                player={player}
-                totalScore={totalScore}
-              />
-            ))}
-          </tbody>
-          <tfoot>
-            <TeamTotalsRow
-              players={team.team_players}
-              totalScore={totalScore}
-            />
-          </tfoot>
-        </table>
-      </div>
+          ))}
+        </tbody>
+        <tfoot className="border-border border-t bg-foreground/[0.02]">
+          <tr>
+            <StatsTd
+              sticky
+              align="left"
+              numeric={false}
+              className="bg-[color-mix(in_oklch,var(--card),var(--muted)_20%)] font-mono text-[11px] text-faint uppercase tracking-wider"
+            >
+              Team
+            </StatsTd>
+            <StatsTd tone="muted">{totals.kills}</StatsTd>
+            <StatsTd tone="muted">{totals.deaths}</StatsTd>
+            <StatsTd tone="muted">{totals.assists}</StatsTd>
+            <StatsTd tone={diffTone(totalDiff)}>
+              {totalDiff != null ? formatNumberWithSign(totalDiff) : null}
+            </StatsTd>
+            <StatsTd tone="muted">{totalKd?.toFixed(2)}</StatsTd>
+            <StatsTd tone="muted">{totals.adr?.toFixed(1)}</StatsTd>
+            <StatsTd tone="muted">
+              {totalHs != null ? `${totalHs.toFixed(0)}%` : null}
+            </StatsTd>
+            <StatsTd tone="muted">{totals.rating?.toFixed(2)}</StatsTd>
+          </tr>
+        </tfoot>
+      </StatsTable>
     </div>
   );
 }
@@ -553,38 +409,42 @@ export function MatchView({ matchId }: { matchId: string }) {
     .map((p) => p.player_id_nullable)
     .filter(Boolean);
 
-  const activeStreams = streamingPlayers
-    .filter((s) => s.twitch_login)
-    .filter((s) => matchPlayerIds.includes(s.id));
+  const activeStreams = streamingPlayers.filter(
+    (s) => s.twitch_login && matchPlayerIds.includes(s.id),
+  );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       <MatchHeader match={match} />
 
       {activeStreams.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <h2 className="font-bold text-neutral-600 text-sm uppercase tracking-widest">
-            Live Streams
-          </h2>
+        <section className="flex flex-col gap-4">
+          <SectionHeader
+            title="Live streams"
+            description="Players from this match streaming on Twitch"
+          />
           <div
             className={cn(
               "grid gap-4",
-              activeStreams.length === 1
-                ? "grid-cols-1"
-                : "grid-cols-1 lg:grid-cols-2",
+              activeStreams.length > 1 && "lg:grid-cols-2",
             )}
           >
             {activeStreams.map((s) => (
               <TwitchPlayer key={s.id} login={s.twitch_login as string} />
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      <div className="flex flex-col gap-3">
-        <h2 className="font-bold text-neutral-600 text-sm uppercase tracking-widest">
-          Match Statistics
-        </h2>
+      <section className="flex flex-col gap-4">
+        <SectionHeader
+          title="Scoreboard"
+          description={
+            match.finished_at
+              ? "Final player statistics"
+              : "Statistics appear when the match ends"
+          }
+        />
         {match.teams.map((team) => (
           <TeamStatsTable
             key={team.id}
@@ -593,7 +453,7 @@ export function MatchView({ matchId }: { matchId: string }) {
             isMatchFinished={Boolean(match.finished_at)}
           />
         ))}
-      </div>
+      </section>
     </div>
   );
 }

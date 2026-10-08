@@ -1,7 +1,10 @@
-export default function notFound() {
+import { NotFoundState } from "@/components/not-found-state";
+
+export default function PlayerNotFound() {
   return (
-    <div className="col-span-full flex h-96 flex-col items-center justify-center text-center">
-      Sorry, the player was not found 😔
-    </div>
+    <NotFoundState
+      title="Player not found"
+      description="We don't track a player with this nickname. Check the spelling or search from the rankings."
+    />
   );
 }

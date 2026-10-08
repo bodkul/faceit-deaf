@@ -1,32 +1,28 @@
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { cn } from "cn";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { NavCount } from "@/components/layout/header";
+import { Button } from "@/components/ui/button";
 import { Portal, PortalBackdrop } from "@/components/ui/portal";
-import { navLinks } from "@/config/nav";
+import { isNavLinkActive, navLinks } from "@/config/nav";
 import { useEventsCount } from "@/features/events/hooks/use-events-count";
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
-
+  const pathname = usePathname();
   const { data: eventsCount } = useEventsCount();
 
   const Icon = open ? IconX : IconMenu2;
-
-  const badgeCountByHref: Partial<Record<string, number | null>> = {
-    "/events": eventsCount,
-  };
 
   return (
     <div className="md:hidden">
       <Button
         aria-controls="mobile-menu"
         aria-expanded={open}
-        aria-label="Toggle menu"
-        className="md:hidden"
+        aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpen(!open)}
         size="icon"
         variant="outline"
@@ -36,36 +32,29 @@ export function MobileNav() {
       {open && (
         <Portal className="top-14" id="mobile-menu">
           <PortalBackdrop />
-          <div
-            className={cn(
-              "data-[slot=open]:zoom-in-97 ease-out data-[slot=open]:animate-in",
-              "size-full p-4",
-            )}
-            data-slot={open ? "open" : "closed"}
-          >
-            <nav className="grid gap-y-2">
-              {navLinks.map((link) => {
-                const badgeCount = badgeCountByHref[link.href];
-
-                return (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className={buttonVariants({
-                      variant: "ghost",
-                      className: "justify-start",
-                    })}
-                    onClick={() => setOpen(false)}
-                  >
-                    {link.label}
-                    {!!badgeCount && (
-                      <Badge variant="destructive">{badgeCount}</Badge>
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+          <nav className="fade-in-0 slide-in-from-top-2 grid animate-in gap-1 p-4 duration-200">
+            {navLinks.map((link) => {
+              const active = isNavLinkActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex h-12 items-center gap-3 rounded-lg px-3 font-medium text-base transition-colors",
+                    active
+                      ? "bg-foreground/[0.07] text-foreground"
+                      : "text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground",
+                  )}
+                >
+                  <link.icon className="size-5" />
+                  {link.label}
+                  {link.href === "/events" && <NavCount count={eventsCount} />}
+                </Link>
+              );
+            })}
+          </nav>
         </Portal>
       )}
     </div>

@@ -15,12 +15,12 @@ export const revalidate = 300;
 export const metadata = {
   title: "Events",
   description:
-    "CS2 events for the deaf community — follow live results and standings",
+    "Deaf CS2 tournaments — follow results, standings and player stats.",
 };
 
 export default function EventsPage() {
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-6">
       <PageHeader>
         <PageHeaderHeading>
           <PageHeaderTitle>{metadata.title}</PageHeaderTitle>

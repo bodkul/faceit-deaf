@@ -1,15 +1,19 @@
 import {
   PageHeader,
+  PageHeaderDescription,
   PageHeaderHeading,
   PageHeaderTitle,
 } from "@/components/layout/page-header";
 
 export default function ProfileLayout({ children }: LayoutProps<"/profile">) {
   return (
-    <div className="flex flex-col space-y-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <PageHeader>
         <PageHeaderHeading>
-          <PageHeaderTitle>Profile</PageHeaderTitle>
+          <PageHeaderTitle>Account</PageHeaderTitle>
+          <PageHeaderDescription>
+            Linked accounts for your csdeaf profile.
+          </PageHeaderDescription>
         </PageHeaderHeading>
       </PageHeader>
 

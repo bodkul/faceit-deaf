@@ -1,10 +1,10 @@
-export default function notFound() {
+import { NotFoundState } from "@/components/not-found-state";
+
+export default function MatchNotFound() {
   return (
-    <div className="flex h-96 flex-col items-center justify-center text-center">
-      <h2 className="font-bold text-2xl">Match not found</h2>
-      <p className="text-muted-foreground">
-        Sorry, this match doesn't exist 😔
-      </p>
-    </div>
+    <NotFoundState
+      title="Match not found"
+      description="Only matches with tracked deaf players are recorded. This one isn't one of them."
+    />
   );
 }

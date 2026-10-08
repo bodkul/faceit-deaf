@@ -16,10 +16,12 @@ export default async function PlayerLayout({
   await ensurePlayerExists(username);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       {playerCard}
-      <TabsNav basePath={`/player/${username}`} tabs={PLAYER_TABS} />
-      {tabs}
+      <div className="flex flex-col gap-6">
+        <TabsNav basePath={`/player/${username}`} tabs={PLAYER_TABS} />
+        {tabs}
+      </div>
     </div>
   );
 }

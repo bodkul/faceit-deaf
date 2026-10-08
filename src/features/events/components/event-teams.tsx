@@ -5,22 +5,21 @@ import { useQuery } from "@tanstack/react-query";
 import { cn } from "cn";
 import Link from "next/link";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  diffTone,
+  ratioTone,
+  StatsTable,
+  StatsTd,
+  StatsTh,
+} from "@/components/stats-table";
+import { TeamAvatar } from "@/components/team-avatar";
 import {
   Empty,
+  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
 import { Loading } from "@/features/events/components/event-table-skeleton";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import type { EventBySlug } from "@/features/events/queries";
@@ -32,172 +31,171 @@ import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
-export function EventTeamsClient({ event }: { event: EventBySlug }) {
-  useRealtime(queryKeys.events.teams(event.id), eventSources);
-
-  const { data: teams, isLoading } = useQuery({
-    queryKey: queryKeys.events.teams(event.id),
-    queryFn: async () => {
-      const { data: matches } = await supabase
-        .from("event_matches")
-        .select(`
-        match_id,
-        maps:event_match_maps (
-          id,
-          player_stats:event_map_player_stats (
-            faction_id,
-            kills,
-            deaths
-          )
-        ),
-        teams:event_match_teams (
+async function fetchEventTeams(eventId: string) {
+  const { data: matches } = await supabase
+    .from("event_matches")
+    .select(`
+      match_id,
+      maps:event_match_maps (
+        id,
+        player_stats:event_map_player_stats (
           faction_id,
-          team_name,
-          is_winner
+          kills,
+          deaths
         )
-      `)
-        .eq("event_id", event.id)
-        .throwOnError();
+      ),
+      teams:event_match_teams (
+        faction_id,
+        team_name,
+        is_winner
+      )
+    `)
+    .eq("event_id", eventId)
+    .throwOnError();
 
-      const teamStats = new Map<
-        string,
-        {
-          name: string;
-          maps: number;
-          kills: number;
-          deaths: number;
-        }
-      >();
+  const totals = new Map<
+    string,
+    {
+      name: string;
+      wins: number;
+      losses: number;
+      maps: number;
+      kills: number;
+      deaths: number;
+    }
+  >();
 
-      for (const match of matches) {
-        for (const team of match.teams) {
-          const teamName = normalizeTeamName(team.team_name);
+  for (const match of matches) {
+    for (const team of match.teams) {
+      const name = normalizeTeamName(team.team_name);
+      const stats = totals.get(name) ?? {
+        name,
+        wins: 0,
+        losses: 0,
+        maps: 0,
+        kills: 0,
+        deaths: 0,
+      };
 
-          const stats = teamStats.get(teamName) ?? {
-            name: teamName,
-            maps: 0,
-            kills: 0,
-            deaths: 0,
-          };
+      if (team.is_winner === true) stats.wins++;
+      if (team.is_winner === false) stats.losses++;
+      stats.maps += match.maps.length;
 
-          stats.maps += match.maps.length;
-
-          for (const map of match.maps) {
-            for (const player of map.player_stats) {
-              if (player.faction_id === team.faction_id) {
-                stats.kills += player.kills ?? 0;
-                stats.deaths += player.deaths ?? 0;
-              }
-            }
+      for (const map of match.maps) {
+        for (const player of map.player_stats) {
+          if (player.faction_id === team.faction_id) {
+            stats.kills += player.kills ?? 0;
+            stats.deaths += player.deaths ?? 0;
           }
-
-          teamStats.set(teamName, stats);
         }
       }
 
-      const teamNames = [...teamStats.keys()];
+      totals.set(name, stats);
+    }
+  }
 
-      const { data: teamAvatars } = await supabase
-        .from("teams")
-        .select("name, avatar")
-        .in("name", teamNames)
-        .throwOnError();
+  const { data: teamAvatars } = await supabase
+    .from("teams")
+    .select("name, avatar")
+    .in("name", [...totals.keys()])
+    .throwOnError();
 
-      return [...teamStats.values()]
-        .map((team) => ({
-          ...team,
-          avatar:
-            teamAvatars?.find((t) => t.name === team.name)?.avatar ?? null,
-          kd: team.deaths > 0 ? team.kills / team.deaths : team.kills,
-          kd_diff: team.kills - team.deaths,
-        }))
-        .sort((a, b) => b.kd_diff - a.kd_diff);
-    },
+  const avatarByName = new Map(teamAvatars.map((t) => [t.name, t.avatar]));
+
+  return [...totals.values()]
+    .map((team) => ({
+      ...team,
+      avatar: avatarByName.get(team.name) ?? null,
+      kd: team.deaths > 0 ? team.kills / team.deaths : team.kills,
+      kd_diff: team.kills - team.deaths,
+    }))
+    .sort(
+      (a, b) => b.wins - a.wins || a.losses - b.losses || b.kd_diff - a.kd_diff,
+    );
+}
+
+export function EventTeamsClient({ event }: { event: EventBySlug }) {
+  const queryKey = queryKeys.events.teams(event.id);
+  useRealtime(queryKey, eventSources);
+
+  const { data: teams, isLoading } = useQuery({
+    queryKey,
+    queryFn: () => fetchEventTeams(event.id),
   });
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <Loading rows={8} />;
 
-  if (!teams || teams.length === 0) {
+  if (!teams?.length) {
     return (
-      <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
-        <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-        <CardContent>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconTrophy className="text-yellow-400/60" />
-              </EmptyMedia>
-              <EmptyTitle>No Teams Yet</EmptyTitle>
-            </EmptyHeader>
-          </Empty>
-        </CardContent>
-      </Card>
+      <Empty className="rounded-xl border border-border border-dashed">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <IconTrophy />
+          </EmptyMedia>
+          <EmptyTitle>No teams yet</EmptyTitle>
+          <EmptyDescription>
+            Standings appear after the first match.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
   return (
-    <ItemGroup>
-      {teams.map((team, index) => (
-        <Item
-          key={team.name}
-          size="sm"
-          className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm [a]:hover:bg-neutral-900/30"
-          render={<Link href={`/events/${event.slug}/teams/${team.name}`} />}
-        >
-          <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/3 blur-3xl" />
-
-          <span className="tabular-nums">#{index + 1}</span>
-
-          <ItemMedia variant="image" className="self-center!">
-            <Avatar className="rounded-md after:rounded-md">
-              <AvatarImage
-                className="rounded-md"
-                src={team.avatar ?? undefined}
-              />
-              <AvatarFallback className="rounded-md">
-                {team.name?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-          </ItemMedia>
-
-          <ItemContent>
-            <ItemTitle className="transition-colors group-hover/item:text-red-500">
-              {team.name}
-            </ItemTitle>
-          </ItemContent>
-
-          <ItemContent className="items-center">
-            <ItemTitle>Maps</ItemTitle>
-            <ItemDescription>{team.maps}</ItemDescription>
-          </ItemContent>
-
-          <ItemContent className="items-center">
-            <ItemTitle>K-D Diff</ItemTitle>
-            <ItemDescription
-              className={cn({
-                "text-emerald-400": team.kd_diff >= 1,
-                "text-red-400": team.kd_diff < 1,
-              })}
+    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+      <StatsTable minWidth={560}>
+        <thead className="border-border border-b">
+          <tr>
+            <StatsTh sticky align="left">
+              Team
+            </StatsTh>
+            <StatsTh align="center">W – L</StatsTh>
+            <StatsTh>Maps</StatsTh>
+            <StatsTh>+/-</StatsTh>
+            <StatsTh>K/D</StatsTh>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {teams.map((team, index) => (
+            <tr
+              key={team.name}
+              className="transition-colors hover:bg-foreground/[0.03]"
             >
-              {formatNumberWithSign(team.kd_diff)}
-            </ItemDescription>
-          </ItemContent>
-
-          <ItemContent className="items-center">
-            <ItemTitle>K/D</ItemTitle>
-            <ItemDescription
-              className={cn({
-                "text-emerald-400": team.kd >= 1,
-                "text-red-400": team.kd < 1,
-              })}
-            >
-              {team.kd.toFixed(2)}
-            </ItemDescription>
-          </ItemContent>
-        </Item>
-      ))}
-    </ItemGroup>
+              <StatsTd sticky align="left" numeric={false}>
+                <Link
+                  href={`/events/${event.slug}/teams/${encodeURIComponent(team.name)}`}
+                  className="flex items-center gap-3 font-semibold transition-colors hover:text-primary"
+                >
+                  <span
+                    className={cn(
+                      "w-5 shrink-0 text-right font-mono text-xs tabular-nums",
+                      index < 3 ? "text-warning" : "text-faint",
+                    )}
+                  >
+                    {index + 1}
+                  </span>
+                  <TeamAvatar
+                    name={team.name}
+                    src={team.avatar}
+                    className="size-8"
+                  />
+                  <span className="max-w-40 truncate">{team.name}</span>
+                </Link>
+              </StatsTd>
+              <StatsTd align="center">
+                <span className="text-win">{team.wins}</span>
+                <span className="text-faint"> – </span>
+                <span className="text-loss">{team.losses}</span>
+              </StatsTd>
+              <StatsTd tone="muted">{team.maps}</StatsTd>
+              <StatsTd tone={diffTone(team.kd_diff)} className="font-semibold">
+                {formatNumberWithSign(team.kd_diff)}
+              </StatsTd>
+              <StatsTd tone={ratioTone(team.kd)}>{team.kd.toFixed(2)}</StatsTd>
+            </tr>
+          ))}
+        </tbody>
+      </StatsTable>
+    </div>
   );
 }

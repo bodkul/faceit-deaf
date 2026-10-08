@@ -1,23 +1,30 @@
 "use client";
 
+import { IconArrowLeft } from "@tabler/icons-react";
 import { cn } from "cn";
 import { format } from "date-fns";
 import { groupBy, orderBy, sumBy } from "es-toolkit";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SectionHeader } from "@/components/section-header";
+import {
+  ratioTone,
+  StatsTable,
+  StatsTd,
+  StatsTh,
+} from "@/components/stats-table";
+import { TeamAvatar } from "@/components/team-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEventData } from "@/features/events/hooks/use-event-data";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 
 function Loading() {
   return (
-    <div className="flex flex-col gap-4">
-      <Skeleton className="h-8 w-32 bg-neutral-900" />
-      <Skeleton className="h-28 w-full rounded-2xl bg-neutral-900" />
-      <Skeleton className="h-64 w-full rounded-2xl bg-neutral-900" />
-      <Skeleton className="h-64 w-full rounded-2xl bg-neutral-900" />
+    <div className="flex flex-col gap-6">
+      <Skeleton className="h-32 rounded-2xl" />
+      <Skeleton className="h-64 rounded-xl" />
+      <Skeleton className="h-48 rounded-xl" />
     </div>
   );
 }
@@ -35,18 +42,14 @@ export function EventTeamView({
 
   if (isLoading) return <Loading />;
 
+  const isOurs = (name: string) => normalizeTeamName(name) === teamName;
+
   const history = orderBy(
     matches
-      .filter((match) =>
-        match.teams.some((t) => normalizeTeamName(t.team_name) === teamName),
-      )
+      .filter((match) => match.teams.some((t) => isOurs(t.team_name)))
       .map((match) => {
-        const myTeam = match.teams.find(
-          (t) => normalizeTeamName(t.team_name) === teamName,
-        );
-        const enemyTeam = match.teams.find(
-          (t) => normalizeTeamName(t.team_name) !== teamName,
-        );
+        const myTeam = match.teams.find((t) => isOurs(t.team_name));
+        const enemyTeam = match.teams.find((t) => !isOurs(t.team_name));
 
         const mapsWon = match.maps.filter(
           (m) => m.winner_faction_id === myTeam?.faction_id,
@@ -61,12 +64,14 @@ export function EventTeamView({
           match_id: match.match_id,
           started_at: match.started_at ?? null,
           win: mapsWon > mapsLost ? true : mapsWon < mapsLost ? false : null,
-          enemy_name: enemyTeam?.team_name ?? "Unknown",
+          enemy_name: enemyTeam
+            ? normalizeTeamName(enemyTeam.team_name)
+            : "Unknown",
           maps_won: mapsWon,
           maps_lost: mapsLost,
         };
       }),
-    [(r) => r.match_id],
+    [(r) => r.started_at ?? ""],
     ["desc"],
   );
 
@@ -77,11 +82,8 @@ export function EventTeamView({
 
   const playerGroups = groupBy(
     matches.flatMap((match) => {
-      const myTeam = match.teams.find(
-        (t) => normalizeTeamName(t.team_name) === teamName,
-      );
+      const myTeam = match.teams.find((t) => isOurs(t.team_name));
       if (!myTeam) return [];
-
       return match.maps.flatMap((mapData) =>
         mapData.player_stats.filter(
           (ps) => ps.faction_id === myTeam.faction_id,
@@ -98,8 +100,6 @@ export function EventTeamView({
       maps: stats.length,
       kills: sumBy(stats, (s) => s.kills ?? 0),
       deaths: sumBy(stats, (s) => s.deaths ?? 0),
-      assists: sumBy(stats, (s) => s.assists ?? 0),
-      headshots: sumBy(stats, (s) => s.headshots ?? 0),
       adr_total: sumBy(stats, (s) => s.adr ?? 0),
       mvps: sumBy(stats, (s) => s.mvps ?? 0),
     })),
@@ -107,177 +107,127 @@ export function EventTeamView({
     ["desc"],
   );
 
-  const totalMatches = wins + losses;
-
   return (
-    <div className="space-y-6">
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-        <div className="flex items-center gap-4 px-6 py-5">
-          <Avatar className="size-14 rounded-xl">
-            <AvatarFallback className="rounded-xl text-lg">
-              {teamName.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="font-black text-2xl text-white">{teamName}</h1>
-            <p className="text-neutral-500 text-sm">{totalMatches} matches</p>
+    <div className="flex flex-col gap-8">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="border-border border-b px-4 py-3 sm:px-6">
+          <Link
+            href={`/events/${slug}/teams`}
+            className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+          >
+            <IconArrowLeft className="size-4" />
+            All teams
+          </Link>
+        </div>
+        <div className="flex items-center gap-4 px-4 py-5 sm:px-6">
+          <TeamAvatar name={teamName} className="size-14 rounded-xl" />
+          <div className="flex min-w-0 flex-col">
+            <h2 className="truncate font-black text-2xl tracking-tight">
+              {teamName}
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              {history.length} {history.length === 1 ? "series" : "series"}{" "}
+              played
+            </p>
           </div>
-          <div className="ml-auto flex items-center gap-6">
-            <div className="text-center">
-              <div className="font-bold font-mono text-2xl text-emerald-400">
-                {wins}
-              </div>
-              <div className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                W
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="font-bold font-mono text-2xl text-red-400">
-                {losses}
-              </div>
-              <div className="font-mono text-neutral-600 text-xs uppercase tracking-widest">
-                L
-              </div>
-            </div>
+          <div className="ml-auto flex items-center gap-1 font-black font-mono text-3xl tabular-nums">
+            <span className="text-win">{wins}</span>
+            <span className="text-faint text-xl">–</span>
+            <span className="text-loss">{losses}</span>
           </div>
         </div>
-      </div>
+      </section>
 
       {players.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-          <div className="border-neutral-800 border-b px-5 py-4">
-            <h3 className="font-bold text-white">Players</h3>
-          </div>
-          <div className="w-full overflow-x-auto">
-            <table className="w-max min-w-full">
-              <colgroup>
-                <col className="w-48" />
-                <col className="w-16" />
-                <col className="w-16" />
-                <col className="w-14" />
-                <col className="w-16" />
-                <col className="w-16" />
-                <col className="w-14" />
-              </colgroup>
-              <thead>
-                <tr className="border-neutral-800/50 border-b">
-                  {["Player", "Maps", "KD", "Avg K", "Avg D", "ADR", "MVP"].map(
-                    (h, i) => (
-                      <th
-                        key={h}
-                        className={cn(
-                          "px-4 py-2 font-mono text-neutral-600 text-xs uppercase tracking-widest",
-                          i === 0 ? "text-left" : "text-right",
-                        )}
-                      >
-                        {h}
-                      </th>
-                    ),
-                  )}
+        <section className="flex flex-col gap-4">
+          <SectionHeader title="Roster" description="Totals across the event" />
+          <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+            <StatsTable minWidth={560}>
+              <thead className="border-border border-b">
+                <tr>
+                  <StatsTh sticky align="left">
+                    Player
+                  </StatsTh>
+                  <StatsTh>Maps</StatsTh>
+                  <StatsTh>K/D</StatsTh>
+                  <StatsTh>Avg K</StatsTh>
+                  <StatsTh>Avg D</StatsTh>
+                  <StatsTh>ADR</StatsTh>
+                  <StatsTh>MVP</StatsTh>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border">
                 {players.map((p) => {
                   const kd = p.kills / Math.max(p.deaths, 1);
-                  const avgK = p.kills / p.maps;
-                  const avgD = p.deaths / p.maps;
-                  const avgAdr = p.adr_total / p.maps;
                   return (
                     <tr
                       key={p.player_id}
-                      className="border-neutral-800/50 border-b last:border-0 hover:bg-neutral-800/20"
+                      className="transition-colors hover:bg-foreground/[0.03]"
                     >
-                      <td className="px-4 py-2.5">
+                      <StatsTd sticky align="left" numeric={false}>
                         <Link
                           href={`/events/${slug}/players/${encodeURIComponent(p.player_id)}`}
-                          className="font-medium text-neutral-200 text-sm transition-colors hover:text-white"
+                          className="block max-w-40 truncate font-medium transition-colors hover:text-primary"
                         >
                           {p.nickname}
                         </Link>
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                        {p.maps}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-sm">
-                        <span
-                          className={
-                            kd >= 1 ? "text-emerald-400" : "text-red-400"
-                          }
-                        >
-                          {kd.toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-neutral-200 text-sm">
-                        {avgK.toFixed(1)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                        {avgD.toFixed(1)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-neutral-400 text-sm">
-                        {avgAdr.toFixed(1)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-mono text-sm text-yellow-400">
+                      </StatsTd>
+                      <StatsTd tone="muted">{p.maps}</StatsTd>
+                      <StatsTd tone={ratioTone(kd)} className="font-semibold">
+                        {kd.toFixed(2)}
+                      </StatsTd>
+                      <StatsTd tone="strong">
+                        {(p.kills / p.maps).toFixed(1)}
+                      </StatsTd>
+                      <StatsTd>{(p.deaths / p.maps).toFixed(1)}</StatsTd>
+                      <StatsTd>{(p.adr_total / p.maps).toFixed(1)}</StatsTd>
+                      <StatsTd tone={p.mvps > 0 ? "warning" : "muted"}>
                         {p.mvps}
-                      </td>
+                      </StatsTd>
                     </tr>
                   );
                 })}
               </tbody>
-            </table>
+            </StatsTable>
           </div>
-        </div>
+        </section>
       )}
 
-      {history.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950">
-          <div className="border-neutral-800 border-b px-5 py-4">
-            <h3 className="font-bold text-white">Match History</h3>
-          </div>
-          <div className="flex flex-col divide-y divide-neutral-800/50">
-            {history.map((row) => (
-              <Link
-                key={row.match_id}
-                href={`/events/${slug}/matches/${row.match_id}`}
-                className="flex items-center gap-4 px-5 py-3 transition-colors hover:bg-neutral-800/20"
+      <section className="flex flex-col gap-4">
+        <SectionHeader title="Results" />
+        <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
+          {history.map((row) => (
+            <Link
+              key={row.match_id}
+              href={`/events/${slug}/matches/${row.match_id}`}
+              className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-foreground/[0.03]"
+            >
+              <span
+                className={cn(
+                  "flex size-7 shrink-0 items-center justify-center rounded-md font-bold font-mono text-xs",
+                  row.win === true && "bg-win/15 text-win",
+                  row.win === false && "bg-loss/15 text-loss",
+                  row.win == null && "bg-muted text-faint",
+                )}
               >
-                <div
-                  className={cn("size-1.5 shrink-0 rounded-full", {
-                    "bg-emerald-400": row.win === true,
-                    "bg-red-400": row.win === false,
-                    "bg-neutral-600": row.win == null,
-                  })}
-                />
-                <span className="min-w-0 flex-1 truncate font-medium text-neutral-300 text-sm">
-                  vs {row.enemy_name}
+                {row.win === true ? "W" : row.win === false ? "L" : "–"}
+              </span>
+              <span className="min-w-0 flex-1 truncate font-medium">
+                <span className="text-muted-foreground">vs </span>
+                {row.enemy_name}
+              </span>
+              {row.started_at && (
+                <span className="hidden font-mono text-faint text-xs sm:inline">
+                  {format(row.started_at, "d MMM, HH:mm")}
                 </span>
-                <div className="flex items-center gap-3">
-                  {row.started_at && (
-                    <span className="font-mono text-neutral-600 text-xs">
-                      {format(row.started_at, "d MMM yyyy")}
-                    </span>
-                  )}
-                  <span className="font-mono text-neutral-500 text-xs">
-                    Maps: {row.maps_won}:{row.maps_lost}
-                  </span>
-                  <span
-                    className={cn("font-bold font-mono text-sm", {
-                      "text-emerald-400": row.win === true,
-                      "text-red-400": row.win === false,
-                      "text-neutral-500": row.win == null,
-                    })}
-                  >
-                    {row.win === true
-                      ? "WIN"
-                      : row.win === false
-                        ? "LOSS"
-                        : "—"}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
+              )}
+              <span className="font-bold font-mono tabular-nums">
+                {row.maps_won}:{row.maps_lost}
+              </span>
+            </Link>
+          ))}
         </div>
-      )}
+      </section>
     </div>
   );
 }

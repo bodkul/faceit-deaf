@@ -2,30 +2,38 @@
 
 import {
   IconCalendar,
-  IconMapPin,
-  IconUser,
+  IconTrophy,
   IconUsersGroup,
+  IconWorld,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { format, getYear } from "date-fns";
-import { enUS } from "date-fns/locale";
 import { notFound } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Meta } from "@/features/events/components/event-meta";
+import { EventStatusPill } from "@/features/events/components/event-status-pill";
+import {
+  formatEventDates,
+  getEventStatus,
+} from "@/features/events/lib/event-status";
 import { getEventBySlug } from "@/features/events/queries";
 import { useRealtime } from "@/hooks/use-realtime";
 import { eventSources } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
+
+function EventCardShell({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="relative isolate overflow-hidden rounded-2xl border border-border bg-card">
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,color-mix(in_oklch,var(--primary)_14%,transparent),transparent_60%)]"
+      />
+      <div className="flex items-center gap-4 p-5 sm:gap-5 sm:p-8">
+        {children}
+      </div>
+    </section>
+  );
+}
 
 export function EventCard({ slug }: { slug: string }) {
   const queryKey = ["event-card", slug];
@@ -45,60 +53,53 @@ export function EventCard({ slug }: { slug: string }) {
 
   if (isPending || !event) {
     return (
-      <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 p-2 backdrop-blur-sm">
-        <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
-
-        <Item>
-          <Skeleton className="size-17 rounded-md md:size-18" />
-          <ItemContent></ItemContent>
-        </Item>
-      </Card>
+      <EventCardShell>
+        <Skeleton className="size-16 rounded-xl sm:size-20" />
+        <div className="flex flex-col gap-2.5">
+          <Skeleton className="h-8 w-72 max-w-full" />
+          <Skeleton className="h-4 w-56 max-w-full" />
+        </div>
+      </EventCardShell>
     );
   }
 
-  const yearFormat = (date: string) =>
-    getYear(date) === getYear(new Date()) ? "d MMM" : "d MMM yyyy";
-
-  const start = format(event.start_date, yearFormat(event.start_date), {
-    locale: enUS,
-  });
-  const end = event.end_date
-    ? format(event.end_date, yearFormat(event.end_date), {
-        locale: enUS,
-      })
-    : null;
-
   return (
-    <Card className="relative overflow-hidden border-neutral-800/50 bg-neutral-900/30 p-2 backdrop-blur-sm">
-      <div className="absolute -top-20 -right-20 size-40 rounded-full bg-red-500/5 blur-3xl" />
-      <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-red-500/4 blur-3xl" />
+    <EventCardShell>
+      <Avatar className="size-16 shrink-0 rounded-xl ring-2 ring-border-strong after:rounded-xl sm:size-20">
+        <AvatarImage
+          className="rounded-xl bg-black object-contain"
+          src={event.logo_url ?? undefined}
+          alt=""
+        />
+        <AvatarFallback className="rounded-xl">
+          <IconTrophy className="size-8" />
+        </AvatarFallback>
+      </Avatar>
 
-      <Item>
-        <ItemMedia>
-          <Avatar className="size-17 rounded-md after:rounded-md md:size-18">
-            <AvatarImage
-              className="rounded-md"
-              src={event.logo_url}
-              alt={event.name}
-            />
-            <AvatarFallback className="rounded-md">
-              <IconUser size={32} />
-            </AvatarFallback>
-          </Avatar>
-        </ItemMedia>
-
-        <ItemContent>
-          <ItemTitle className="font-bold text-xl md:text-2xl">
+      <div className="flex min-w-0 flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h1 className="font-black text-xl tracking-tight sm:text-3xl">
             {event.name}
-          </ItemTitle>
-          <ItemDescription className="flex items-center gap-4 text-neutral-500">
-            <Meta icon={IconCalendar}>{end ? `${start} — ${end}` : start}</Meta>
-            <Meta icon={IconUsersGroup}>{event.teams.count} teams</Meta>
-            <Meta icon={IconMapPin}>Online</Meta>
-          </ItemDescription>
-        </ItemContent>
-      </Item>
-    </Card>
+          </h1>
+          <EventStatusPill
+            status={getEventStatus(event.start_date, event.end_date)}
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-sm">
+          <span className="inline-flex items-center gap-1.5">
+            <IconCalendar className="size-4 text-faint" />
+            {formatEventDates(event.start_date, event.end_date)}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <IconUsersGroup className="size-4 text-faint" />
+            {event.teams.count} teams
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <IconWorld className="size-4 text-faint" />
+            Online
+          </span>
+        </div>
+      </div>
+    </EventCardShell>
   );
 }

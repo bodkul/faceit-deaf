@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import useRealtimeChannel from "@/hooks/use-realtime-channel";
+import { useRealtime } from "@/hooks/use-realtime";
+import { topics } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
@@ -8,7 +9,7 @@ const supabase = createClient();
 export function useMatch(id: string) {
   const queryKey = ["match", id] as const;
 
-  useRealtimeChannel(queryKey);
+  useRealtime(queryKey, [topics.match(id)]);
 
   return useQuery({
     queryKey,

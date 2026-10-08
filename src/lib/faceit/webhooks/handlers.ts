@@ -2,7 +2,8 @@ import { keyBy, mapAsync } from "es-toolkit";
 
 import { faceit } from "@/lib/faceit/client";
 import type { MatchPayload } from "@/lib/faceit/webhooks/types";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { broadcast } from "@/lib/realtime/broadcast";
+import { topics } from "@/lib/realtime/topics";
 import {
   deleteMatch,
   getExistingPlayers,
@@ -12,8 +13,6 @@ import {
 } from "@/lib/supabase/mutations";
 
 import { getMatchId, getPlayerIds } from "../utils";
-
-const supabase = createAdminClient();
 
 export async function handleMatchStatusReady(payload: MatchPayload) {
   const match = await faceit.matches.getMatchDetails(payload.id);
@@ -58,9 +57,19 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
     { concurrency: 3 },
   );
 
-  await supabase.channel(`match:${matchId}`).httpSend("*", {});
+  await broadcast(matchTopics(matchId, payload));
 }
 
 export async function handleMatchStatusCancelled(payload: MatchPayload) {
-  await deleteMatch(getMatchId(payload));
+  const matchId = getMatchId(payload);
+  await deleteMatch(matchId);
+  await broadcast(matchTopics(matchId, payload));
+}
+
+function matchTopics(matchId: string, payload: MatchPayload) {
+  return [
+    topics.match(matchId),
+    topics.liveMatches,
+    ...getPlayerIds(payload).map(topics.player),
+  ];
 }

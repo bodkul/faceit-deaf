@@ -24,13 +24,17 @@ import {
 import { Loading } from "@/features/events/components/event-table-skeleton";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import type { EventBySlug } from "@/features/events/queries";
+import { useRealtime } from "@/hooks/use-realtime";
 import { formatNumberWithSign } from "@/lib/format";
 import { queryKeys } from "@/lib/query-keys";
+import { eventSources } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
 export function EventTeamsClient({ event }: { event: EventBySlug }) {
+  useRealtime(queryKeys.events.teams(event.id), eventSources);
+
   const { data: teams, isLoading } = useQuery({
     queryKey: queryKeys.events.teams(event.id),
     queryFn: async () => {

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { FaceitLevelIcon } from "@/components/icons";
+import { RealtimeRefresh } from "@/components/realtime-refresh";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -23,6 +24,7 @@ import {
 import { PlayersPagination } from "@/features/player/components/players-pagination";
 import { getPlayerRankings } from "@/features/player/queries";
 import { getCountryFlagUrl } from "@/lib/country";
+import { topics } from "@/lib/realtime/topics";
 
 const PAGE_SIZE = 20;
 
@@ -70,6 +72,7 @@ export default async function PlayersPage({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
+      <RealtimeRefresh sources={[topics.players]} />
       <ItemGroup>
         {players.map((player, index) => {
           const rank = (currentPage - 1) * PAGE_SIZE + index + 1;

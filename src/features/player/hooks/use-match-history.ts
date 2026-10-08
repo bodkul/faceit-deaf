@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { usePagination } from "@/hooks/use-pagination";
+import { useRealtime } from "@/hooks/use-realtime";
+import { topics } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
@@ -10,6 +12,9 @@ const supabase = createClient();
 const PAGE_SIZE = 20;
 
 export function useMatchHistory(player_id: string) {
+  useRealtime(["player_matches_count", player_id], [topics.player(player_id)]);
+  useRealtime(["player_matches", player_id], [topics.player(player_id)]);
+
   const { data: totalCount = 0 } = useQuery({
     queryKey: ["player_matches_count", player_id],
     enabled: !!player_id,

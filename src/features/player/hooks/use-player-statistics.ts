@@ -7,6 +7,8 @@ import {
 } from "date-fns";
 import { nth } from "es-toolkit/compat";
 
+import { useRealtime } from "@/hooks/use-realtime";
+import { topics } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
@@ -99,6 +101,8 @@ export function usePlayerStatistics(
   playerId: string,
   range: PlayerStatisticsRange,
 ) {
+  useRealtime(["playerStatistics", playerId], [topics.player(playerId)]);
+
   const { data, isLoading } = useQuery({
     queryKey: ["playerStatistics", playerId, range],
     queryFn: async () => {

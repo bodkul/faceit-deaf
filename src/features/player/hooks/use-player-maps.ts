@@ -1,11 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { countBy, map, orderBy } from "es-toolkit/compat";
 
+import { useRealtime } from "@/hooks/use-realtime";
+import { topics } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
 export function usePlayerMaps(player_id: string) {
+  useRealtime(["player-matches", player_id], [topics.player(player_id)]);
+
   return useQuery({
     queryKey: ["player-matches", player_id],
     queryFn: async () => {

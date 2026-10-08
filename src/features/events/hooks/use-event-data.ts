@@ -1,10 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { useRealtime } from "@/hooks/use-realtime";
+import { eventSources } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
 export function useEventData(slug: string) {
+  useRealtime(["event", slug], eventSources);
+
   return useQuery({
     queryKey: ["event", slug],
     queryFn: async () => {

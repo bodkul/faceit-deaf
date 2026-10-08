@@ -39,3 +39,6 @@ next-env.d.ts
 .trigger
 certificates
 .env
+
+# supabase cli
+supabase/.temp

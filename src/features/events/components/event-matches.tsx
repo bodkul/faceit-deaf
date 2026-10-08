@@ -25,12 +25,16 @@ import {
 import { EventMatchesSkeleton } from "@/features/events/components/event-matches-skeleton";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import type { EventBySlug } from "@/features/events/queries";
+import { useRealtime } from "@/hooks/use-realtime";
 import { queryKeys } from "@/lib/query-keys";
+import { eventSources } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
 export function EventMatchesClient({ event }: { event: EventBySlug }) {
+  useRealtime(queryKeys.events.matches(event.id), eventSources);
+
   const { data: matches, isLoading } = useQuery({
     queryKey: queryKeys.events.matches(event.id),
     queryFn: async () => {

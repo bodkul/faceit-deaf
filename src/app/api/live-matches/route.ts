@@ -4,14 +4,13 @@ import { NextResponse } from "next/server";
 
 import { faceit } from "@/lib/faceit/client";
 import { getMatchId } from "@/lib/faceit/utils";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { broadcast } from "@/lib/realtime/broadcast";
+import { topics } from "@/lib/realtime/topics";
 import {
   getActiveMatches,
   updateMatch,
   updateMatchTeam,
 } from "@/lib/supabase/mutations";
-
-const supabase = createAdminClient();
 
 export async function GET() {
   const activeMatches = await getActiveMatches();
@@ -59,7 +58,10 @@ export async function GET() {
     { concurrency: 3 },
   );
 
-  await supabase.channel("live-matches").httpSend("*", {});
+  await broadcast([
+    topics.liveMatches,
+    ...relevantMatches.map((m) => topics.match(getMatchId({ id: m.match_id }))),
+  ]);
 
   return NextResponse.json({ message: "OK" });
 }

@@ -23,13 +23,17 @@ import {
 } from "@/components/ui/item";
 import { Loading } from "@/features/events/components/event-table-skeleton";
 import type { EventBySlug } from "@/features/events/queries";
+import { useRealtime } from "@/hooks/use-realtime";
 import { formatNumberWithSign } from "@/lib/format";
 import { queryKeys } from "@/lib/query-keys";
+import { eventSources } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
 export function EventPlayersClient({ event }: { event: EventBySlug }) {
+  useRealtime(queryKeys.events.players(event.id), eventSources);
+
   const { data: players, isLoading } = useQuery({
     queryKey: queryKeys.events.players(event.id),
     queryFn: async () => {

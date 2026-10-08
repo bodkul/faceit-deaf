@@ -8,23 +8,38 @@ import { isUUID } from "@/lib/utils";
 
 const supabase = createClient();
 
-export const ensurePlayerExists = cache(async (nickname: string) => {
-  if (!isUUID(nickname)) {
-    const { data } = await supabase
-      .from("players")
-      .select("nickname")
-      .match({ nickname })
-      .single();
+/**
+ * A tracked player by nickname. Shared by the layout and every parallel
+ * route of a player page, so it runs once per request.
+ */
+const getTrackedPlayer = cache(async (nickname: string) => {
+  if (isUUID(nickname)) return null;
 
-    if (data) return data.nickname;
-  }
+  const { data } = await supabase
+    .from("players")
+    .select(
+      "id, avatar, cover_image, nickname, steam_id_64, twitch_username, country, faceit_elo",
+    )
+    .match({ nickname })
+    .maybeSingle();
+
+  return data;
+});
+
+/**
+ * Resolves `/player/[username]` to a nickname: a tracked player's nickname,
+ * or the FACEIT id of an untracked player who has played a tracked match.
+ */
+export const ensurePlayerExists = cache(async (nickname: string) => {
+  const player = await getTrackedPlayer(nickname);
+  if (player) return player.nickname;
 
   const { data } = await supabase
     .from("match_team_players")
     .select("nickname")
     .eq("player_id_mandatory", nickname)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (!data) notFound();
 
@@ -45,44 +60,18 @@ export async function getPlayerMetadata(
 }
 
 export async function getPlayerIdByNickname(nickname: string) {
-  if (!isUUID(nickname)) {
-    const { data: playerData } = await supabase
-      .from("players")
-      .select("id")
-      .match({ nickname })
-      .single();
+  const player = await getTrackedPlayer(nickname);
+  if (player) return player.id;
 
-    if (playerData) return playerData.id;
-  }
-
-  const { data: matchPlayerData } = await supabase
-    .from("match_team_players")
-    .select("player_id_mandatory, match_teams!inner(matches!inner(started_at))")
-    .eq("player_id_mandatory", nickname)
-    .order("started_at", {
-      ascending: false,
-      referencedTable: "match_teams.matches",
-    })
-    .limit(1)
-    .single();
-
-  if (!matchPlayerData) return null;
-
-  return matchPlayerData.player_id_mandatory;
+  // Untracked players are addressed by FACEIT id; ensurePlayerExists has
+  // already checked that they played a match.
+  await ensurePlayerExists(nickname);
+  return nickname;
 }
 
 export async function getPlayerByUsername(nickname: string) {
-  if (!isUUID(nickname)) {
-    const { data: playerData } = await supabase
-      .from("players")
-      .select(
-        "id, avatar, cover_image, nickname, steam_id_64, twitch_username, country, faceit_elo",
-      )
-      .match({ nickname })
-      .single();
-
-    if (playerData) return playerData;
-  }
+  const player = await getTrackedPlayer(nickname);
+  if (player) return player;
 
   const playerDetails = await faceit.players.getPlayerDetails(nickname);
 

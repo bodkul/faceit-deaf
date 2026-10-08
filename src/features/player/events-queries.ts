@@ -17,8 +17,7 @@ export async function getPlayerEvents(playerId: string) {
       map:event_match_maps!inner (
         match:event_matches!inner (
           match_id,
-          event:events!inner (slug, name, logo_url, start_date, end_date),
-          teams:event_match_teams (faction_id, team_name, is_winner)
+          event:events!inner (id, slug, name, logo_url, start_date, end_date)
         )
       )
     `)
@@ -26,8 +25,8 @@ export async function getPlayerEvents(playerId: string) {
     .throwOnError();
 
   // Series results need every game of the series, not just the player's maps.
-  const seriesByMatchId = await getSeriesByMatchId([
-    ...new Set(stats.map((row) => row.map.match.event.slug)),
+  const { matchById, seriesByMatchId } = await getEventSeries([
+    ...new Set(stats.map((row) => row.map.match.event.id)),
   ]);
 
   const events = new Map<
@@ -50,11 +49,17 @@ export async function getPlayerEvents(playerId: string) {
   >();
 
   for (const row of stats) {
-    const { event, match_id, teams } = row.map.match;
-    const side = teams.find((t) => t.faction_id === row.faction_id);
+    const { event, match_id } = row.map.match;
+    const side = matchById
+      .get(match_id)
+      ?.teams.find((t) => t.faction_id === row.faction_id);
 
     const totals = events.get(event.slug) ?? {
-      ...event,
+      slug: event.slug,
+      name: event.name,
+      logo_url: event.logo_url,
+      start_date: event.start_date,
+      end_date: event.end_date,
       teams: new Set<string>(),
       series: new Map<string, boolean | null>(),
       maps: 0,
@@ -99,29 +104,31 @@ export async function getPlayerEvents(playerId: string) {
   );
 }
 
-async function getSeriesByMatchId(slugs: string[]) {
-  const { data: matches } = await createClient()
-    .from("event_matches")
-    .select(`
-      match_id, started_at, best_of,
-      event:events!inner (slug),
-      teams:event_match_teams (faction_id, team_name, is_winner),
-      maps:event_match_maps (winner_faction_id)
-    `)
-    .in("event.slug", slugs)
-    .throwOnError();
+/** Every match of the events, and the series each one belongs to. */
+async function getEventSeries(eventIds: string[]) {
+  const { data: matches } = eventIds.length
+    ? await createClient()
+        .from("event_matches")
+        .select(`
+          match_id, event_id, started_at, best_of,
+          teams:event_match_teams (faction_id, team_name, is_winner),
+          maps:event_match_maps (winner_faction_id)
+        `)
+        .in("event_id", eventIds)
+        .throwOnError()
+    : { data: [] };
 
-  const bySlug = Map.groupBy(matches, (m) => m.event.slug);
+  const matchById = new Map(matches.map((m) => [m.match_id, m]));
   const seriesByMatchId = new Map<
     string,
     ReturnType<typeof mergeSeries<(typeof matches)[number]>>[number]
   >();
 
-  for (const eventMatches of bySlug.values()) {
+  for (const eventMatches of Map.groupBy(matches, (m) => m.event_id).values()) {
     for (const series of mergeSeries(eventMatches)) {
       for (const id of series.match_ids) seriesByMatchId.set(id, series);
     }
   }
 
-  return seriesByMatchId;
+  return { matchById, seriesByMatchId };
 }

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/empty";
 import { Loading } from "@/features/events/components/event-table-skeleton";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
+import { mergeSeries } from "@/features/events/lib/series";
 import type { EventBySlug } from "@/features/events/queries";
 import { useRealtime } from "@/hooks/use-realtime";
 import { formatNumberWithSign } from "@/lib/format";
@@ -36,8 +37,11 @@ async function fetchEventTeams(eventId: string) {
     .from("event_matches")
     .select(`
       match_id,
+      started_at,
+      best_of,
       maps:event_match_maps (
         id,
+        winner_faction_id,
         player_stats:event_map_player_stats (
           faction_id,
           kills,
@@ -65,7 +69,7 @@ async function fetchEventTeams(eventId: string) {
     }
   >();
 
-  for (const match of matches) {
+  for (const match of mergeSeries(matches)) {
     for (const team of match.teams) {
       const name = normalizeTeamName(team.team_name);
       const stats = totals.get(name) ?? {
@@ -159,7 +163,7 @@ export function EventTeamsClient({ event }: { event: EventBySlug }) {
           {teams.map((team, index) => (
             <tr
               key={team.name}
-              className="transition-colors hover:bg-foreground/[0.03]"
+              className="transition-colors hover:bg-foreground/3"
             >
               <StatsTd sticky align="left" numeric={false}>
                 <Link

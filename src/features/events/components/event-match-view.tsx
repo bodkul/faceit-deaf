@@ -221,7 +221,7 @@ function PlayerTable({
             return (
               <tr
                 key={p.id}
-                className="transition-colors hover:bg-foreground/[0.03]"
+                className="transition-colors hover:bg-foreground/3"
               >
                 <StatsTd sticky align="left" numeric={false}>
                   <Link
@@ -301,7 +301,7 @@ export function EventMatchView({
 
   if (isLoading) return <Loading />;
 
-  const match = matches?.find((m) => m.match_id === matchId);
+  const match = matches?.find((m) => m.match_ids.includes(matchId));
   if (!match) return notFound();
 
   const maps = [...match.maps].sort((a, b) => a.match_round - b.match_round);

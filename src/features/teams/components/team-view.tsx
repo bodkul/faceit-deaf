@@ -136,7 +136,7 @@ export function TeamView({ team }: { team: Team }) {
                   return (
                     <tr
                       key={p.player_id}
-                      className="transition-colors hover:bg-foreground/[0.03]"
+                      className="transition-colors hover:bg-foreground/3"
                     >
                       <StatsTd sticky align="left" numeric={false}>
                         {p.profile ? (
@@ -179,7 +179,7 @@ export function TeamView({ team }: { team: Team }) {
               <Link
                 key={event.slug}
                 href={`/events/${event.slug}/teams/${encodeURIComponent(team.name)}`}
-                className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-foreground/[0.03]"
+                className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-foreground/3"
               >
                 <Avatar className="size-9 shrink-0 rounded-lg after:rounded-lg after:border-border">
                   <AvatarImage
@@ -217,7 +217,7 @@ export function TeamView({ team }: { team: Team }) {
               <Link
                 key={`${row.event_slug}-${row.match_id}`}
                 href={`/events/${row.event_slug}/matches/${row.match_id}`}
-                className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-foreground/[0.03]"
+                className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-foreground/3"
               >
                 <ResultBadge win={row.win} />
                 <div className="flex min-w-0 flex-1 flex-col">

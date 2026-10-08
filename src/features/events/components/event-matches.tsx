@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/empty";
 import { EventMatchesSkeleton } from "@/features/events/components/event-matches-skeleton";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
+import { mergeSeries } from "@/features/events/lib/series";
 import type { EventBySlug } from "@/features/events/queries";
 import { useRealtime } from "@/hooks/use-realtime";
 import { queryKeys } from "@/lib/query-keys";
@@ -33,15 +34,19 @@ async function fetchEventMatches(eventId: string) {
         match_id,
         status,
         started_at,
+        finished_at,
         best_of,
         score_faction1,
         score_faction2,
         teams:event_match_teams (
+          faction_id,
+          faction_key,
           team_name,
           is_winner
         ),
         maps:event_match_maps (
-          id
+          id,
+          winner_faction_id
         )
       `,
     )
@@ -64,9 +69,9 @@ async function fetchEventMatches(eventId: string) {
 
   const avatarByName = new Map(teamAvatars.map((t) => [t.name, t.avatar]));
 
-  const matches = data.map((match) => ({
+  const matches = mergeSeries(data).map((match) => ({
     ...match,
-    teams: match.teams.map((team) => {
+    teams: orderBy(match.teams, ["faction_key"], ["asc"]).map((team) => {
       const name = normalizeTeamName(team.team_name);
       return { ...team, name, avatar: avatarByName.get(name) ?? null };
     }),
@@ -112,7 +117,7 @@ function MatchRow({ match, slug }: { match: EventMatch; slug: string }) {
   return (
     <Link
       href={`/events/${slug}/matches/${match.match_id}`}
-      className="group grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-3 transition-colors hover:bg-foreground/[0.03] sm:gap-6 sm:px-4"
+      className="group grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-3 transition-colors hover:bg-foreground/3 sm:gap-6 sm:px-4"
     >
       <TeamCell team={team1} align="left" />
 

@@ -1,13 +1,16 @@
 import { orderBy } from "es-toolkit";
 
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
+import { mergeSeries } from "@/features/events/lib/series";
 import { createClient } from "@/lib/supabase/server";
 
 export type PlayerEvent = Awaited<ReturnType<typeof getPlayerEvents>>[number];
 
 /** Every event the player has a map in, with their team and per-event totals. */
 export async function getPlayerEvents(playerId: string) {
-  const { data: stats } = await createClient()
+  const supabase = createClient();
+
+  const { data: stats } = await supabase
     .from("event_map_player_stats")
     .select(`
       faction_id, kills, deaths, adr, mvps, headshots,
@@ -21,6 +24,11 @@ export async function getPlayerEvents(playerId: string) {
     `)
     .eq("player_id", playerId)
     .throwOnError();
+
+  // Series results need every game of the series, not just the player's maps.
+  const seriesByMatchId = await getSeriesByMatchId([
+    ...new Set(stats.map((row) => row.map.match.event.slug)),
+  ]);
 
   const events = new Map<
     string,
@@ -58,8 +66,16 @@ export async function getPlayerEvents(playerId: string) {
     };
     events.set(event.slug, totals);
 
+    const series = seriesByMatchId.get(match_id);
+    const seriesSide = series?.teams.find(
+      (t) => t.faction_id === row.faction_id,
+    );
+
     if (side) totals.teams.add(normalizeTeamName(side.team_name));
-    totals.series.set(match_id, side?.is_winner ?? null);
+    totals.series.set(
+      series?.match_id ?? match_id,
+      seriesSide?.is_winner ?? side?.is_winner ?? null,
+    );
     totals.maps++;
     totals.kills += row.kills ?? 0;
     totals.deaths += row.deaths ?? 0;
@@ -81,4 +97,31 @@ export async function getPlayerEvents(playerId: string) {
     ["start_date"],
     ["desc"],
   );
+}
+
+async function getSeriesByMatchId(slugs: string[]) {
+  const { data: matches } = await createClient()
+    .from("event_matches")
+    .select(`
+      match_id, started_at, best_of,
+      event:events!inner (slug),
+      teams:event_match_teams (faction_id, team_name, is_winner),
+      maps:event_match_maps (winner_faction_id)
+    `)
+    .in("event.slug", slugs)
+    .throwOnError();
+
+  const bySlug = Map.groupBy(matches, (m) => m.event.slug);
+  const seriesByMatchId = new Map<
+    string,
+    ReturnType<typeof mergeSeries<(typeof matches)[number]>>[number]
+  >();
+
+  for (const eventMatches of bySlug.values()) {
+    for (const series of mergeSeries(eventMatches)) {
+      for (const id of series.match_ids) seriesByMatchId.set(id, series);
+    }
+  }
+
+  return seriesByMatchId;
 }

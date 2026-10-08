@@ -222,7 +222,7 @@ export function EventPlayerView({
               {mapRows.map((row) => (
                 <tr
                   key={`${row.match_id}-${row.match_round}`}
-                  className="transition-colors hover:bg-foreground/[0.03]"
+                  className="transition-colors hover:bg-foreground/3"
                 >
                   <StatsTd
                     sticky

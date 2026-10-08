@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
+import { mergeSeries } from "@/features/events/lib/series";
 import { createClient } from "@/lib/supabase/server";
 
 type TeamEvent = {
@@ -64,7 +65,7 @@ export const getTeams = cache(async (): Promise<Team[]> => {
     .select(`
       slug, name, logo_url, start_date, end_date,
       matches:event_matches (
-        match_id, started_at,
+        match_id, started_at, finished_at, best_of,
         teams:event_match_teams (faction_id, team_name, is_winner),
         maps:event_match_maps (
           winner_faction_id,
@@ -83,7 +84,7 @@ export const getTeams = cache(async (): Promise<Team[]> => {
   const teams = new Map<string, TeamTotals>();
 
   for (const { matches, ...event } of events) {
-    for (const match of matches) {
+    for (const match of mergeSeries(matches)) {
       for (const side of match.teams) {
         const name = normalizeTeamName(side.team_name);
         const opponent = match.teams.find(

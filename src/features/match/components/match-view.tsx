@@ -336,7 +336,7 @@ function TeamStatsTable({
           {rows.map(({ player, diff, kd, hs, rating }) => (
             <tr
               key={player.id}
-              className="group transition-colors hover:bg-foreground/[0.03]"
+              className="group transition-colors hover:bg-foreground/3"
             >
               <StatsTd sticky align="left" numeric={false}>
                 <Link
@@ -365,7 +365,7 @@ function TeamStatsTable({
             </tr>
           ))}
         </tbody>
-        <tfoot className="border-border border-t bg-foreground/[0.02]">
+        <tfoot className="border-border border-t bg-foreground/2">
           <tr>
             <StatsTd
               sticky

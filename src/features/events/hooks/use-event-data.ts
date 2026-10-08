@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { mergeSeries } from "@/features/events/lib/series";
 import { useRealtime } from "@/hooks/use-realtime";
 import { eventSources } from "@/lib/realtime/topics";
 import { createClient } from "@/lib/supabase/client";
@@ -76,7 +77,7 @@ export function useEventData(slug: string) {
         .order("started_at", { ascending: false })
         .throwOnError();
 
-      return data ?? [];
+      return mergeSeries(data ?? []).reverse();
     },
   });
 }

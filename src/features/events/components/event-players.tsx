@@ -160,7 +160,7 @@ export function EventPlayersClient({ event }: { event: EventBySlug }) {
           {players.map((player, index) => (
             <tr
               key={player.player_id}
-              className="transition-colors hover:bg-foreground/[0.03]"
+              className="transition-colors hover:bg-foreground/3"
             >
               <StatsTd sticky align="left" numeric={false}>
                 <Link

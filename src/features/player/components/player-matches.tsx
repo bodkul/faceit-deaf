@@ -169,7 +169,7 @@ export default function MatchHistoryPage({ playerId }: { playerId: string }) {
             <tr
               key={match.id}
               className={cn(
-                "group relative transition-colors hover:bg-foreground/[0.03]",
+                "group relative transition-colors hover:bg-foreground/3",
                 // Result stripe on the left edge.
                 "[&>td:first-child]:border-l-2",
                 match.win === true && "[&>td:first-child]:border-l-win",

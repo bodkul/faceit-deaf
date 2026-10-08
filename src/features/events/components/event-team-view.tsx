@@ -170,7 +170,7 @@ export function EventTeamView({
                   return (
                     <tr
                       key={p.player_id}
-                      className="transition-colors hover:bg-foreground/[0.03]"
+                      className="transition-colors hover:bg-foreground/3"
                     >
                       <StatsTd sticky align="left" numeric={false}>
                         <Link
@@ -208,7 +208,7 @@ export function EventTeamView({
             <Link
               key={row.match_id}
               href={`/events/${slug}/matches/${row.match_id}`}
-              className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-foreground/[0.03]"
+              className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-foreground/3"
             >
               <span
                 className={cn(

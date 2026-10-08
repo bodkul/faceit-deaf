@@ -16,7 +16,7 @@ import {
 } from "@/components/stats-table";
 import { TeamAvatar } from "@/components/team-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEventData } from "@/features/events/hooks/use-event-data";
+import { useEventTeamMatches } from "@/features/events/hooks/use-event-data";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import { teamHref } from "@/features/teams/lib/team-href";
 
@@ -39,7 +39,7 @@ export function EventTeamView({
 }) {
   const teamName = decodeURIComponent(rawTeamName);
 
-  const { data: matches = [], isLoading } = useEventData(slug);
+  const { data: matches = [], isLoading } = useEventTeamMatches(slug, teamName);
 
   if (isLoading) return <Loading />;
 

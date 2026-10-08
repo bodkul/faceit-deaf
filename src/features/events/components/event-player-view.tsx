@@ -17,7 +17,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEventData } from "@/features/events/hooks/use-event-data";
+import { useEventPlayerMaps } from "@/features/events/hooks/use-event-data";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 
 function Loading() {
@@ -59,49 +59,43 @@ export function EventPlayerView({
   slug: string;
   playerId: string;
 }) {
-  const { data: matches = [], isLoading } = useEventData(slug);
+  const { data: rows = [], isLoading } = useEventPlayerMaps(slug, playerId);
 
   if (isLoading) return <Loading />;
 
   const mapRows = orderBy(
-    matches.flatMap((match) =>
-      match.maps.flatMap((mapData) => {
-        const ps = mapData.player_stats.find((p) => p.player_id === playerId);
-        if (!ps) return [];
+    rows.map((ps) => {
+      const { map } = ps;
+      const kills = ps.kills ?? 0;
+      const deaths = ps.deaths ?? 0;
+      const headshots = ps.headshots ?? 0;
+      const teamInfo = map.match.teams.find(
+        (t) => t.faction_id === ps.faction_id,
+      );
 
-        const kills = ps.kills ?? 0;
-        const deaths = ps.deaths ?? 0;
-        const headshots = ps.headshots ?? 0;
-        const teamStat = mapData.team_stats.find(
-          (ts) => ts.faction_id === ps.faction_id,
-        );
-        const teamInfo = match.teams.find(
-          (t) => t.faction_id === ps.faction_id,
-        );
-
-        return [
-          {
-            match_id: match.match_id,
-            started_at: match.started_at ?? null,
-            map_name: mapData.map_name,
-            match_round: mapData.match_round,
-            nickname: ps.nickname,
-            kills,
-            deaths,
-            assists: ps.assists ?? 0,
-            headshots,
-            adr: ps.adr,
-            kd: kills / Math.max(deaths, 1),
-            hs_pct: (headshots / Math.max(kills, 1)) * 100,
-            mvps: ps.mvps ?? 0,
-            team_name: teamInfo
-              ? normalizeTeamName(teamInfo.team_name)
-              : ps.faction_id,
-            is_winner: teamStat?.is_winner,
-          },
-        ];
-      }),
-    ),
+      return {
+        match_id: map.match.match_id,
+        started_at: map.match.started_at ?? null,
+        map_name: map.map_name,
+        match_round: map.match_round,
+        nickname: ps.nickname,
+        kills,
+        deaths,
+        assists: ps.assists ?? 0,
+        headshots,
+        adr: ps.adr,
+        kd: kills / Math.max(deaths, 1),
+        hs_pct: (headshots / Math.max(kills, 1)) * 100,
+        mvps: ps.mvps ?? 0,
+        team_name: teamInfo
+          ? normalizeTeamName(teamInfo.team_name)
+          : ps.faction_id,
+        is_winner:
+          map.winner_faction_id == null
+            ? null
+            : map.winner_faction_id === ps.faction_id,
+      };
+    }),
     [(r) => r.started_at ?? "", (r) => r.match_round],
     ["desc", "asc"],
   );

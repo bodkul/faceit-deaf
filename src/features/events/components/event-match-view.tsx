@@ -19,7 +19,7 @@ import { TeamAvatar } from "@/components/team-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   type EventMatch,
-  useEventData,
+  useEventMatch,
 } from "@/features/events/hooks/use-event-data";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 
@@ -296,12 +296,11 @@ export function EventMatchView({
   slug: string;
   matchId: string;
 }) {
-  const { data: matches, isLoading } = useEventData(slug);
+  const { data: match, isLoading } = useEventMatch(slug, matchId);
   const [activeTab, setActiveTab] = useState<"overall" | number>("overall");
 
   if (isLoading) return <Loading />;
 
-  const match = matches?.find((m) => m.match_ids.includes(matchId));
   if (!match) return notFound();
 
   const maps = [...match.maps].sort((a, b) => a.match_round - b.match_round);

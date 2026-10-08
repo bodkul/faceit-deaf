@@ -45,7 +45,7 @@ export function MobileNav() {
                     "flex h-12 items-center gap-3 rounded-lg px-3 font-medium text-base transition-colors",
                     active
                       ? "bg-foreground/[0.07] text-foreground"
-                      : "text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground",
+                      : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
                   )}
                 >
                   <link.icon className="size-5" />

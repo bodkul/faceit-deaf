@@ -17,7 +17,7 @@ export function Logo({ className }: { className?: string }) {
     <Link
       href="/"
       className={cn(
-        "flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-foreground/[0.05]",
+        "flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-foreground/5",
         className,
       )}
     >
@@ -67,7 +67,7 @@ export function Header() {
                   "inline-flex h-8 items-center rounded-md px-3 font-medium text-sm transition-colors",
                   active
                     ? "bg-foreground/[0.07] text-foreground"
-                    : "text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground",
+                    : "text-muted-foreground hover:bg-foreground/4 hover:text-foreground",
                 )}
               >
                 {link.label}

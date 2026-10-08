@@ -32,28 +32,27 @@ export async function GET() {
     async ({ match_id, voting, started_at, status, results, teams }) => {
       const id = getMatchId({ id: match_id });
 
-      await updateMatch(id, {
-        location_pick: voting.location?.pick[0],
-        map_pick: voting.map?.pick[0],
-        started_at: started_at
-          ? fromUnixTime(started_at).toISOString()
-          : undefined,
-        status,
-        round_score: results
-          ? `${results.score.faction1} / ${results.score.faction2}`
-          : undefined,
-      });
-
-      if (results) {
-        await Promise.all([
+      await Promise.all([
+        updateMatch(id, {
+          location_pick: voting.location?.pick[0],
+          map_pick: voting.map?.pick[0],
+          started_at: started_at
+            ? fromUnixTime(started_at).toISOString()
+            : undefined,
+          status,
+          round_score: results
+            ? `${results.score.faction1} / ${results.score.faction2}`
+            : undefined,
+        }),
+        results &&
           updateMatchTeam(id, teams.faction1.faction_id, {
             final_score: results.score.faction1,
           }),
+        results &&
           updateMatchTeam(id, teams.faction2.faction_id, {
             final_score: results.score.faction2,
           }),
-        ]);
-      }
+      ]);
     },
     { concurrency: 3 },
   );

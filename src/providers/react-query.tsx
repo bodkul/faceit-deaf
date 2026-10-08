@@ -15,6 +15,9 @@ export function ReactQueryProvider({
         defaultOptions: {
           queries: {
             retry: 3,
+            // Realtime invalidates queries when their data changes, so there
+            // is no need to refetch on every mount and window focus.
+            staleTime: 60 * 1000,
           },
         },
       }),

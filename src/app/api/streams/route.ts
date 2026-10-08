@@ -6,6 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 
 const supabase = createClient();
 
+// Every open page polls this each minute; serve them all from one cached
+// response instead of querying the database and Twitch per visitor.
+export const revalidate = 60;
+
 async function getTwitchAppToken() {
   const res = await ky
     .post("https://id.twitch.tv/oauth2/token", {
@@ -46,12 +50,13 @@ export async function GET() {
     .json<{ data: { user_id: string; user_login: string }[] }>();
 
   // auth user id → twitch login of a currently live stream
+  const userIdByTwitchId = new Map(
+    accounts.map((a) => [a.providerAccountId, a.userId]),
+  );
   const loginByUserId = new Map<string, string>();
   for (const stream of liveStreams) {
-    const account = accounts.find(
-      (a) => a.providerAccountId === stream.user_id,
-    );
-    if (account?.userId) loginByUserId.set(account.userId, stream.user_login);
+    const userId = userIdByTwitchId.get(stream.user_id);
+    if (userId) loginByUserId.set(userId, stream.user_login);
   }
 
   if (!loginByUserId.size) return NextResponse.json({ streamingPlayers: [] });

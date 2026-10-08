@@ -124,30 +124,35 @@ export const syncFinishedMatchTask = task({
       existingPlayers.map((p) => p.id),
     );
 
-    await upsertPlayers(
-      players.map((player) => ({
-        id: player.player_id,
-        avatar: player.avatar,
-        nickname: player.nickname,
-        faceit_elo: player.games.cs2.faceit_elo,
-        skill_level: player.games.cs2.skill_level,
-        steam_id_64: player.steam_id_64,
-        cover_image: player.cover_image,
-      })),
-    );
+    // Independent writes; team players below reference both.
+    await Promise.all([
+      upsertPlayers(
+        players.map((player) => ({
+          id: player.player_id,
+          avatar: player.avatar,
+          nickname: player.nickname,
+          faceit_elo: player.games.cs2.faceit_elo,
+          skill_level: player.games.cs2.skill_level,
+          steam_id_64: player.steam_id_64,
+          cover_image: player.cover_image,
+        })),
+      ),
+      upsertMatch({
+        id: matchId,
+        competition_id: match.competition_id,
+        organizer_id: match.organizer_id,
+        location_pick: match.voting.location?.pick[0],
+        map_pick: match.voting.map?.pick[0],
+        started_at: fromUnixTime(match.started_at).toISOString(),
+        finished_at: fromUnixTime(match.finished_at).toISOString(),
+        status: match.status,
+        round_score: round.round_stats.Score,
+      }),
+    ]);
 
-    logger.info("Upserted players", { matchId, playersCount: players.length });
-
-    await upsertMatch({
-      id: matchId,
-      competition_id: match.competition_id,
-      organizer_id: match.organizer_id,
-      location_pick: match.voting.location?.pick[0],
-      map_pick: match.voting.map?.pick[0],
-      started_at: fromUnixTime(match.started_at).toISOString(),
-      finished_at: fromUnixTime(match.finished_at).toISOString(),
-      status: match.status,
-      round_score: round.round_stats.Score,
+    logger.info("Upserted players and match", {
+      matchId,
+      playersCount: players.length,
     });
 
     const existingPlayerById = keyBy(existingPlayers, (p) => p.id);

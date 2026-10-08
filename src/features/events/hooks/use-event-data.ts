@@ -1,4 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import {
+  type QueryClient,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import { mergeSeries } from "@/features/events/lib/series";
@@ -28,9 +32,25 @@ async function fetchEventSeries(slug: string) {
   return mergeSeries(data);
 }
 
+/**
+ * The series list through the query cache, so moving between matches and
+ * teams of one event fetches it once. Realtime invalidates the whole
+ * `["event", slug]` prefix, which marks it stale too.
+ */
+function getEventSeries(queryClient: QueryClient, slug: string) {
+  return queryClient.fetchQuery({
+    queryKey: ["event", slug, "series"],
+    queryFn: () => fetchEventSeries(slug),
+  });
+}
+
 /** One series with full per-map team and player stats. */
-async function fetchEventMatch(slug: string, matchId: string) {
-  const series = (await fetchEventSeries(slug)).find((s) =>
+async function fetchEventMatch(
+  queryClient: QueryClient,
+  slug: string,
+  matchId: string,
+) {
+  const series = (await getEventSeries(queryClient, slug)).find((s) =>
     s.match_ids.includes(matchId),
   );
   if (!series) return null;
@@ -61,9 +81,13 @@ async function fetchEventMatch(slug: string, matchId: string) {
 }
 
 /** The team's series, with stats for the team's own players only. */
-async function fetchEventTeamMatches(slug: string, teamName: string) {
+async function fetchEventTeamMatches(
+  queryClient: QueryClient,
+  slug: string,
+  teamName: string,
+) {
   const isOurs = (name: string) => normalizeTeamName(name) === teamName;
-  const series = (await fetchEventSeries(slug)).filter((s) =>
+  const series = (await getEventSeries(queryClient, slug)).filter((s) =>
     s.teams.some((t) => isOurs(t.team_name)),
   );
 
@@ -117,22 +141,22 @@ async function fetchEventPlayerMaps(slug: string, playerId: string) {
 }
 
 export function useEventMatch(slug: string, matchId: string) {
-  const queryKey = ["event", slug, "match", matchId];
-  useRealtime(queryKey, eventSources);
+  const queryClient = useQueryClient();
+  useRealtime(["event", slug], eventSources);
 
   return useQuery({
-    queryKey,
-    queryFn: () => fetchEventMatch(slug, matchId),
+    queryKey: ["event", slug, "match", matchId],
+    queryFn: () => fetchEventMatch(queryClient, slug, matchId),
   });
 }
 
 export function useEventTeamMatches(slug: string, teamName: string) {
-  const queryKey = ["event", slug, "team", teamName];
-  useRealtime(queryKey, eventSources);
+  const queryClient = useQueryClient();
+  useRealtime(["event", slug], eventSources);
 
   return useQuery({
-    queryKey,
-    queryFn: () => fetchEventTeamMatches(slug, teamName),
+    queryKey: ["event", slug, "team", teamName],
+    queryFn: () => fetchEventTeamMatches(queryClient, slug, teamName),
   });
 }
 

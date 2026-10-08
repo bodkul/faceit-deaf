@@ -5,18 +5,16 @@ import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 import { createClient } from "@/lib/supabase/server";
 import type { TypedSupabaseClient } from "@/lib/supabase/types";
 
-export type EventBySlug = NonNullable<
-  Awaited<ReturnType<typeof getEventBySlug>>
->;
-
-/** Shared by server code and the client-side event card, so the caller picks the client. */
+/** The event header: details plus the distinct teams that played. */
 export async function getEventBySlug(
   supabase: TypedSupabaseClient,
   slug: string,
 ) {
   const { data } = await supabase
     .from("events")
-    .select("*, matches:event_matches(teams:event_match_teams(team_name))")
+    .select(
+      "name, logo_url, start_date, end_date, matches:event_matches(teams:event_match_teams(team_name))",
+    )
     .match({ slug })
     .maybeSingle()
     .throwOnError();
@@ -66,8 +64,17 @@ export async function getEvents(limit?: number) {
   }));
 }
 
+export type EventBySlug = Awaited<ReturnType<typeof ensureEventExists>>;
+
+/** Only what pages need; the event card loads the rest on the client. */
 export const ensureEventExists = cache(async (slug: string) => {
-  const event = await getEventBySlug(createClient(), slug);
+  const { data: event } = await createClient()
+    .from("events")
+    .select("id, name, slug")
+    .match({ slug })
+    .maybeSingle()
+    .throwOnError();
+
   if (!event) notFound();
   return event;
 });

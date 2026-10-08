@@ -27,10 +27,12 @@ import { createClient } from "@/lib/supabase/client";
 const supabase = createClient();
 
 async function fetchEventMatches(eventId: string) {
-  const { data } = await supabase
-    .from("event_matches")
-    .select(
-      `
+  // The teams table is tiny: load it alongside instead of after the matches.
+  const [{ data }, { data: teamAvatars }] = await Promise.all([
+    supabase
+      .from("event_matches")
+      .select(
+        `
         match_id,
         status,
         started_at,
@@ -49,23 +51,11 @@ async function fetchEventMatches(eventId: string) {
           winner_faction_id
         )
       `,
-    )
-    .eq("event_id", eventId)
-    .throwOnError();
-
-  const teamNames = [
-    ...new Set(
-      data.flatMap((match) =>
-        match.teams.map((t) => normalizeTeamName(t.team_name)),
-      ),
-    ),
-  ];
-
-  const { data: teamAvatars } = await supabase
-    .from("teams")
-    .select("name, avatar")
-    .in("name", teamNames)
-    .throwOnError();
+      )
+      .eq("event_id", eventId)
+      .throwOnError(),
+    supabase.from("teams").select("name, avatar").throwOnError(),
+  ]);
 
   const avatarByName = new Map(teamAvatars.map((t) => [t.name, t.avatar]));
 

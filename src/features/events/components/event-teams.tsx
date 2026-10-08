@@ -33,9 +33,11 @@ import { createClient } from "@/lib/supabase/client";
 const supabase = createClient();
 
 async function fetchEventTeams(eventId: string) {
-  const { data: matches } = await supabase
-    .from("event_matches")
-    .select(`
+  // The teams table is tiny: load it alongside instead of after the matches.
+  const [{ data: matches }, { data: teamAvatars }] = await Promise.all([
+    supabase
+      .from("event_matches")
+      .select(`
       match_id,
       started_at,
       best_of,
@@ -54,8 +56,10 @@ async function fetchEventTeams(eventId: string) {
         is_winner
       )
     `)
-    .eq("event_id", eventId)
-    .throwOnError();
+      .eq("event_id", eventId)
+      .throwOnError(),
+    supabase.from("teams").select("name, avatar").throwOnError(),
+  ]);
 
   const totals = new Map<
     string,
@@ -97,12 +101,6 @@ async function fetchEventTeams(eventId: string) {
       totals.set(name, stats);
     }
   }
-
-  const { data: teamAvatars } = await supabase
-    .from("teams")
-    .select("name, avatar")
-    .in("name", [...totals.keys()])
-    .throwOnError();
 
   const avatarByName = new Map(teamAvatars.map((t) => [t.name, t.avatar]));
 

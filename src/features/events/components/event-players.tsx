@@ -31,9 +31,12 @@ import { createClient } from "@/lib/supabase/client";
 const supabase = createClient();
 
 async function fetchEventPlayers(eventId: string) {
-  const { data: matches } = await supabase
-    .from("event_matches")
-    .select(`
+  // Only a few hundred tracked players: load their avatars alongside the
+  // stats instead of after them.
+  const [{ data: matches }, { data: avatars }] = await Promise.all([
+    supabase
+      .from("event_matches")
+      .select(`
       match_id,
       maps:event_match_maps (
         id,
@@ -48,8 +51,10 @@ async function fetchEventPlayers(eventId: string) {
         )
       )
     `)
-    .eq("event_id", eventId)
-    .throwOnError();
+      .eq("event_id", eventId)
+      .throwOnError(),
+    supabase.from("players").select("id, avatar").throwOnError(),
+  ]);
 
   const totals = new Map<
     string,
@@ -90,12 +95,6 @@ async function fetchEventPlayers(eventId: string) {
       }
     }
   }
-
-  const { data: avatars } = await supabase
-    .from("players")
-    .select("id, avatar")
-    .in("id", [...totals.keys()])
-    .throwOnError();
 
   const avatarById = new Map(avatars.map((a) => [a.id, a.avatar]));
 

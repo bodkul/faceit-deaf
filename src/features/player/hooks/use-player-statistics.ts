@@ -1,11 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  differenceInMilliseconds,
-  parseISO,
-  startOfToday,
-  subDays,
-} from "date-fns";
-import { nth } from "es-toolkit/compat";
+import { startOfToday, subDays } from "date-fns";
+import { useMemo } from "react";
 
 import { useRealtime } from "@/hooks/use-realtime";
 import { topics } from "@/lib/realtime/topics";
@@ -24,136 +19,31 @@ const SESSION_GAP_HOURS = 4;
 const SESSION_GAP_MS = SESSION_GAP_HOURS * 60 * 60 * 1000;
 const MAX_SESSION_MATCHES = 20;
 
-function getDateFromRange(range: PlayerStatisticsRange): Date | undefined {
-  switch (range) {
-    case "last7Days":
-      return subDays(startOfToday(), 7);
-    case "last30Days":
-      return subDays(startOfToday(), 30);
-    default:
-      return undefined;
-  }
-}
+// Matches of this organizer don't count towards statistics.
+const EXCLUDED_ORGANIZER_ID = "200aea79-4218-4289-a6ea-8261c610dd2e";
 
-async function getCurrentSessionStart(
-  playerId: string,
-): Promise<Date | undefined> {
+/**
+ * Every finished match of the player, newest first. Fetched once per player
+ * and sliced into ranges on the client, so switching ranges is free.
+ *
+ * Starts from `match_team_players` (indexed by player): starting from
+ * `matches` made Postgres walk every match and timed out for active players.
+ */
+async function fetchPlayerMatches(playerId: string) {
   const { data } = await supabase
-    .from("matches")
+    .from("match_team_players")
     .select(`
-      finished_at,
-      match_teams!inner(
-        match_team_players!inner(
-          player_id_mandatory
-        )
-      )
+      elo_before, elo_after, kills, deaths, assists, headshots, kr_ratio, adr,
+      match_teams!inner(team_win, matches!inner(finished_at, organizer_id))
     `)
-    .eq("status", "FINISHED")
-    .not("finished_at", "is", null)
-    .eq("match_teams.match_team_players.player_id_mandatory", playerId)
-    .order("finished_at", { ascending: false })
-    .limit(MAX_SESSION_MATCHES)
+    .eq("player_id_mandatory", playerId)
+    .eq("match_teams.matches.status", "FINISHED")
     .throwOnError();
 
-  if (!data?.length) {
-    return undefined;
-  }
-
-  const firstFinishedAt = data.find(
-    (match) => !!match.finished_at,
-  )?.finished_at;
-
-  if (!firstFinishedAt) {
-    return undefined;
-  }
-
-  let sessionStart = parseISO(firstFinishedAt);
-  let previousFinishedAt = firstFinishedAt;
-
-  for (let i = 1; i < data.length; i++) {
-    const currFinishedAt = nth(data, i)?.finished_at;
-
-    if (!currFinishedAt) {
-      continue;
-    }
-
-    const prev = parseISO(previousFinishedAt);
-    const curr = parseISO(currFinishedAt);
-
-    if (Number.isNaN(prev.getTime()) || Number.isNaN(curr.getTime())) {
-      continue;
-    }
-
-    const diff = differenceInMilliseconds(prev, curr);
-
-    if (diff > SESSION_GAP_MS) {
-      break;
-    }
-
-    sessionStart = curr;
-    previousFinishedAt = currFinishedAt;
-  }
-
-  return sessionStart;
-}
-
-export function usePlayerStatistics(
-  playerId: string,
-  range: PlayerStatisticsRange,
-) {
-  useRealtime(["playerStatistics", playerId], [topics.player(playerId)]);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["playerStatistics", playerId, range],
-    queryFn: async () => {
-      let query = supabase
-        .from("matches")
-        .select(`
-          match_teams!inner(
-            team_win,
-            match_team_players!inner(
-              elo_before,
-              elo_after,
-              kills,
-              deaths,
-              assists,
-              headshots,
-              kr_ratio,
-              adr
-            )
-          )
-        `)
-        .eq("status", "FINISHED")
-        .eq("match_teams.match_team_players.player_id_mandatory", playerId)
-        .neq("organizer_id", "200aea79-4218-4289-a6ea-8261c610dd2e")
-        .order("finished_at", { ascending: false })
-        .throwOnError();
-
-      if (range === "currentSession") {
-        const sessionStart = await getCurrentSessionStart(playerId);
-        if (sessionStart) {
-          query = query.gte("finished_at", sessionStart.toISOString());
-        }
-      } else if (range === "last20Matches") {
-        query = query.limit(20);
-      } else if (range !== "allTime") {
-        const date = getDateFromRange(range);
-        if (date) {
-          query = query.gte("finished_at", date.toISOString());
-        }
-      }
-
-      const { data } = await query;
-      return data;
-    },
-    enabled: !!playerId,
-  });
-
-  const enhancedData = data?.map((match) => {
-    const team = match.match_teams[0];
-    const player = team.match_team_players[0];
-
-    return {
+  return data
+    .map(({ match_teams: team, ...player }) => ({
+      finishedAt: team.matches.finished_at,
+      organizerId: team.matches.organizer_id,
       win: team.team_win,
       eloBefore: player.elo_before,
       eloAfter: player.elo_after,
@@ -163,8 +53,69 @@ export function usePlayerStatistics(
       headshots: player.headshots,
       krRatio: player.kr_ratio,
       adr: player.adr,
-    };
+    }))
+    .sort((a, b) => (b.finishedAt ?? "").localeCompare(a.finishedAt ?? ""));
+}
+
+type PlayerMatchRow = Awaited<ReturnType<typeof fetchPlayerMatches>>[number];
+
+/** Matches no more than SESSION_GAP_HOURS apart, counted back from the latest. */
+function getCurrentSessionStart(matches: PlayerMatchRow[]) {
+  const recent = matches
+    .filter((m) => m.finishedAt)
+    .slice(0, MAX_SESSION_MATCHES)
+    .map((m) => new Date(m.finishedAt as string).getTime());
+
+  let sessionStart = recent[0];
+  for (let i = 1; i < recent.length; i++) {
+    if (recent[i - 1] - recent[i] > SESSION_GAP_MS) break;
+    sessionStart = recent[i];
+  }
+
+  return sessionStart;
+}
+
+function selectRange(matches: PlayerMatchRow[], range: PlayerStatisticsRange) {
+  const counted = matches.filter(
+    (m) => m.organizerId && m.organizerId !== EXCLUDED_ORGANIZER_ID,
+  );
+  const since = (time: number | undefined) =>
+    time === undefined
+      ? counted
+      : counted.filter(
+          (m) => m.finishedAt && new Date(m.finishedAt).getTime() >= time,
+        );
+
+  switch (range) {
+    case "currentSession":
+      return since(getCurrentSessionStart(matches));
+    case "last20Matches":
+      return counted.slice(0, 20);
+    case "last7Days":
+      return since(subDays(startOfToday(), 7).getTime());
+    case "last30Days":
+      return since(subDays(startOfToday(), 30).getTime());
+    case "allTime":
+      return counted;
+  }
+}
+
+export function usePlayerStatistics(
+  playerId: string,
+  range: PlayerStatisticsRange,
+) {
+  useRealtime(["playerStatistics", playerId], [topics.player(playerId)]);
+
+  const { data: matches, isLoading } = useQuery({
+    queryKey: ["playerStatistics", playerId],
+    queryFn: () => fetchPlayerMatches(playerId),
+    enabled: !!playerId,
   });
 
-  return { data: enhancedData, isLoading };
+  const data = useMemo(
+    () => matches && selectRange(matches, range),
+    [matches, range],
+  );
+
+  return { data, isLoading };
 }

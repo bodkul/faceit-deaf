@@ -10,6 +10,9 @@ const TEAM_NAME_GROUPS: Record<string, string[]> = {
   DARKFANG: ["team_Honi27", "team_TK691", "team_Gumenyuk401", "team_baby_sp17"],
   "Oltenia Vanguard": ["OlteniaVanguard", "team_sNkOfficial"],
   POLARIS: ["team_Superbsrb"],
+  SeaGod: ["team_X-Tricked-X"],
+  STORMING: ["team_Cqpaz", "team_SomeWickBruv"],
+  Astralis: ["team_GhostkilI"],
 };
 
 const TEAM_NAME_OVERRIDES: Record<string, string> = Object.fromEntries(

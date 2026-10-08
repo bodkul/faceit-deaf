@@ -1,6 +1,6 @@
 "use client";
 
-import { IconArrowLeft } from "@tabler/icons-react";
+import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 import { cn } from "cn";
 import { format } from "date-fns";
 import { groupBy, orderBy, sumBy } from "es-toolkit";
@@ -18,6 +18,7 @@ import { TeamAvatar } from "@/components/team-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEventData } from "@/features/events/hooks/use-event-data";
 import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
+import { teamHref } from "@/features/teams/lib/team-href";
 
 function Loading() {
   return (
@@ -110,13 +111,20 @@ export function EventTeamView({
   return (
     <div className="flex flex-col gap-8">
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="border-border border-b px-4 py-3 sm:px-6">
+        <div className="flex items-center justify-between gap-4 border-border border-b px-4 py-3 sm:px-6">
           <Link
             href={`/events/${slug}/teams`}
             className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
           >
             <IconArrowLeft className="size-4" />
             All teams
+          </Link>
+          <Link
+            href={teamHref(teamName)}
+            className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+          >
+            Team profile
+            <IconArrowRight className="size-4" />
           </Link>
         </div>
         <div className="flex items-center gap-4 px-4 py-5 sm:px-6">

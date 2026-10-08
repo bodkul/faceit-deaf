@@ -72,7 +72,7 @@ export function StatsTh({
 
 export type CellTone = "win" | "loss" | "warning" | "strong" | "muted";
 
-const toneClass: Record<CellTone, string> = {
+export const cellToneClass: Record<CellTone, string> = {
   win: "text-win",
   loss: "text-loss",
   warning: "text-warning",
@@ -102,7 +102,7 @@ export function StatsTd({
         align === "left" && "text-left",
         align === "right" && "text-right",
         align === "center" && "text-center",
-        tone ? toneClass[tone] : numeric && "text-foreground/85",
+        tone ? cellToneClass[tone] : numeric && "text-foreground/85",
         sticky && stickyCell,
         className,
       )}

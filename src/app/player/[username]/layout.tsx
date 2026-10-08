@@ -5,6 +5,7 @@ const PLAYER_TABS = [
   { value: "overview", label: "Overview", path: "" },
   { value: "matches", label: "Matches", path: "/matches" },
   { value: "maps", label: "Maps", path: "/maps" },
+  { value: "events", label: "Events", path: "/events" },
 ] as const;
 
 export default async function PlayerLayout({

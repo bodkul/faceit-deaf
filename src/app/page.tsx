@@ -7,6 +7,7 @@ import { siteConfig } from "@/config/site";
 import { EventRow } from "@/features/events/components/event-row";
 import { getEvents } from "@/features/events/queries";
 import { LiveMatches } from "@/features/match/components/live-matches";
+import { getMatchCounts } from "@/features/match/queries";
 import { PlayerRankRow } from "@/features/player/components/player-rank-row";
 import { PlayerSearch } from "@/features/player/components/player-search";
 import { getPlayerRankings } from "@/features/player/queries";
@@ -15,10 +16,17 @@ import { getPlayerRankings } from "@/features/player/queries";
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [{ players, count }, events] = await Promise.all([
+  const [{ players, count }, events, matchCounts] = await Promise.all([
     getPlayerRankings(5, 0),
     getEvents(3),
+    getMatchCounts(),
   ]);
+
+  const stats = [
+    { label: "Players tracked", value: count },
+    { label: "Matches tracked", value: matchCounts.total },
+    { label: "Matches this week", value: matchCounts.week },
+  ];
 
   return (
     <div className="flex flex-col gap-14">
@@ -57,6 +65,19 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
+        <dl className="grid w-full max-w-md grid-cols-3 divide-x divide-border rounded-xl border border-border bg-card shadow-(--highlight)">
+          {stats.map((stat) => (
+            <div
+              key={stat.label}
+              className="flex flex-col-reverse gap-0.5 px-3 py-3"
+            >
+              <dt className="text-muted-foreground text-xs">{stat.label}</dt>
+              <dd className="font-black font-mono text-2xl tabular-nums">
+                {stat.value.toLocaleString("en-US")}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       <LiveMatches />

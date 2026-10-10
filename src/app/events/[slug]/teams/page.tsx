@@ -11,7 +11,7 @@ export async function generateMetadata({
 
   return {
     title: event.name,
-    description: `Event ${event.name} on csdeaf.pro`,
+    description: `Event ${event.name} on csdeaf`,
   };
 }
 

@@ -3,7 +3,12 @@ import { IconBrandTwitch } from "@tabler/icons-react";
 import { StatusPill } from "@/components/status-pill";
 
 // Twitch only renders the embed on domains listed as `parent`.
-const EMBED_PARENTS = ["csdeaf.pro", "www.csdeaf.pro", "localhost"];
+const EMBED_PARENTS = [
+  "csdeaf.vercel.app",
+  "csdeaf.pro",
+  "www.csdeaf.pro",
+  "localhost",
+];
 
 export function TwitchPlayer({ login }: { login: string }) {
   const params = new URLSearchParams({

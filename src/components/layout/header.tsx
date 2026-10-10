@@ -22,9 +22,7 @@ export function Logo({ className }: { className?: string }) {
       )}
     >
       <LogoIcon className="size-6" />
-      <span className="font-black text-[15px] tracking-tight">
-        csdeaf<span className="text-faint">.pro</span>
-      </span>
+      <span className="font-black text-[15px] tracking-tight">csdeaf</span>
     </Link>
   );
 }

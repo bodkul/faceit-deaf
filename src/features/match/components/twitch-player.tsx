@@ -10,7 +10,13 @@ const EMBED_PARENTS = [
   "localhost",
 ];
 
-export function TwitchPlayer({ login }: { login: string }) {
+export function TwitchPlayer({
+  login,
+  nickname,
+}: {
+  login: string;
+  nickname: string;
+}) {
   const params = new URLSearchParams({
     channel: login,
     autoplay: "true",
@@ -21,9 +27,19 @@ export function TwitchPlayer({ login }: { login: string }) {
   return (
     <div className="overflow-hidden rounded-xl border border-[#9146ff]/25 bg-card">
       <div className="flex items-center gap-2 border-[#9146ff]/10 border-b px-4 py-2.5">
-        <IconBrandTwitch size={16} className="text-[#b58cff]" />
-        <span className="font-medium text-foreground text-sm">{login}</span>
-        <StatusPill tone="live" pulse className="ml-auto">
+        <IconBrandTwitch size={16} className="shrink-0 text-[#b58cff]" />
+        <span className="truncate font-medium text-foreground text-sm">
+          {nickname}
+        </span>
+        <a
+          href={`https://www.twitch.tv/${login}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="truncate text-muted-foreground text-xs transition-colors hover:text-[#b58cff]"
+        >
+          twitch.tv/{login}
+        </a>
+        <StatusPill tone="live" pulse className="ml-auto shrink-0">
           Live
         </StatusPill>
       </div>
@@ -33,10 +49,12 @@ export function TwitchPlayer({ login }: { login: string }) {
           height="100%"
           width="100%"
           allowFullScreen
-          title={`${login} live stream`}
+          loading="lazy"
+          title={`${nickname} live stream`}
           className="block"
-          // The Twitch player needs scripts and its own origin to run.
-          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          // The Twitch player needs scripts and its own origin to run; links
+          // out to twitch.tv open as normal, unsandboxed tabs.
+          sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"
         />
       </div>
     </div>

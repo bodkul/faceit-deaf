@@ -92,8 +92,13 @@ const fetchLiveStreams = unstable_cache(
 
 /** Players among `nicknames` who are live on Twitch right now. */
 export async function getLiveStreams(nicknames: string[]) {
+  // Server functions are public endpoints; don't trust the payload's shape.
+  if (!Array.isArray(nicknames)) return [];
+
   // Normalized so the same players share one cache entry.
-  const players = [...new Set(nicknames)].sort().slice(0, MAX_PLAYERS);
+  const players = [...new Set(nicknames.filter((n) => typeof n === "string"))]
+    .sort()
+    .slice(0, MAX_PLAYERS);
   if (!players.length) return [];
   return fetchLiveStreams(players);
 }

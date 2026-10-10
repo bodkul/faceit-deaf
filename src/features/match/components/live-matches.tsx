@@ -63,12 +63,14 @@ function MatchStatusPill({ match }: { match: Match }) {
   );
 }
 
+const NO_STREAMS = new Set<string>();
+
 function MatchCard({
   match,
-  streamingNicknames,
+  streamingNicknames = NO_STREAMS,
 }: {
   match: Match;
-  streamingNicknames: Set<string>;
+  streamingNicknames?: Set<string>;
 }) {
   const status = getMatchStatus(match);
   const [scoreA, scoreB] = (match.round_score ?? "0 / 0")
@@ -151,7 +153,7 @@ function MatchGrid({
   streamingNicknames,
 }: {
   matches: Match[];
-  streamingNicknames: Set<string>;
+  streamingNicknames?: Set<string>;
 }) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -169,9 +171,10 @@ function MatchGrid({
 export function LiveMatches() {
   const { data: active = [], isLoading } = useLiveMatches();
   const { data: finished = [] } = useFinishedMatches();
-  // One request for every player on the page rather than one per card.
+  // One request for every live player rather than one per card. Finished
+  // matches are skipped: whatever their players stream now isn't that match.
   const { data: streamingPlayers = [] } = useLiveStreams(
-    [...active, ...finished].flatMap((match) => match.players ?? []),
+    active.flatMap((match) => match.players ?? []),
   );
   const streamingNicknames = new Set(streamingPlayers.map((p) => p.nickname));
 
@@ -215,10 +218,7 @@ export function LiveMatches() {
       {finished.length > 0 && (
         <div className="flex flex-col gap-4">
           <SectionHeader title="Just finished" />
-          <MatchGrid
-            matches={finished}
-            streamingNicknames={streamingNicknames}
-          />
+          <MatchGrid matches={finished} />
         </div>
       )}
     </section>

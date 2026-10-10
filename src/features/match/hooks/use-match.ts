@@ -21,8 +21,8 @@ export function useMatch(id: string) {
         )
         .match({ id })
         .order("faction", { referencedTable: "teams", ascending: true })
-        .limit(1)
-        .single();
+        .maybeSingle()
+        .throwOnError();
       return data;
     },
   });

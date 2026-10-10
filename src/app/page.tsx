@@ -25,7 +25,7 @@ export default async function HomePage() {
   const stats = [
     { label: "Players tracked", value: count },
     { label: "Matches tracked", value: matchCounts.total },
-    { label: "Matches this week", value: matchCounts.week },
+    { label: "Matches this month", value: matchCounts.month },
   ];
 
   return (

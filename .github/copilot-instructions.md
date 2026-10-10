@@ -31,6 +31,7 @@ FaceitDeaf is a Next.js 16 application for tracking CS2 FACEIT matches among dea
 - All jobs in `src/trigger/*.ts`, use only `task()` (NOT `client.defineJob`)
 - Config: `trigger.config.ts` (max duration, retry)
 - Run: `npm run trigger:dev`
+- Deploy: handled by the Trigger.dev GitHub integration (push to `master` → Production, env vars pulled from Vercel). No GitHub Actions workflow — don't add one.
 
 ### Component Architecture
 - Pages: `_components/` for page-specific, global — in `src/components/`

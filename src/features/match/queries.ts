@@ -1,13 +1,13 @@
-import { startOfMonth } from "date-fns";
+import { subDays } from "date-fns";
 
 import { createClient } from "@/lib/supabase/server";
 
-/** Finished tracked matches: all time and since the start of this month. */
+/** Finished tracked matches: all time and over the last 7 days. */
 export async function getMatchCounts() {
   const supabase = createClient();
-  const monthStart = startOfMonth(new Date()).toISOString();
+  const weekAgo = subDays(new Date(), 7).toISOString();
 
-  const [total, month] = await Promise.all([
+  const [total, week] = await Promise.all([
     supabase
       .from("matches")
       .select("*", { count: "exact", head: true })
@@ -17,9 +17,9 @@ export async function getMatchCounts() {
       .from("matches")
       .select("*", { count: "exact", head: true })
       .eq("status", "FINISHED")
-      .gte("finished_at", monthStart)
+      .gte("finished_at", weekAgo)
       .throwOnError(),
   ]);
 
-  return { total: total.count ?? 0, month: month.count ?? 0 };
+  return { total: total.count ?? 0, week: week.count ?? 0 };
 }

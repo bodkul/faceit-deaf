@@ -23,7 +23,7 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-14">
       <section className="flex flex-col items-center gap-5 pt-4 text-center sm:pt-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-foreground/[0.05] px-3 py-1 font-medium text-muted-foreground text-xs ring-1 ring-foreground/10 ring-inset">
+        <span className="inline-flex items-center gap-2 rounded-full bg-foreground/5 px-3 py-1 font-medium text-muted-foreground text-xs ring-1 ring-foreground/10 ring-inset">
           <span className="size-1.5 rounded-full bg-primary" />
           Tracking {count} deaf CS2 players
         </span>

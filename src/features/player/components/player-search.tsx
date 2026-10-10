@@ -90,7 +90,7 @@ export function PlayerSearch({
                 <li key={player.id}>
                   <Link
                     href={`/player/${player.nickname}`}
-                    className="flex w-full items-center gap-3 px-3 py-2.5 transition-colors hover:bg-foreground/[0.05]"
+                    className="flex w-full items-center gap-3 px-3 py-2.5 transition-colors hover:bg-foreground/5"
                     onClick={() => setIsOpen(false)}
                   >
                     <Avatar className="rounded-lg">

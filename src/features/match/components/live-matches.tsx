@@ -70,9 +70,12 @@ function MatchCard({ match }: { match: Match }) {
   const [scoreA, scoreB] = (match.round_score ?? "0 / 0")
     .split("/")
     .map((s) => Number(s.trim()) || 0);
-  const hasStream = match.players?.some((nickname) =>
-    streamingPlayers.some((p) => p.nickname === nickname),
+  const streamers = new Set(
+    match.players?.filter((nickname) =>
+      streamingPlayers.some((p) => p.nickname === nickname),
+    ),
   );
+  const hasStream = streamers.size > 0;
 
   return (
     <Link
@@ -117,14 +120,25 @@ function MatchCard({ match }: { match: Match }) {
 
       {match.players && match.players.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {match.players.map((nickname) => (
-            <span
-              key={nickname}
-              className="rounded-md bg-black/40 px-2 py-0.5 font-medium text-foreground/90 text-xs ring-1 ring-white/10 ring-inset backdrop-blur-sm"
-            >
-              {nickname}
-            </span>
-          ))}
+          {match.players.map((nickname) => {
+            const isStreaming = streamers.has(nickname);
+
+            return (
+              <span
+                key={nickname}
+                title={isStreaming ? `${nickname} is streaming` : nickname}
+                className={cn(
+                  "inline-flex h-6 min-w-0 max-w-full items-center gap-1 rounded-md px-2 font-medium text-xs ring-1 ring-inset",
+                  isStreaming
+                    ? "text-[#b58cff] ring-[#9146ff]/40"
+                    : "text-foreground/80 ring-foreground/15",
+                )}
+              >
+                {isStreaming && <IconBrandTwitch className="size-3 shrink-0" />}
+                <span className="truncate">{nickname}</span>
+              </span>
+            );
+          })}
         </div>
       )}
     </Link>

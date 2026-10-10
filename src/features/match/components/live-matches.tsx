@@ -63,19 +63,20 @@ function MatchStatusPill({ match }: { match: Match }) {
   );
 }
 
-function MatchCard({ match }: { match: Match }) {
-  const { data: streamingPlayers = [] } = useLiveStreams();
-
+function MatchCard({
+  match,
+  streamingNicknames,
+}: {
+  match: Match;
+  streamingNicknames: Set<string>;
+}) {
   const status = getMatchStatus(match);
   const [scoreA, scoreB] = (match.round_score ?? "0 / 0")
     .split("/")
     .map((s) => Number(s.trim()) || 0);
-  const streamers = new Set(
-    match.players?.filter((nickname) =>
-      streamingPlayers.some((p) => p.nickname === nickname),
-    ),
+  const hasStream = !!match.players?.some((nickname) =>
+    streamingNicknames.has(nickname),
   );
-  const hasStream = streamers.size > 0;
 
   return (
     <Link
@@ -121,7 +122,7 @@ function MatchCard({ match }: { match: Match }) {
       {match.players && match.players.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {match.players.map((nickname) => {
-            const isStreaming = streamers.has(nickname);
+            const isStreaming = streamingNicknames.has(nickname);
 
             return (
               <span
@@ -145,11 +146,21 @@ function MatchCard({ match }: { match: Match }) {
   );
 }
 
-function MatchGrid({ matches }: { matches: Match[] }) {
+function MatchGrid({
+  matches,
+  streamingNicknames,
+}: {
+  matches: Match[];
+  streamingNicknames: Set<string>;
+}) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {matches.map((match) => (
-        <MatchCard key={match.id} match={match} />
+        <MatchCard
+          key={match.id}
+          match={match}
+          streamingNicknames={streamingNicknames}
+        />
       ))}
     </div>
   );
@@ -158,6 +169,11 @@ function MatchGrid({ matches }: { matches: Match[] }) {
 export function LiveMatches() {
   const { data: active = [], isLoading } = useLiveMatches();
   const { data: finished = [] } = useFinishedMatches();
+  // One request for every player on the page rather than one per card.
+  const { data: streamingPlayers = [] } = useLiveStreams(
+    [...active, ...finished].flatMap((match) => match.players ?? []),
+  );
+  const streamingNicknames = new Set(streamingPlayers.map((p) => p.nickname));
 
   return (
     <section className="flex flex-col gap-8">
@@ -180,7 +196,7 @@ export function LiveMatches() {
             <Skeleton className="hidden h-40 rounded-xl lg:block" />
           </div>
         ) : active.length > 0 ? (
-          <MatchGrid matches={active} />
+          <MatchGrid matches={active} streamingNicknames={streamingNicknames} />
         ) : (
           <Empty className="rounded-xl border border-border border-dashed p-6 md:p-8">
             <EmptyHeader>
@@ -199,7 +215,10 @@ export function LiveMatches() {
       {finished.length > 0 && (
         <div className="flex flex-col gap-4">
           <SectionHeader title="Just finished" />
-          <MatchGrid matches={finished} />
+          <MatchGrid
+            matches={finished}
+            streamingNicknames={streamingNicknames}
+          />
         </div>
       )}
     </section>

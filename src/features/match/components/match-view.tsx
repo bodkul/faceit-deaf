@@ -396,22 +396,19 @@ function TeamStatsTable({
 
 export function MatchView({ matchId }: { matchId: string }) {
   const { data: match, isLoading } = useMatch(matchId.replace(/^1-/, ""));
-  const { data: streamingPlayers = [] } = useLiveStreams();
+  // Only tracked players can have a linked Twitch account.
+  const { data: activeStreams = [] } = useLiveStreams(
+    (match?.teams ?? [])
+      .flatMap((t) => t.team_players)
+      .filter((p) => p.player_id_nullable)
+      .map((p) => p.nickname),
+  );
 
   if (!matchId.startsWith("1-")) return notFound();
   if (isLoading) return <Loading />;
   if (!match || match.teams.length < 2) return notFound();
 
   const totalScore = sumBy(match.teams, (team) => team.final_score ?? 0);
-
-  const matchPlayerIds = match.teams
-    .flatMap((t) => t.team_players)
-    .map((p) => p.player_id_nullable)
-    .filter(Boolean);
-
-  const activeStreams = streamingPlayers.filter(
-    (s) => s.twitch_login && matchPlayerIds.includes(s.id),
-  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -430,7 +427,7 @@ export function MatchView({ matchId }: { matchId: string }) {
             )}
           >
             {activeStreams.map((s) => (
-              <TwitchPlayer key={s.id} login={s.twitch_login as string} />
+              <TwitchPlayer key={s.id} login={s.twitch_login} />
             ))}
           </div>
         </section>

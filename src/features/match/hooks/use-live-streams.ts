@@ -7,18 +7,26 @@ type TwitchStreams = {
   streamingPlayers: {
     id: string;
     nickname: string;
-    twitch_login: string | null;
+    twitch_login: string;
   }[];
 };
 
-export function useLiveStreams() {
+export function useLiveStreams(nicknames: string[]) {
+  // Sorted so the same players share one query and one CDN-cached URL.
+  const players = [...new Set(nicknames)].sort();
+
   return useQuery({
-    queryKey: ["live-streams"],
+    queryKey: ["live-streams", players],
     queryFn: async () => {
-      const { streamingPlayers } =
-        await ky("/api/streams").json<TwitchStreams>();
+      const searchParams = new URLSearchParams(
+        players.map((nickname) => ["nickname", nickname]),
+      );
+      const { streamingPlayers } = await ky("/api/streams", {
+        searchParams,
+      }).json<TwitchStreams>();
       return streamingPlayers;
     },
+    enabled: players.length > 0,
     staleTime: 60 * 1000,
     refetchInterval: 60 * 1000,
   });

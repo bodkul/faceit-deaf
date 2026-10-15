@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "npx biome check --write --unsafe",
-    "trigger:dev": "npx trigger.dev@latest dev",
-    "trigger:update": "npx trigger.dev@latest update",
+    "trigger:dev": "trigger dev",
+    "trigger:update": "trigger update",
     "biome:migrate": "npx biome migrate --write",
     "next:upgrade": "npx @next/codemod upgrade",
     "update-types": "npx supabase gen types --lang=typescript --project-id %PROJECT_REF% > src/types/database.ts"
@@ -52,6 +52,7 @@
     "@types/react-dom": "19.3.0",
     "postcss": "^8",
     "tailwindcss": "^4.3.3",
+    "trigger.dev": "4.7.3",
     "typescript": "^7.0.2"
   },
   "overrides": {

@@ -3,9 +3,17 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Berlin"
     open-pull-requests-limit: 10
     groups:
+      # Security fixes for transitive dependencies arrive in one PR
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"
       # Trigger.dev SDK and CLI must stay on the same version
       trigger-dev:
         patterns:
@@ -25,4 +33,11 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Berlin"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

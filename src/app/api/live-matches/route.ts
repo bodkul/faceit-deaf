@@ -1,6 +1,6 @@
 import { fromUnixTime } from "date-fns";
 import { mapAsync } from "es-toolkit";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { faceit } from "@/lib/faceit/client";
 import { getMatchId } from "@/lib/faceit/utils";
@@ -57,10 +57,14 @@ export async function GET() {
     { concurrency: 3 },
   );
 
-  await broadcast([
-    topics.liveMatches,
-    ...relevantMatches.map((m) => topics.match(getMatchId({ id: m.match_id }))),
-  ]);
+  after(() =>
+    broadcast([
+      topics.liveMatches,
+      ...relevantMatches.map((m) =>
+        topics.match(getMatchId({ id: m.match_id })),
+      ),
+    ]),
+  );
 
   return NextResponse.json({ message: "OK" });
 }

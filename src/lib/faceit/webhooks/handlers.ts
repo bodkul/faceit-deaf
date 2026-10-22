@@ -1,4 +1,5 @@
 import { keyBy, mapAsync } from "es-toolkit";
+import { after } from "next/server";
 
 import { faceit } from "@/lib/faceit/client";
 import type { MatchPayload } from "@/lib/faceit/webhooks/types";
@@ -57,13 +58,13 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
     { concurrency: 3 },
   );
 
-  await broadcast(matchTopics(matchId, payload));
+  after(() => broadcast(matchTopics(matchId, payload)));
 }
 
 export async function handleMatchStatusCancelled(payload: MatchPayload) {
   const matchId = getMatchId(payload);
   await deleteMatch(matchId);
-  await broadcast(matchTopics(matchId, payload));
+  after(() => broadcast(matchTopics(matchId, payload)));
 }
 
 function matchTopics(matchId: string, payload: MatchPayload) {

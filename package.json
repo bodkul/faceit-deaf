@@ -11,7 +11,8 @@
     "trigger:update": "trigger update",
     "biome:migrate": "npx biome migrate --write",
     "next:upgrade": "npx @next/codemod upgrade",
-    "update-types": "npx supabase gen types --lang=typescript --project-id %PROJECT_REF% > src/types/database.ts"
+    "update-types": "npx supabase gen types --lang=typescript --project-id %PROJECT_REF% > src/types/database.ts",
+    "update-faceit-types": "npx openapi-typescript src/lib/faceit/openapi.json -o src/lib/faceit/openapi.d.ts && npx biome format --write src/lib/faceit/openapi.d.ts"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.11.3",
@@ -29,13 +30,13 @@
     "cn": "^0.4.0",
     "date-fns": "^4.4.0",
     "es-toolkit": "^1.52.0",
-    "faceit-sdk": "^1.0.3",
     "geist": "^1.7.2",
     "ky": "^2.2.0",
     "motion": "^14.1.0",
     "next": "16.4.0",
     "next-auth": "^5.0.0-beta.30",
     "next-themes": "^0.4.6",
+    "openapi-fetch": "^0.17.0",
     "p-throttle": "^8.1.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",

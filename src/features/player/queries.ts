@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-import { faceit } from "@/lib/faceit/client";
+import { getPlayer } from "@/lib/faceit/api";
 import { createClient } from "@/lib/supabase/server";
 import { isUUID } from "@/lib/utils";
 
@@ -73,7 +73,7 @@ export async function getPlayerByUsername(nickname: string) {
   const player = await getTrackedPlayer(nickname);
   if (player) return player;
 
-  const playerDetails = await faceit.players.getPlayerDetails(nickname);
+  const playerDetails = await getPlayer(nickname);
 
   return {
     id: playerDetails.player_id,

@@ -1,7 +1,7 @@
 import { keyBy, mapAsync } from "es-toolkit";
 import { after } from "next/server";
 
-import { faceit } from "@/lib/faceit/client";
+import { getMatch } from "@/lib/faceit/api";
 import type { MatchPayload } from "@/lib/faceit/webhooks/types";
 import { broadcast } from "@/lib/realtime/broadcast";
 import { topics } from "@/lib/realtime/topics";
@@ -16,7 +16,7 @@ import {
 import { getMatchId, getPlayerIds } from "../utils";
 
 export async function handleMatchStatusReady(payload: MatchPayload) {
-  const match = await faceit.matches.getMatchDetails(payload.id);
+  const match = await getMatch(payload.id);
 
   if (match.calculate_elo !== true) return;
 
@@ -28,8 +28,8 @@ export async function handleMatchStatusReady(payload: MatchPayload) {
     id: matchId,
     competition_id: match.competition_id,
     organizer_id: match.organizer_id,
-    location_pick: match.voting.location?.pick[0],
-    map_pick: match.voting.map?.pick[0],
+    location_pick: match.voting?.location?.pick[0],
+    map_pick: match.voting?.map?.pick[0],
     status: match.status.toUpperCase(),
   });
 

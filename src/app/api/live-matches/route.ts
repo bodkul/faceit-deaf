@@ -1,9 +1,8 @@
-import { fromUnixTime } from "date-fns";
 import { mapAsync } from "es-toolkit";
 import { after, NextResponse } from "next/server";
 
-import { faceit } from "@/lib/faceit/client";
-import { getMatchId } from "@/lib/faceit/utils";
+import { getMatches } from "@/lib/faceit/api";
+import { getMatchId, unixToISO } from "@/lib/faceit/utils";
 import { broadcast } from "@/lib/realtime/broadcast";
 import { topics } from "@/lib/realtime/topics";
 import {
@@ -19,7 +18,7 @@ export async function GET() {
     return NextResponse.json({ message: "No matches found" });
   }
 
-  const matches = await faceit.matches.getMatchesDetails(
+  const matches = await getMatches(
     activeMatches.map((match) => `1-${match.id}`),
   );
 
@@ -34,11 +33,9 @@ export async function GET() {
 
       await Promise.all([
         updateMatch(id, {
-          location_pick: voting.location?.pick[0],
-          map_pick: voting.map?.pick[0],
-          started_at: started_at
-            ? fromUnixTime(started_at).toISOString()
-            : undefined,
+          location_pick: voting?.location?.pick[0],
+          map_pick: voting?.map?.pick[0],
+          started_at: unixToISO(started_at),
           status,
           round_score: results
             ? `${results.score.faction1} / ${results.score.faction2}`

@@ -1,10 +1,9 @@
 import { logger, task } from "@trigger.dev/sdk";
-import { fromUnixTime } from "date-fns";
 import { keyBy, mapAsync, sumBy } from "es-toolkit";
 
-import { faceit } from "@/lib/faceit/client";
-import type { MatchStats } from "@/lib/faceit/types";
-import { getMatchId, getPlayerIds } from "@/lib/faceit/utils";
+import { getMatch, getMatchStats, getPlayers } from "@/lib/faceit/api";
+import type { PlayerStats } from "@/lib/faceit/types";
+import { getMatchId, getPlayerIds, unixToISO } from "@/lib/faceit/utils";
 import type { MatchPayload } from "@/lib/faceit/webhooks/types";
 import { broadcast } from "@/lib/realtime/broadcast";
 import { topics } from "@/lib/realtime/topics";
@@ -16,9 +15,6 @@ import {
   upsertPlayers,
 } from "@/lib/supabase/mutations";
 import type { TablesInsert } from "@/types/database";
-
-type PlayerStats =
-  MatchStats["rounds"][number]["teams"][number]["players"][number]["player_stats"];
 
 const num = (val: unknown) => Number(val) || 0;
 
@@ -96,7 +92,7 @@ export const syncFinishedMatchTask = task({
       totalPlayers: playerIds.length,
     });
 
-    const match = await faceit.matches.getMatchDetails(payload.id);
+    const match = await getMatch(payload.id);
 
     if (match.calculate_elo !== true) {
       return { message: "Ignored: not a valid match" };
@@ -104,10 +100,10 @@ export const syncFinishedMatchTask = task({
 
     const [existingPlayers, matchStats] = await Promise.all([
       getExistingPlayers(playerIds),
-      faceit.matches.getMatchStats(payload.id),
+      getMatchStats(payload.id),
     ]);
 
-    const round = matchStats.rounds[0];
+    const round = matchStats.rounds?.[0];
     if (!round) {
       throw new Error(`Match ${matchId} has no round stats yet`);
     }
@@ -116,13 +112,11 @@ export const syncFinishedMatchTask = task({
       matchId,
       existingPlayersCount: existingPlayers.length,
       matchStatus: match.status,
-      roundScore: round.round_stats.Score,
+      roundScore: round.round_stats?.Score,
     });
 
     // Refresh profiles of tracked players to capture their post-match ELO.
-    const players = await faceit.players.getPlayersDetails(
-      existingPlayers.map((p) => p.id),
-    );
+    const players = await getPlayers(existingPlayers.map((p) => p.id));
 
     // Independent writes; team players below reference both.
     await Promise.all([
@@ -141,12 +135,12 @@ export const syncFinishedMatchTask = task({
         id: matchId,
         competition_id: match.competition_id,
         organizer_id: match.organizer_id,
-        location_pick: match.voting.location?.pick[0],
-        map_pick: match.voting.map?.pick[0],
-        started_at: fromUnixTime(match.started_at).toISOString(),
-        finished_at: fromUnixTime(match.finished_at).toISOString(),
+        location_pick: match.voting?.location?.pick[0],
+        map_pick: match.voting?.map?.pick[0],
+        started_at: unixToISO(match.started_at),
+        finished_at: unixToISO(match.finished_at),
         status: match.status,
-        round_score: round.round_stats.Score,
+        round_score: round.round_stats?.Score as string | undefined,
       }),
     ]);
 
@@ -161,14 +155,10 @@ export const syncFinishedMatchTask = task({
     await mapAsync(
       payload.teams,
       async (team) => {
-        const roundTeam = round.teams.find((rt) => rt.team_id === team.id);
-        const teamStats = (roundTeam?.team_stats ?? {}) as Record<
-          string,
-          string
-        >;
-        const statsByPlayerId = keyBy(
-          roundTeam?.players ?? [],
-          (p) => p.player_id,
+        const roundTeam = round.teams?.find((rt) => rt.team_id === team.id);
+        const teamStats = roundTeam?.team_stats ?? {};
+        const statsByPlayerId = keyBy(roundTeam?.players ?? [], (p) =>
+          String(p.player_id),
         );
 
         if (!roundTeam) {

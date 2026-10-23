@@ -1,7 +1,11 @@
 "use client";
 
 import NumberFlow from "@number-flow/react";
-import { IconBrandTwitch, IconDeviceGamepad2 } from "@tabler/icons-react";
+import {
+  IconBrandTwitch,
+  IconDeviceGamepad2,
+  IconFlag,
+} from "@tabler/icons-react";
 import { cn } from "cn";
 import { differenceInMinutes, formatDistanceToNowStrict } from "date-fns";
 import Link from "next/link";
@@ -168,9 +172,20 @@ function MatchGrid({
   );
 }
 
+function MatchGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <Skeleton className="h-40 rounded-xl" />
+      <Skeleton className="hidden h-40 rounded-xl sm:block" />
+      <Skeleton className="hidden h-40 rounded-xl lg:block" />
+    </div>
+  );
+}
+
 export function LiveMatches() {
   const { data: active = [], isLoading } = useLiveMatches();
-  const { data: finished = [] } = useFinishedMatches();
+  const { data: finished = [], isLoading: isFinishedLoading } =
+    useFinishedMatches();
   // One request for every live player rather than one per card. Finished
   // matches are skipped: whatever their players stream now isn't that match.
   const { data: streamingPlayers = [] } = useLiveStreams(
@@ -193,11 +208,7 @@ export function LiveMatches() {
         </SectionHeader>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Skeleton className="h-40 rounded-xl" />
-            <Skeleton className="hidden h-40 rounded-xl sm:block" />
-            <Skeleton className="hidden h-40 rounded-xl lg:block" />
-          </div>
+          <MatchGridSkeleton />
         ) : active.length > 0 ? (
           <MatchGrid matches={active} streamingNicknames={streamingNicknames} />
         ) : (
@@ -215,12 +226,26 @@ export function LiveMatches() {
         )}
       </div>
 
-      {finished.length > 0 && (
-        <div className="flex flex-col gap-4">
-          <SectionHeader title="Just finished" />
+      <div className="flex flex-col gap-4">
+        <SectionHeader title="Just finished" />
+        {isFinishedLoading ? (
+          <MatchGridSkeleton />
+        ) : finished.length > 0 ? (
           <MatchGrid matches={finished} />
-        </div>
-      )}
+        ) : (
+          <Empty className="rounded-xl border border-border border-dashed p-6 md:p-8">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconFlag />
+              </EmptyMedia>
+              <EmptyTitle>No finished matches yet</EmptyTitle>
+              <EmptyDescription>
+                Matches show up here as soon as they end.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
+      </div>
     </section>
   );
 }

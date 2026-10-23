@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5";
+    PostgrestVersion: "14.17";
   };
   next_auth: {
     Tables: {
@@ -356,7 +356,7 @@ export type Database = {
           id: string;
           is_winner: boolean | null;
           match_id: string;
-          team_name: string;
+          team_name: string | null;
         };
         Insert: {
           faction_id: string;
@@ -695,13 +695,6 @@ export type Database = {
             foreignKeyName: "match_teams_match_id_fkey";
             columns: ["match_id"];
             isOneToOne: false;
-            referencedRelation: "live_matches";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "match_teams_match_id_fkey";
-            columns: ["match_id"];
-            isOneToOne: false;
             referencedRelation: "matches";
             referencedColumns: ["id"];
           },
@@ -871,36 +864,6 @@ export type Database = {
           indexrelid: unknown;
           schema_name: unknown;
           table_name: unknown;
-        };
-        Relationships: [];
-      };
-      live_matches: {
-        Row: {
-          finished_at: string | null;
-          id: string | null;
-          map_pick: string | null;
-          players: string[] | null;
-          round_score: string | null;
-          started_at: string | null;
-          status: string | null;
-        };
-        Insert: {
-          finished_at?: string | null;
-          id?: string | null;
-          map_pick?: string | null;
-          players?: never;
-          round_score?: string | null;
-          started_at?: string | null;
-          status?: string | null;
-        };
-        Update: {
-          finished_at?: string | null;
-          id?: string | null;
-          map_pick?: string | null;
-          players?: never;
-          round_score?: string | null;
-          started_at?: string | null;
-          status?: string | null;
         };
         Relationships: [];
       };

@@ -2,7 +2,10 @@ import { orderBy } from "es-toolkit";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
+import {
+  hasTeamName,
+  normalizeTeamName,
+} from "@/features/events/lib/normalize-team-name";
 import { mergeSeries } from "@/features/events/lib/series";
 import { createClient } from "@/lib/supabase/server";
 
@@ -223,7 +226,7 @@ export const ensureTeamExists = cache(async (name: string) => {
     .select("team_name")
     .throwOnError();
 
-  if (!data.some((team) => normalizeTeamName(team.team_name) === name)) {
+  if (!data.some(hasTeamName(name))) {
     notFound();
   }
 });

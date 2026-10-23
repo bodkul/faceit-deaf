@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
+import { hasTeamName } from "@/features/events/lib/normalize-team-name";
 import { mergeSeries } from "@/features/events/lib/series";
 import { useRealtime } from "@/hooks/use-realtime";
 import { eventSources } from "@/lib/realtime/topics";
@@ -86,14 +86,14 @@ async function fetchEventTeamMatches(
   slug: string,
   teamName: string,
 ) {
-  const isOurs = (name: string) => normalizeTeamName(name) === teamName;
+  const isOurs = hasTeamName(teamName);
   const series = (await getEventSeries(queryClient, slug)).filter((s) =>
-    s.teams.some((t) => isOurs(t.team_name)),
+    s.teams.some(isOurs),
   );
 
   const mapIds = series.flatMap((s) => s.maps.map((m) => m.id));
   const factionIds = series.flatMap((s) =>
-    s.teams.filter((t) => isOurs(t.team_name)).map((t) => t.faction_id),
+    s.teams.filter(isOurs).map((t) => t.faction_id),
   );
 
   const { data: stats } = mapIds.length

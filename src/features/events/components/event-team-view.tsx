@@ -17,7 +17,10 @@ import {
 import { TeamAvatar } from "@/components/team-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEventTeamMatches } from "@/features/events/hooks/use-event-data";
-import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
+import {
+  hasTeamName,
+  normalizeTeamName,
+} from "@/features/events/lib/normalize-team-name";
 import { teamHref } from "@/features/teams/lib/team-href";
 
 function Loading() {
@@ -43,14 +46,14 @@ export function EventTeamView({
 
   if (isLoading) return <Loading />;
 
-  const isOurs = (name: string) => normalizeTeamName(name) === teamName;
+  const isOurs = hasTeamName(teamName);
 
   const history = orderBy(
     matches
-      .filter((match) => match.teams.some((t) => isOurs(t.team_name)))
+      .filter((match) => match.teams.some(isOurs))
       .map((match) => {
-        const myTeam = match.teams.find((t) => isOurs(t.team_name));
-        const enemyTeam = match.teams.find((t) => !isOurs(t.team_name));
+        const myTeam = match.teams.find(isOurs);
+        const enemyTeam = match.teams.find((t) => !isOurs(t));
 
         const mapsWon = match.maps.filter(
           (m) => m.winner_faction_id === myTeam?.faction_id,
@@ -83,7 +86,7 @@ export function EventTeamView({
 
   const playerGroups = groupBy(
     matches.flatMap((match) => {
-      const myTeam = match.teams.find((t) => isOurs(t.team_name));
+      const myTeam = match.teams.find(isOurs);
       if (!myTeam) return [];
       return match.maps.flatMap((mapData) =>
         mapData.player_stats.filter(

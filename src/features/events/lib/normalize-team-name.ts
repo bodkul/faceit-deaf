@@ -21,7 +21,11 @@ const TEAM_NAME_OVERRIDES: Record<string, string> = Object.fromEntries(
   ),
 );
 
-export function normalizeTeamName(name: string): string {
+export function normalizeTeamName(name: string | null): string {
+  if (!name) {
+    return "";
+  }
+
   if (TEAM_NAME_OVERRIDES[name]) {
     return TEAM_NAME_OVERRIDES[name];
   }
@@ -30,4 +34,10 @@ export function normalizeTeamName(name: string): string {
     .replace(/^team_/i, "")
     .replace(/_/g, " ")
     .trim();
+}
+
+/** Matches teams whose normalized name is `teamName`, for `some`/`find`/`filter`. */
+export function hasTeamName(teamName: string) {
+  return (team: { team_name: string | null }) =>
+    normalizeTeamName(team.team_name) === teamName;
 }

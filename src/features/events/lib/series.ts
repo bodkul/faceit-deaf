@@ -2,7 +2,7 @@ import { normalizeTeamName } from "@/features/events/lib/normalize-team-name";
 
 type SeriesTeam = {
   faction_id: string;
-  team_name: string;
+  team_name: string | null;
   is_winner: boolean | null;
   faction_key?: string;
 };

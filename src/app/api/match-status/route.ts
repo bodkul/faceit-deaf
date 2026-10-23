@@ -6,7 +6,10 @@ import {
   handleMatchStatusCancelled,
   handleMatchStatusReady,
 } from "@/lib/faceit/webhooks/handlers";
-import { syncFinishedMatchTask } from "@/trigger/sync-finished-match";
+import {
+  syncFinishedMatchOptions,
+  syncFinishedMatchTask,
+} from "@/trigger/sync-finished-match";
 
 export async function POST(request: NextRequest) {
   if (
@@ -37,9 +40,10 @@ export async function POST(request: NextRequest) {
       break;
 
     case "match_status_finished": {
-      const handle = await syncFinishedMatchTask.trigger(payload, {
-        tags: [`match_${payload.id}`],
-      });
+      const handle = await syncFinishedMatchTask.trigger(
+        payload,
+        syncFinishedMatchOptions(payload.id),
+      );
       return NextResponse.json(handle);
     }
 

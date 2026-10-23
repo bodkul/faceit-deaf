@@ -1,10 +1,10 @@
 import { logger, task } from "@trigger.dev/sdk";
-import { keyBy, mapAsync, sumBy } from "es-toolkit";
+import { keyBy, mapAsync } from "es-toolkit";
+import { HTTPError } from "ky";
 
 import { getMatch, getMatchStats, getPlayers } from "@/lib/faceit/api";
 import type { PlayerStats } from "@/lib/faceit/types";
-import { getMatchId, getPlayerIds, unixToISO } from "@/lib/faceit/utils";
-import type { MatchPayload } from "@/lib/faceit/webhooks/types";
+import { getMatchId, unixToISO } from "@/lib/faceit/utils";
 import { broadcast } from "@/lib/realtime/broadcast";
 import { topics } from "@/lib/realtime/topics";
 import {
@@ -79,47 +79,85 @@ function mapPlayerStats(
   };
 }
 
-export const syncFinishedMatchTask = task({
-  id: "sync-finished-match",
-  maxDuration: 300,
-  run: async (payload: MatchPayload) => {
-    const matchId = getMatchId(payload);
-    const playerIds = getPlayerIds(payload);
+/**
+ * A refreshed FACEIT ELO only reflects this match while the players haven't
+ * played another one, so matches synced late (missed webhooks, backfills)
+ * leave ELO alone.
+ */
+const ELO_FRESHNESS_SECONDS = 15 * 60;
 
-    logger.info("Starting sync of finished match", {
-      matchId,
-      teamsCount: payload.teams.length,
-      totalPlayers: playerIds.length,
-    });
+/**
+ * FACEIT occasionally never publishes stats for a finished match. Past this
+ * age the match is closed from its result alone instead of retrying forever.
+ */
+const STATS_GIVE_UP_SECONDS = 24 * 60 * 60;
 
-    const match = await getMatch(payload.id);
+const secondsSince = (timestamp: number | undefined) =>
+  timestamp ? Date.now() / 1000 - timestamp : 0;
 
-    if (match.calculate_elo !== true) {
-      return { message: "Ignored: not a valid match" };
-    }
+/** Sync a finished match by its FACEIT id ("1-<uuid>"). */
+export async function syncFinishedMatch(faceitMatchId: string) {
+  const match = await getMatch(faceitMatchId);
+  const matchId = getMatchId({ id: match.match_id });
 
-    const [existingPlayers, matchStats] = await Promise.all([
-      getExistingPlayers(playerIds),
-      getMatchStats(payload.id),
-    ]);
+  if (match.calculate_elo !== true) {
+    return { message: "Ignored: not a valid match" };
+  }
 
-    const round = matchStats.rounds?.[0];
-    if (!round) {
+  if (match.status !== "FINISHED") {
+    throw new Error(`Match ${matchId} is ${match.status}, not FINISHED yet`);
+  }
+
+  const teams = [match.teams.faction1, match.teams.faction2];
+  const playerIds = teams.flatMap((team) =>
+    (team.roster ?? []).map((p) => p.player_id as string),
+  );
+  const finishedAgo = secondsSince(match.finished_at);
+  const trackElo = !!match.finished_at && finishedAgo < ELO_FRESHNESS_SECONDS;
+
+  logger.info("Starting sync of finished match", {
+    matchId,
+    totalPlayers: playerIds.length,
+    trackElo,
+  });
+
+  const [existingPlayers, matchStats] = await Promise.all([
+    getExistingPlayers(playerIds),
+    getMatchStats(faceitMatchId).catch((error) => {
+      if (error instanceof HTTPError && error.response.status === 404) return;
+      throw error;
+    }),
+  ]);
+
+  const round = matchStats?.rounds?.[0];
+  if (!round) {
+    if (finishedAgo < STATS_GIVE_UP_SECONDS) {
       throw new Error(`Match ${matchId} has no round stats yet`);
     }
-
-    logger.info("Fetched initial data", {
+    logger.warn("No stats from FACEIT, closing match from its result", {
       matchId,
-      existingPlayersCount: existingPlayers.length,
-      matchStatus: match.status,
-      roundScore: round.round_stats?.Score,
     });
+  }
 
-    // Refresh profiles of tracked players to capture their post-match ELO.
-    const players = await getPlayers(existingPlayers.map((p) => p.id));
+  const score = match.results?.score;
+  const roundScore =
+    (round?.round_stats?.Score as string | undefined) ??
+    (score ? `${score.faction1} / ${score.faction2}` : undefined);
 
-    // Independent writes; team players below reference both.
-    await Promise.all([
+  logger.info("Fetched initial data", {
+    matchId,
+    existingPlayersCount: existingPlayers.length,
+    roundScore,
+  });
+
+  // Refresh profiles of tracked players to capture their post-match ELO.
+  const players = trackElo
+    ? await getPlayers(existingPlayers.map((p) => p.id))
+    : [];
+
+  // Independent writes; team players below reference both.
+  await Promise.all([
+    players.length &&
       upsertPlayers(
         players.map((player) => ({
           id: player.player_id,
@@ -131,82 +169,109 @@ export const syncFinishedMatchTask = task({
           cover_image: player.cover_image,
         })),
       ),
-      upsertMatch({
-        id: matchId,
-        competition_id: match.competition_id,
-        organizer_id: match.organizer_id,
-        location_pick: match.voting?.location?.pick[0],
-        map_pick: match.voting?.map?.pick[0],
-        started_at: unixToISO(match.started_at),
-        finished_at: unixToISO(match.finished_at),
-        status: match.status,
-        round_score: round.round_stats?.Score as string | undefined,
-      }),
-    ]);
+    upsertMatch({
+      id: matchId,
+      competition_id: match.competition_id,
+      organizer_id: match.organizer_id,
+      location_pick: match.voting?.location?.pick[0],
+      map_pick: match.voting?.map?.pick[0],
+      started_at: unixToISO(match.started_at),
+      finished_at: unixToISO(match.finished_at),
+      status: match.status,
+      round_score: roundScore,
+    }),
+  ]);
 
-    logger.info("Upserted players and match", {
-      matchId,
-      playersCount: players.length,
-    });
+  logger.info("Upserted players and match", {
+    matchId,
+    playersCount: players.length,
+  });
 
-    const existingPlayerById = keyBy(existingPlayers, (p) => p.id);
-    const refreshedPlayerById = keyBy(players, (p) => p.player_id);
+  const existingPlayerById = keyBy(existingPlayers, (p) => p.id);
+  const refreshedPlayerById = keyBy(players, (p) => p.player_id);
 
-    await mapAsync(
-      payload.teams,
-      async (team) => {
-        const roundTeam = round.teams?.find((rt) => rt.team_id === team.id);
-        const teamStats = roundTeam?.team_stats ?? {};
-        const statsByPlayerId = keyBy(roundTeam?.players ?? [], (p) =>
-          String(p.player_id),
-        );
+  await mapAsync(
+    teams,
+    async (team, index) => {
+      const teamId = team.faction_id;
+      const faction = index === 0 ? "faction1" : "faction2";
+      const roundTeam = round?.teams?.find((rt) => rt.team_id === teamId);
+      const teamStats = roundTeam?.team_stats ?? {};
+      const statsByPlayerId = keyBy(roundTeam?.players ?? [], (p) =>
+        String(p.player_id),
+      );
 
-        if (!roundTeam) {
-          logger.warn("No round stats for team", { matchId, teamId: team.id });
-        }
+      if (!roundTeam) {
+        logger.warn("No round stats for team", { matchId, teamId });
+      }
 
-        const resTeam = await upsertMatchTeam({
-          match_id: matchId,
-          team_id: team.id,
-          name: team.name,
-          avatar: team.avatar,
-          first_half_score: Number(teamStats["First Half Score"]),
-          second_half_score: Number(teamStats["Second Half Score"]),
-          overtime_score: Number(teamStats["Overtime score"]),
-          final_score: Number(teamStats["Final Score"]),
-          team_win: teamStats["Team Win"] === "1",
-        });
+      const resTeam = await upsertMatchTeam({
+        match_id: matchId,
+        team_id: teamId,
+        name: team.name ?? "",
+        avatar: team.avatar ?? "",
+        faction: index + 1,
+        first_half_score: Number(teamStats["First Half Score"]),
+        second_half_score: Number(teamStats["Second Half Score"]),
+        overtime_score: Number(teamStats["Overtime score"]),
+        final_score: roundTeam
+          ? Number(teamStats["Final Score"])
+          : score?.[faction],
+        team_win: roundTeam
+          ? teamStats["Team Win"] === "1"
+          : match.results?.winner === faction,
+      });
 
-        await upsertMatchTeamPlayers(
-          team.roster.map((player) => ({
+      await upsertMatchTeamPlayers(
+        (team.roster ?? []).map((player) => {
+          const id = player.player_id as string;
+          return {
             match_team_id: resTeam.id,
-            player_id_nullable: existingPlayerById[player.id]
-              ? player.id
-              : null,
-            player_id_mandatory: player.id,
-            nickname: player.nickname,
+            player_id_nullable: existingPlayerById[id] ? id : null,
+            player_id_mandatory: id,
+            nickname: player.nickname ?? "",
             game_skill_level: player.game_skill_level,
-            elo_before: existingPlayerById[player.id]?.faceit_elo,
-            elo_after: refreshedPlayerById[player.id]?.games.cs2.faceit_elo,
-            ...mapPlayerStats(statsByPlayerId[player.id]?.player_stats),
-          })),
-        );
-      },
-      { concurrency: 2 },
-    );
+            // Left out entirely (not null) when stale, so the upsert keeps
+            // the elo_before recorded when the match went READY.
+            ...(trackElo && {
+              elo_before: existingPlayerById[id]?.faceit_elo,
+              elo_after: refreshedPlayerById[id]?.games.cs2.faceit_elo,
+            }),
+            ...mapPlayerStats(statsByPlayerId[id]?.player_stats),
+          };
+        }),
+      );
+    },
+    { concurrency: 2 },
+  );
 
-    await broadcast([
-      topics.match(matchId),
-      topics.liveMatches,
-      topics.players,
-      ...playerIds.map(topics.player),
-    ]);
+  await broadcast([
+    topics.match(matchId),
+    topics.liveMatches,
+    topics.players,
+    ...playerIds.map(topics.player),
+  ]);
 
-    logger.info("Finished syncing match successfully", {
-      matchId,
-      totalPlayersProcessed: sumBy(payload.teams, (t) => t.roster.length),
-    });
+  logger.info("Finished syncing match successfully", {
+    matchId,
+    totalPlayersProcessed: playerIds.length,
+  });
 
-    return { message: `Match ${matchId} synced successfully` };
-  },
+  return { message: `Match ${matchId} synced successfully` };
+}
+
+/** Same key from the webhook and the cron, so a match is synced once. */
+export function syncFinishedMatchOptions(faceitMatchId: string) {
+  return {
+    tags: [`match_${getMatchId({ id: faceitMatchId })}`],
+    idempotencyKey: `sync-finished-match-${faceitMatchId}`,
+    idempotencyKeyTTL: "10m",
+  };
+}
+
+export const syncFinishedMatchTask = task({
+  id: "sync-finished-match",
+  maxDuration: 300,
+  // The webhook sends the whole match payload; only the id is used.
+  run: async (payload: { id: string }) => syncFinishedMatch(payload.id),
 });

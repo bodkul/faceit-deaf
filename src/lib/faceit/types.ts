@@ -34,7 +34,10 @@ export type Match = WithRequired<
   "match_id" | "status" | "competition_id" | "organizer_id"
 > & {
   teams: Record<"faction1" | "faction2", Faction>;
-  results?: { score: Record<"faction1" | "faction2", number> };
+  results?: {
+    winner?: "faction1" | "faction2";
+    score: Record<"faction1" | "faction2", number>;
+  };
   voting?: { location?: VotingPick; map?: VotingPick };
 };
 

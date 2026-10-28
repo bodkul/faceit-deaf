@@ -16,7 +16,7 @@ export function NotFoundState({
         <IconMoodEmpty className="size-7" />
       </div>
       <div className="flex flex-col gap-2">
-        <h1 className="font-bold text-2xl tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
         <p className="max-w-sm text-balance text-muted-foreground">
           {description}
         </p>

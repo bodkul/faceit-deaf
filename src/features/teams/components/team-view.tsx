@@ -24,8 +24,8 @@ function Stat({
 }) {
   return (
     <div className="flex flex-col gap-1 bg-card px-4 py-3 sm:px-6">
-      <span className="text-muted-foreground text-xs">{label}</span>
-      <span className="font-bold font-mono text-xl tabular-nums">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="font-mono text-xl font-bold tabular-nums">
         {children}
       </span>
     </div>
@@ -36,7 +36,7 @@ function ResultBadge({ win }: { win: boolean | null }) {
   return (
     <span
       className={cn(
-        "flex size-7 shrink-0 items-center justify-center rounded-md font-bold font-mono text-xs",
+        "flex size-7 shrink-0 items-center justify-center rounded-md font-mono text-xs font-bold",
         win === true && "bg-win/15 text-win",
         win === false && "bg-loss/15 text-loss",
         win == null && "bg-muted text-faint",
@@ -58,10 +58,10 @@ export function TeamView({ team }: { team: Team }) {
   return (
     <div className="flex flex-col gap-8">
       <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-(--highlight)">
-        <div className="border-border border-b px-4 py-3 sm:px-6">
+        <div className="border-b border-border px-4 py-3 sm:px-6">
           <Link
             href="/teams"
-            className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <IconArrowLeft className="size-4" />
             All teams
@@ -70,17 +70,17 @@ export function TeamView({ team }: { team: Team }) {
         <div className="flex items-center gap-4 px-4 py-5 sm:px-6">
           <TeamAvatar name={team.name} className="size-16 rounded-2xl" />
           <div className="flex min-w-0 flex-col gap-0.5">
-            <h1 className="truncate font-black text-2xl tracking-tight sm:text-3xl">
+            <h1 className="truncate text-2xl font-black tracking-tight sm:text-3xl">
               {team.name}
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               {team.roster.length} players
               {team.last_played &&
                 ` · last played ${format(team.last_played, "d MMM yyyy")}`}
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-px border-border border-t bg-border sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px border-t border-border bg-border sm:grid-cols-4">
           <Stat label="Series">
             <span className="text-win">{team.wins}</span>
             <span className="text-faint">–</span>
@@ -104,7 +104,7 @@ export function TeamView({ team }: { team: Team }) {
           />
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
             <StatsTable minWidth={600}>
-              <thead className="border-border border-b">
+              <thead className="border-b border-border">
                 <tr>
                   <StatsTh sticky align="left">
                     Player
@@ -124,7 +124,7 @@ export function TeamView({ team }: { team: Team }) {
                     <span className="flex min-w-0 items-center gap-2.5">
                       <Avatar className="size-7">
                         <AvatarImage src={p.avatar ?? undefined} alt="" />
-                        <AvatarFallback className="font-semibold text-[10px]">
+                        <AvatarFallback className="text-[10px] font-semibold">
                           {p.nickname.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -192,14 +192,14 @@ export function TeamView({ team }: { team: Team }) {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate font-medium text-sm">
+                  <span className="truncate text-sm font-medium">
                     {event.name}
                   </span>
-                  <span className="text-muted-foreground text-xs">
+                  <span className="text-xs text-muted-foreground">
                     {formatEventDates(event.start_date, event.end_date)}
                   </span>
                 </div>
-                <span className="font-bold font-mono text-sm tabular-nums">
+                <span className="font-mono text-sm font-bold tabular-nums">
                   <span className="text-win">{event.wins}</span>
                   <span className="text-faint">–</span>
                   <span className="text-loss">{event.losses}</span>
@@ -221,17 +221,17 @@ export function TeamView({ team }: { team: Team }) {
               >
                 <ResultBadge win={row.win} />
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate font-medium text-sm">
+                  <span className="truncate text-sm font-medium">
                     <span className="text-muted-foreground">vs </span>
                     {row.opponent}
                   </span>
-                  <span className="truncate text-faint text-xs">
+                  <span className="truncate text-xs text-faint">
                     {row.event_name}
                     {row.started_at &&
                       ` · ${format(row.started_at, "d MMM, HH:mm")}`}
                   </span>
                 </div>
-                <span className="font-bold font-mono tabular-nums">
+                <span className="font-mono font-bold tabular-nums">
                   {row.maps_won}:{row.maps_lost}
                 </span>
               </Link>

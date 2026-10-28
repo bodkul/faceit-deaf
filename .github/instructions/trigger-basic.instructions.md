@@ -1,6 +1,7 @@
 ---
-applyTo: **/trigger/**/*.ts
----
+
+## applyTo: **/trigger/**/*.ts
+
 # Trigger.dev Basic Tasks (v4)
 
 **MUST use `@trigger.dev/sdk` (v4), NEVER `client.defineJob`**
@@ -21,7 +22,9 @@ export const processData = task({
   },
   run: async (payload: { userId: string; data: any[] }) => {
     // Task logic - runs for long time, no timeouts
-    console.log(`Processing ${payload.data.length} items for user ${payload.userId}`);
+    console.log(
+      `Processing ${payload.data.length} items for user ${payload.userId}`,
+    );
     return { processed: payload.data.length };
   },
 });
@@ -82,10 +85,13 @@ const handle = await tasks.trigger<typeof processData>("process-data", {
 });
 
 // Batch trigger
-const batchHandle = await tasks.batchTrigger<typeof processData>("process-data", [
-  { payload: { userId: "123", data: [{ id: 1 }] } },
-  { payload: { userId: "456", data: [{ id: 2 }] } },
-]);
+const batchHandle = await tasks.batchTrigger<typeof processData>(
+  "process-data",
+  [
+    { payload: { userId: "123", data: [{ id: 1 }] } },
+    { payload: { userId: "456", data: [{ id: 2 }] } },
+  ],
+);
 ```
 
 ### From Inside Tasks (with Result handling)

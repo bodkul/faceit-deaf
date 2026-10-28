@@ -39,20 +39,20 @@ function MapCard({ stats, share }: { stats: PlayerMapStats; share: number }) {
       <MapBackground map={stats.map} className="opacity-35" />
 
       <div className="flex items-baseline justify-between gap-2">
-        <span className="font-bold text-lg capitalize">{name}</span>
-        <span className="font-mono text-muted-foreground text-sm tabular-nums">
+        <span className="text-lg font-bold capitalize">{name}</span>
+        <span className="font-mono text-sm text-muted-foreground tabular-nums">
           {stats.matches} {stats.matches === 1 ? "match" : "matches"}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col">
-          <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+          <span className="font-mono text-[11px] tracking-wider text-faint uppercase">
             Win rate
           </span>
           <span
             className={cn(
-              "font-bold font-mono text-xl tabular-nums",
+              "font-mono text-xl font-bold tabular-nums",
               stats.winrate >= 55 && "text-win",
               stats.winrate < 45 && "text-loss",
             )}
@@ -61,10 +61,10 @@ function MapCard({ stats, share }: { stats: PlayerMapStats; share: number }) {
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+          <span className="font-mono text-[11px] tracking-wider text-faint uppercase">
             Avg K/D
           </span>
-          <span className="font-bold font-mono text-xl tabular-nums">
+          <span className="font-mono text-xl font-bold tabular-nums">
             {stats.kd?.toFixed(2) ?? "—"}
           </span>
         </div>
@@ -77,7 +77,7 @@ function MapCard({ stats, share }: { stats: PlayerMapStats; share: number }) {
             style={{ width: `${Math.max(share, 2)}%` }}
           />
         </div>
-        <span className="text-faint text-xs">
+        <span className="text-xs text-faint">
           {share.toFixed(0)}% of all matches
         </span>
       </div>
@@ -105,7 +105,7 @@ export function Maps({ playerId }: { playerId: string }) {
   if (!maps?.length) {
     return (
       <MapsSection>
-        <Empty className="rounded-xl border border-border border-dashed">
+        <Empty className="rounded-xl border border-dashed border-border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <IconMap />

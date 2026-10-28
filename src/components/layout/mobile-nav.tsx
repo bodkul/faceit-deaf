@@ -32,7 +32,7 @@ export function MobileNav() {
       {open && (
         <Portal className="top-14" id="mobile-menu">
           <PortalBackdrop />
-          <nav className="fade-in-0 slide-in-from-top-2 grid animate-in gap-1 p-4 duration-200">
+          <nav className="grid animate-in gap-1 p-4 duration-200 fade-in-0 slide-in-from-top-2">
             {navLinks.map((link) => {
               const active = isNavLinkActive(pathname, link.href);
               return (
@@ -42,7 +42,7 @@ export function MobileNav() {
                   aria-current={active ? "page" : undefined}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "flex h-12 items-center gap-3 rounded-lg px-3 font-medium text-base transition-colors",
+                    "flex h-12 items-center gap-3 rounded-lg px-3 text-base font-medium transition-colors",
                     active
                       ? "bg-foreground/[0.07] text-foreground"
                       : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground",

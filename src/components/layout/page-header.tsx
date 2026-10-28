@@ -25,7 +25,7 @@ export function PageHeaderTitle({ children, className }: PageHeaderProps) {
   return (
     <h1
       className={cn(
-        "scroll-m-20 font-bold font-heading text-2xl tracking-tight sm:text-3xl",
+        "font-heading scroll-m-20 text-2xl font-bold tracking-tight sm:text-3xl",
         className,
       )}
     >

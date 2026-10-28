@@ -40,11 +40,11 @@ function Stat({
 }) {
   return (
     <div className="flex flex-col gap-0.5 bg-card px-4 py-3">
-      <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+      <span className="font-mono text-[11px] tracking-wider text-faint uppercase">
         {label}
       </span>
       <span
-        className={cn("font-bold font-mono text-xl tabular-nums", className)}
+        className={cn("font-mono text-xl font-bold tabular-nums", className)}
       >
         {value}
       </span>
@@ -118,10 +118,10 @@ export function EventPlayerView({
   return (
     <div className="flex flex-col gap-8">
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="flex items-center justify-between gap-3 border-border border-b px-4 py-3 sm:px-6">
+        <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-6">
           <Link
             href={`/events/${slug}/players`}
-            className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <IconArrowLeft className="size-4" />
             All players
@@ -137,31 +137,31 @@ export function EventPlayerView({
 
         <div className="flex items-center gap-4 px-4 py-5 sm:px-6">
           <Avatar className="size-14 rounded-xl after:rounded-xl">
-            <AvatarFallback className="rounded-xl font-bold text-lg">
+            <AvatarFallback className="rounded-xl text-lg font-bold">
               {nickname.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex min-w-0 flex-col">
-            <h2 className="truncate font-black text-2xl tracking-tight">
+            <h2 className="truncate text-2xl font-black tracking-tight">
               {nickname}
             </h2>
-            <p className="truncate text-muted-foreground text-sm">
+            <p className="truncate text-sm text-muted-foreground">
               {team} · {mapsPlayed} maps
             </p>
           </div>
           {totalMvps > 0 && (
             <div className="ml-auto flex flex-col items-end">
-              <span className="font-black font-mono text-3xl text-warning tabular-nums">
+              <span className="font-mono text-3xl font-black text-warning tabular-nums">
                 {totalMvps}
               </span>
-              <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+              <span className="font-mono text-[11px] tracking-wider text-faint uppercase">
                 MVPs
               </span>
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-px border-border border-t bg-border sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-px border-t border-border bg-border sm:grid-cols-3 lg:grid-cols-6">
           <Stat
             label="K/D"
             value={kd.toFixed(2)}
@@ -198,7 +198,7 @@ export function EventPlayerView({
         />
         <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
           <StatsTable minWidth={640}>
-            <thead className="border-border border-b">
+            <thead className="border-b border-border">
               <tr>
                 <StatsTh sticky align="left">
                   Map

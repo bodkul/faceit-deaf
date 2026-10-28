@@ -24,7 +24,7 @@ export function TeamCard({ team }: { team: Team }) {
         <TeamAvatar name={team.name} className="size-11 rounded-xl" />
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate font-semibold">{team.name}</span>
-          <span className="inline-flex items-center gap-1.5 text-muted-foreground text-xs">
+          <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
             <IconTrophy className="size-3.5 text-faint" />
             {team.events.length} {team.events.length === 1 ? "event" : "events"}
             {team.last_played && (
@@ -38,9 +38,9 @@ export function TeamCard({ team }: { team: Team }) {
             )}
           </span>
         </div>
-        <div className="flex shrink-0 items-baseline gap-0.5 font-bold font-mono tabular-nums">
+        <div className="flex shrink-0 items-baseline gap-0.5 font-mono font-bold tabular-nums">
           <span className="text-win">{team.wins}</span>
-          <span className="text-faint text-sm">–</span>
+          <span className="text-sm text-faint">–</span>
           <span className="text-loss">{team.losses}</span>
         </div>
       </div>
@@ -66,13 +66,13 @@ export function TeamCard({ team }: { team: Team }) {
               title={player.nickname}
             >
               <AvatarImage src={player.avatar ?? undefined} alt="" />
-              <AvatarFallback className="font-semibold text-[10px]">
+              <AvatarFallback className="text-[10px] font-semibold">
                 {player.nickname.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           ))}
         </div>
-        <span className="min-w-0 truncate text-muted-foreground text-xs">
+        <span className="min-w-0 truncate text-xs text-muted-foreground">
           {roster.map((p) => p.nickname).join(", ")}
           {extra > 0 && ` +${extra}`}
         </span>

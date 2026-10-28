@@ -90,7 +90,7 @@ function TeamCell({
       <TeamAvatar name={team.name} src={team.avatar} className="size-8" />
       <span
         className={cn(
-          "truncate font-semibold text-sm sm:text-base",
+          "truncate text-sm font-semibold sm:text-base",
           team.is_winner === false && "text-muted-foreground",
         )}
       >
@@ -112,7 +112,7 @@ function MatchRow({ match, slug }: { match: EventMatch; slug: string }) {
       <TeamCell team={team1} align="left" />
 
       <div className="flex flex-col items-center gap-0.5">
-        <div className="flex items-center gap-2 font-black font-mono text-xl tabular-nums">
+        <div className="flex items-center gap-2 font-mono text-xl font-black tabular-nums">
           <span
             className={cn(team1.is_winner ? "text-win" : "text-foreground/70")}
           >
@@ -125,7 +125,7 @@ function MatchRow({ match, slug }: { match: EventMatch; slug: string }) {
             {match.score_faction2 ?? "–"}
           </span>
         </div>
-        <span className="font-mono text-[10px] text-faint uppercase tracking-wider">
+        <span className="font-mono text-[10px] tracking-wider text-faint uppercase">
           Bo{match.best_of ?? match.maps.length}
           {match.started_at && ` · ${format(match.started_at, "HH:mm")}`}
         </span>
@@ -149,7 +149,7 @@ export function EventMatchesClient({ event }: { event: EventBySlug }) {
 
   if (!matches?.length) {
     return (
-      <Empty className="rounded-xl border border-border border-dashed">
+      <Empty className="rounded-xl border border-dashed border-border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <IconTrophy />
@@ -173,7 +173,7 @@ export function EventMatchesClient({ event }: { event: EventBySlug }) {
     <div className="flex flex-col gap-6">
       {byDay.map(([day, dayMatches]) => (
         <section key={day} className="flex flex-col gap-3">
-          <h2 className="font-mono text-[11px] text-faint uppercase tracking-wider">
+          <h2 className="font-mono text-[11px] tracking-wider text-faint uppercase">
             {day === "tbd" ? "Not scheduled" : format(day, "EEEE, d MMMM")}
             <span className="ml-2 text-faint/70">· {dayMatches.length}</span>
           </h2>

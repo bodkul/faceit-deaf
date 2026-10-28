@@ -50,19 +50,19 @@ function StatTile({
 }) {
   return (
     <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-(--highlight)">
-      <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+      <span className="font-mono text-[11px] tracking-wider text-faint uppercase">
         {label}
       </span>
       <span
         className={cn(
-          "font-black font-mono text-2xl tabular-nums sm:text-3xl",
+          "font-mono text-2xl font-black tabular-nums sm:text-3xl",
           tone === "win" && "text-win",
           tone === "loss" && "text-loss",
         )}
       >
         {value}
       </span>
-      {hint && <span className="text-muted-foreground text-xs">{hint}</span>}
+      {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
     </div>
   );
 }
@@ -121,7 +121,7 @@ function useStatisticsCalculation(data: PlayerMatch[] | undefined) {
 function FormStrip({ form }: { form: (boolean | null)[] }) {
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 shadow-(--highlight) sm:flex-row sm:items-center sm:justify-between">
-      <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+      <span className="font-mono text-[11px] tracking-wider text-faint uppercase">
         Recent form
       </span>
       <ol className="flex gap-1.5" aria-label="Recent results, oldest first">
@@ -129,7 +129,7 @@ function FormStrip({ form }: { form: (boolean | null)[] }) {
           <li
             key={index}
             className={cn(
-              "flex size-7 items-center justify-center rounded-md font-bold font-mono text-xs",
+              "flex size-7 items-center justify-center rounded-md font-mono text-xs font-bold",
               win === true && "bg-win/15 text-win",
               win === false && "bg-loss/15 text-loss",
               win === null && "bg-muted text-faint",
@@ -153,13 +153,13 @@ function EloChart({
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-(--highlight) sm:p-5">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+        <span className="font-mono text-[11px] tracking-wider text-faint uppercase">
           ELO progression
         </span>
         {change !== null && (
           <span
             className={cn(
-              "font-bold font-mono text-sm tabular-nums",
+              "font-mono text-sm font-bold tabular-nums",
               change > 0 && "text-win",
               change < 0 && "text-loss",
             )}
@@ -210,7 +210,7 @@ function EloChart({
           </AreaChart>
         </ChartContainer>
       ) : (
-        <p className="py-10 text-center text-muted-foreground text-sm">
+        <p className="py-10 text-center text-sm text-muted-foreground">
           Not enough matches with ELO data for a chart.
         </p>
       )}
@@ -224,7 +224,7 @@ function StatisticsEmpty(props: {
 }) {
   return (
     <StatisticsLayout {...props}>
-      <Empty className="rounded-xl border border-border border-dashed">
+      <Empty className="rounded-xl border border-dashed border-border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <IconChartBar />

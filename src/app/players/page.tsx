@@ -34,7 +34,7 @@ export default async function PlayersPage({
 
   if (players.length === 0) {
     return (
-      <Empty className="rounded-xl border border-border border-dashed">
+      <Empty className="rounded-xl border border-dashed border-border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <IconUsers />
@@ -53,7 +53,7 @@ export default async function PlayersPage({
       <RealtimeRefresh sources={[topics.players]} />
 
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
-        <div className="flex items-center gap-3 border-border border-b bg-foreground/2 px-4 py-2.5 font-mono text-[11px] text-faint uppercase tracking-wider">
+        <div className="flex items-center gap-3 border-b border-border bg-foreground/2 px-4 py-2.5 font-mono text-[11px] tracking-wider text-faint uppercase">
           <span className="w-7 text-center">#</span>
           <span className="flex-1 pl-12">Player</span>
           <span>FACEIT ELO</span>
@@ -75,7 +75,7 @@ export default async function PlayersPage({
             currentPage={currentPage}
             totalPages={totalPages}
           />
-          <p className="text-faint text-xs">
+          <p className="text-xs text-faint">
             {offset + 1}–{offset + players.length} of {count} players
           </p>
         </div>

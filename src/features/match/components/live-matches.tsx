@@ -89,7 +89,7 @@ function MatchCard({
       href={`/match/1-${match.id}`}
       className={cn(
         "group relative isolate flex flex-col gap-4 overflow-hidden rounded-xl border bg-card p-4 transition-all duration-200",
-        "hover:-translate-y-0.5 hover:border-border-strong hover:shadow-black/40 hover:shadow-lg",
+        "hover:-translate-y-0.5 hover:border-border-strong hover:shadow-lg hover:shadow-black/40",
         status === "live" ? "border-live/30" : "border-border",
       )}
     >
@@ -102,23 +102,23 @@ function MatchCard({
         <MatchStatusPill match={match} />
         <div className="flex items-center gap-2">
           {hasStream && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#9146ff]/15 px-2 py-0.5 font-medium text-[#b58cff] text-[11px]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#9146ff]/15 px-2 py-0.5 text-[11px] font-medium text-[#b58cff]">
               <IconBrandTwitch className="size-3" />
               Stream
             </span>
           )}
-          <span className="font-medium text-muted-foreground text-sm capitalize">
+          <span className="text-sm font-medium text-muted-foreground capitalize">
             {formatMap(match.map_pick)}
           </span>
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-4 font-black font-mono text-4xl tabular-nums">
+      <div className="flex items-center justify-center gap-4 font-mono text-4xl font-black tabular-nums">
         <NumberFlow
           value={scoreA}
           className={cn(scoreA > scoreB && status === "finished" && "text-win")}
         />
-        <span className="text-faint text-xl">:</span>
+        <span className="text-xl text-faint">:</span>
         <NumberFlow
           value={scoreB}
           className={cn(scoreB > scoreA && status === "finished" && "text-win")}
@@ -135,7 +135,7 @@ function MatchCard({
                 key={nickname}
                 title={isStreaming ? `${nickname} is streaming` : nickname}
                 className={cn(
-                  "inline-flex h-6 min-w-0 max-w-full items-center gap-1 rounded-md px-2 font-medium text-xs ring-1 ring-inset",
+                  "inline-flex h-6 max-w-full min-w-0 items-center gap-1 rounded-md px-2 text-xs font-medium ring-1 ring-inset",
                   isStreaming
                     ? "text-[#b58cff] ring-[#9146ff]/40"
                     : "text-foreground/80 ring-foreground/15",
@@ -201,7 +201,7 @@ export function LiveMatches() {
           description="Matches deaf players are playing on FACEIT right now"
         >
           {active.length > 0 && (
-            <span className="rounded-full bg-live/15 px-2 py-0.5 font-mono font-semibold text-live text-xs tabular-nums">
+            <span className="rounded-full bg-live/15 px-2 py-0.5 font-mono text-xs font-semibold text-live tabular-nums">
               {active.length}
             </span>
           )}
@@ -212,7 +212,7 @@ export function LiveMatches() {
         ) : active.length > 0 ? (
           <MatchGrid matches={active} streamingNicknames={streamingNicknames} />
         ) : (
-          <Empty className="rounded-xl border border-border border-dashed p-6 md:p-8">
+          <Empty className="rounded-xl border border-dashed border-border p-6 md:p-8">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <IconDeviceGamepad2 />
@@ -233,7 +233,7 @@ export function LiveMatches() {
         ) : finished.length > 0 ? (
           <MatchGrid matches={finished} />
         ) : (
-          <Empty className="rounded-xl border border-border border-dashed p-6 md:p-8">
+          <Empty className="rounded-xl border border-dashed border-border p-6 md:p-8">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <IconFlag />

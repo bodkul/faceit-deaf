@@ -114,17 +114,17 @@ export function EventTeamView({
   return (
     <div className="flex flex-col gap-8">
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="flex items-center justify-between gap-4 border-border border-b px-4 py-3 sm:px-6">
+        <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3 sm:px-6">
           <Link
             href={`/events/${slug}/teams`}
-            className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <IconArrowLeft className="size-4" />
             All teams
           </Link>
           <Link
             href={teamHref(teamName)}
-            className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             Team profile
             <IconArrowRight className="size-4" />
@@ -133,17 +133,17 @@ export function EventTeamView({
         <div className="flex items-center gap-4 px-4 py-5 sm:px-6">
           <TeamAvatar name={teamName} className="size-14 rounded-xl" />
           <div className="flex min-w-0 flex-col">
-            <h2 className="truncate font-black text-2xl tracking-tight">
+            <h2 className="truncate text-2xl font-black tracking-tight">
               {teamName}
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               {history.length} {history.length === 1 ? "series" : "series"}{" "}
               played
             </p>
           </div>
-          <div className="ml-auto flex items-center gap-1 font-black font-mono text-3xl tabular-nums">
+          <div className="ml-auto flex items-center gap-1 font-mono text-3xl font-black tabular-nums">
             <span className="text-win">{wins}</span>
-            <span className="text-faint text-xl">–</span>
+            <span className="text-xl text-faint">–</span>
             <span className="text-loss">{losses}</span>
           </div>
         </div>
@@ -154,7 +154,7 @@ export function EventTeamView({
           <SectionHeader title="Roster" description="Totals across the event" />
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
             <StatsTable minWidth={560}>
-              <thead className="border-border border-b">
+              <thead className="border-b border-border">
                 <tr>
                   <StatsTh sticky align="left">
                     Player
@@ -215,7 +215,7 @@ export function EventTeamView({
             >
               <span
                 className={cn(
-                  "flex size-7 shrink-0 items-center justify-center rounded-md font-bold font-mono text-xs",
+                  "flex size-7 shrink-0 items-center justify-center rounded-md font-mono text-xs font-bold",
                   row.win === true && "bg-win/15 text-win",
                   row.win === false && "bg-loss/15 text-loss",
                   row.win == null && "bg-muted text-faint",
@@ -228,11 +228,11 @@ export function EventTeamView({
                 {row.enemy_name}
               </span>
               {row.started_at && (
-                <span className="hidden font-mono text-faint text-xs sm:inline">
+                <span className="hidden font-mono text-xs text-faint sm:inline">
                   {format(row.started_at, "d MMM, HH:mm")}
                 </span>
               )}
-              <span className="font-bold font-mono tabular-nums">
+              <span className="font-mono font-bold tabular-nums">
                 {row.maps_won}:{row.maps_lost}
               </span>
             </Link>

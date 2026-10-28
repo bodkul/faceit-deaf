@@ -129,7 +129,7 @@ export function EventTeamsClient({ event }: { event: EventBySlug }) {
 
   if (!teams?.length) {
     return (
-      <Empty className="rounded-xl border border-border border-dashed">
+      <Empty className="rounded-xl border border-dashed border-border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <IconTrophy />
@@ -146,7 +146,7 @@ export function EventTeamsClient({ event }: { event: EventBySlug }) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
       <StatsTable minWidth={560}>
-        <thead className="border-border border-b">
+        <thead className="border-b border-border">
           <tr>
             <StatsTh sticky align="left">
               Team

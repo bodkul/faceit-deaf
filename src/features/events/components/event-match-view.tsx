@@ -46,7 +46,7 @@ function SeriesHeader({ match, slug }: { match: EventMatch; slug: string }) {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-card">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-border border-b px-4 py-3 text-sm sm:px-6">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3 text-sm sm:px-6">
         <Link
           href={`/events/${slug}/matches`}
           className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
@@ -54,7 +54,7 @@ function SeriesHeader({ match, slug }: { match: EventMatch; slug: string }) {
           <IconArrowLeft className="size-4" />
           All matches
         </Link>
-        <span className="font-mono text-muted-foreground text-xs">
+        <span className="font-mono text-xs text-muted-foreground">
           Bo{match.best_of ?? match.maps.length}
           {match.started_at &&
             ` · ${format(match.started_at, "EEE d MMM, HH:mm")}`}
@@ -77,13 +77,13 @@ function SeriesHeader({ match, slug }: { match: EventMatch; slug: string }) {
               className="size-12 rounded-xl sm:size-14"
             />
             <div className="flex min-w-0 flex-col gap-1">
-              <span className="w-full truncate font-bold text-sm sm:text-lg">
+              <span className="w-full truncate text-sm font-bold sm:text-lg">
                 {teamName(team)}
               </span>
               {team?.is_winner != null && (
                 <span
                   className={cn(
-                    "font-mono font-semibold text-[11px] uppercase tracking-wider",
+                    "font-mono text-[11px] font-semibold tracking-wider uppercase",
                     team.is_winner ? "text-win" : "text-loss",
                   )}
                 >
@@ -94,7 +94,7 @@ function SeriesHeader({ match, slug }: { match: EventMatch; slug: string }) {
           </div>
         ))}
 
-        <div className="order-2 flex items-center gap-3 font-black font-mono text-4xl tabular-nums sm:text-5xl">
+        <div className="order-2 flex items-center gap-3 font-mono text-4xl font-black tabular-nums sm:text-5xl">
           <span
             className={cn(team1?.is_winner ? "text-win" : "text-foreground/60")}
           >
@@ -131,7 +131,7 @@ function MapScoreStrip({ map, teams }: { map: MapData; teams: TeamData[] }) {
           {map.map_name?.replace("de_", "")}
         </span>
         {map.total_rounds != null && (
-          <span className="text-muted-foreground text-xs">
+          <span className="text-xs text-muted-foreground">
             {map.total_rounds} rounds
           </span>
         )}
@@ -150,7 +150,7 @@ function MapScoreStrip({ map, teams }: { map: MapData; teams: TeamData[] }) {
             OT {s1?.overtime_score ?? 0}:{s2?.overtime_score ?? 0}
           </span>
         )}
-        <span className="font-black text-lg">
+        <span className="text-lg font-black">
           <span
             className={cn(s1?.is_winner ? "text-win" : "text-foreground/70")}
           >
@@ -183,13 +183,13 @@ function PlayerTable({
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
-      <div className="flex items-center gap-3 border-border border-b px-4 py-3">
+      <div className="flex items-center gap-3 border-b border-border px-4 py-3">
         <TeamAvatar name={name} className="size-8" />
         <span className="min-w-0 truncate font-semibold">{name}</span>
         {isWinner != null && (
           <span
             className={cn(
-              "ml-auto shrink-0 rounded-md px-2 py-0.5 font-mono font-semibold text-xs",
+              "ml-auto shrink-0 rounded-md px-2 py-0.5 font-mono text-xs font-semibold",
               isWinner ? "bg-win/15 text-win" : "bg-loss/15 text-loss",
             )}
           >
@@ -199,7 +199,7 @@ function PlayerTable({
       </div>
 
       <StatsTable minWidth={560} fixed>
-        <thead className="border-border border-b">
+        <thead className="border-b border-border">
           <tr>
             <StatsTh sticky align="left" className="w-44 sm:w-60">
               Player
@@ -322,7 +322,7 @@ export function EventMatchView({
       <SeriesHeader match={match} slug={slug} />
 
       {maps.length === 0 ? (
-        <div className="rounded-xl border border-border border-dashed px-5 py-10 text-center text-muted-foreground text-sm">
+        <div className="rounded-xl border border-dashed border-border px-5 py-10 text-center text-sm text-muted-foreground">
           No map data yet.
         </div>
       ) : (
@@ -360,10 +360,10 @@ export function EventMatchView({
                           : "border-border bg-card hover:border-border-strong",
                       )}
                     >
-                      <span className="font-semibold text-sm capitalize">
+                      <span className="text-sm font-semibold capitalize">
                         {map ? map.map_name?.replace("de_", "") : "Overall"}
                       </span>
-                      <span className="font-mono text-muted-foreground text-xs tabular-nums">
+                      <span className="font-mono text-xs text-muted-foreground tabular-nums">
                         {map ? (
                           <>
                             <span className={cn(w1 && "text-win")}>

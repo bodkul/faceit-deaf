@@ -32,7 +32,7 @@ export function TabsNav({
 
   return (
     <nav className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <div className="flex min-w-max gap-1 border-border border-b">
+      <div className="flex min-w-max gap-1 border-b border-border">
         {tabs.map((tab) => {
           const active = activeTab === tab.value;
           return (
@@ -41,7 +41,7 @@ export function TabsNav({
               href={`${basePath}${tab.path}`}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "relative -mb-px border-b-2 px-3 py-2.5 font-medium text-sm transition-colors",
+                "relative -mb-px border-b-2 px-3 py-2.5 text-sm font-medium transition-colors",
                 active
                   ? "border-primary text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground",

@@ -31,11 +31,11 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-14">
       <section className="flex flex-col items-center gap-5 pt-4 text-center sm:pt-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-foreground/5 px-3 py-1 font-medium text-muted-foreground text-xs ring-1 ring-foreground/10 ring-inset">
+        <span className="inline-flex items-center gap-2 rounded-full bg-foreground/5 px-3 py-1 text-xs font-medium text-muted-foreground ring-1 ring-foreground/10 ring-inset">
           <span className="size-1.5 rounded-full bg-primary" />
           Tracking {count} deaf CS2 players
         </span>
-        <h1 className="max-w-3xl text-balance font-black text-4xl tracking-tight sm:text-5xl lg:text-6xl">
+        <h1 className="max-w-3xl text-4xl font-black tracking-tight text-balance sm:text-5xl lg:text-6xl">
           Every deaf CS2 match,{" "}
           <span className="bg-linear-to-r from-primary to-warning bg-clip-text text-transparent">
             live
@@ -71,8 +71,8 @@ export default async function HomePage() {
               key={stat.label}
               className="flex flex-col-reverse gap-0.5 px-3 py-3"
             >
-              <dt className="text-muted-foreground text-xs">{stat.label}</dt>
-              <dd className="font-black font-mono text-2xl tabular-nums">
+              <dt className="text-xs text-muted-foreground">{stat.label}</dt>
+              <dd className="font-mono text-2xl font-black tabular-nums">
                 {stat.value.toLocaleString("en-US")}
               </dd>
             </div>

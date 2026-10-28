@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function Loading({ rows = 10 }: { rows?: number }) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
-      <div className="h-9 border-border border-b" />
+      <div className="h-9 border-b border-border" />
       <div className="divide-y divide-border">
         {range(rows).map((index) => (
           <div key={index} className="flex items-center gap-3 px-4 py-3">

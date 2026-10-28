@@ -123,7 +123,7 @@ export function EventPlayersClient({ event }: { event: EventBySlug }) {
 
   if (!players?.length) {
     return (
-      <Empty className="rounded-xl border border-border border-dashed">
+      <Empty className="rounded-xl border border-dashed border-border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <IconTrophy />
@@ -140,7 +140,7 @@ export function EventPlayersClient({ event }: { event: EventBySlug }) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
       <StatsTable minWidth={760}>
-        <thead className="border-border border-b">
+        <thead className="border-b border-border">
           <tr>
             <StatsTh sticky align="left">
               Player

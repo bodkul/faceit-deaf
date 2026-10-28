@@ -15,7 +15,7 @@ export async function EventsList() {
 
   if (events.length === 0) {
     return (
-      <Empty className="rounded-xl border border-border border-dashed">
+      <Empty className="rounded-xl border border-dashed border-border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <IconCalendarX />

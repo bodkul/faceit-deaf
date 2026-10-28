@@ -79,7 +79,7 @@ export function PlayerCard({ player }: { player: Player }) {
 
           <div className="flex min-w-0 flex-col gap-2.5">
             <div className="flex min-w-0 items-center gap-2.5">
-              <h1 className="truncate font-black text-2xl tracking-tight sm:text-3xl">
+              <h1 className="truncate text-2xl font-black tracking-tight sm:text-3xl">
                 {player.nickname}
               </h1>
               <CountryFlag code={player.country} className="h-3.5 w-5" />
@@ -109,17 +109,17 @@ export function PlayerCard({ player }: { player: Player }) {
         <div className="flex items-center gap-4 rounded-xl border border-border bg-background/60 px-4 py-3 backdrop-blur-sm sm:min-w-56">
           <FaceitLevelIcon elo={player.faceit_elo} className="size-10" />
           <div className="flex flex-col">
-            <span className="font-mono text-[11px] text-faint uppercase tracking-wider">
+            <span className="font-mono text-[11px] tracking-wider text-faint uppercase">
               {level > 0 ? `Level ${level}` : "Unranked"}
             </span>
-            <span className="font-black font-mono text-2xl tabular-nums leading-tight">
+            <span className="font-mono text-2xl leading-tight font-black tabular-nums">
               {player.faceit_elo ?? "—"}
-              <span className="ml-1 font-medium text-muted-foreground text-xs">
+              <span className="ml-1 text-xs font-medium text-muted-foreground">
                 ELO
               </span>
             </span>
             {toNext !== null && (
-              <span className="text-muted-foreground text-xs">
+              <span className="text-xs text-muted-foreground">
                 {toNext} to level {level + 1}
               </span>
             )}

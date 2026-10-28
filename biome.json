@@ -12,12 +12,9 @@
   "linter": {
     "rules": {
       "nursery": {
-        "useSortedClasses": {
+        "useTailwindSortedClasses": {
           "level": "warn",
-          "fix": "safe",
-          "options": {
-            "functions": ["clsx", "cva", "cn"]
-          }
+          "fix": "safe"
         }
       },
       "a11y": {
@@ -54,5 +51,10 @@
     "formatter": {
       "enabled": true
     }
+  },
+  "tailwind": {
+    "stylesheet": "./src/app/globals.css",
+    "mergeFunctions": ["clsx", "cn"],
+    "variantFunctions": ["cva"]
   }
 }

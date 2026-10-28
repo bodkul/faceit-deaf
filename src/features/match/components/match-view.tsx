@@ -55,14 +55,14 @@ function Loading() {
           key={t}
           className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)"
         >
-          <div className="flex items-center gap-3 border-border border-b px-4 py-3">
+          <div className="flex items-center gap-3 border-b border-border px-4 py-3">
             <Skeleton className="size-8 rounded-lg" />
             <Skeleton className="h-4 w-32" />
           </div>
           {[0, 1, 2, 3, 4].map((r) => (
             <div
               key={r}
-              className="flex items-center gap-3 border-border border-b px-4 py-3 last:border-0"
+              className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-0"
             >
               <Skeleton className="size-6 rounded-full" />
               <Skeleton className="h-4 w-28" />
@@ -107,13 +107,13 @@ function TeamSide({
         className="size-12 rounded-xl sm:size-16"
       />
       <div className="flex min-w-0 flex-col gap-1">
-        <span className="w-full truncate font-bold text-sm sm:line-clamp-2 sm:whitespace-normal sm:break-all sm:text-lg">
+        <span className="w-full truncate text-sm font-bold sm:line-clamp-2 sm:text-lg sm:break-all sm:whitespace-normal">
           {team.name}
         </span>
         {team.team_win != null && (
           <span
             className={cn(
-              "font-mono font-semibold text-[11px] uppercase tracking-wider",
+              "font-mono text-[11px] font-semibold tracking-wider uppercase",
               team.team_win ? "text-win" : "text-loss",
             )}
           >
@@ -147,7 +147,7 @@ function HalfScores({ team1, team2 }: { team1: TeamType; team2: TeamType }) {
   if (parts.every(([, a, b]) => a == null && b == null)) return null;
 
   return (
-    <div className="flex items-center gap-3 font-mono text-muted-foreground text-xs tabular-nums">
+    <div className="flex items-center gap-3 font-mono text-xs text-muted-foreground tabular-nums">
       {parts.map(([label, a, b]) => (
         <span key={label}>
           <span className="text-faint">{label} </span>
@@ -171,8 +171,8 @@ function MatchHeader({ match }: { match: MatchType }) {
     <section className="relative isolate overflow-hidden rounded-2xl border border-border bg-card">
       <MapBackground map={match.map_pick} className="opacity-50" />
 
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-border/60 border-b px-4 py-3 sm:px-6">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-muted-foreground text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border/60 px-4 py-3 sm:px-6">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
           <MatchStatus match={match} />
           <span className="font-semibold text-foreground capitalize">
             {match.map_pick?.replace("de_", "") ?? "Map vote"}
@@ -210,7 +210,7 @@ function MatchHeader({ match }: { match: MatchType }) {
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8">
         <TeamSide team={team1} align="left" />
         <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-3 font-black font-mono text-4xl tabular-nums sm:gap-4 sm:text-6xl">
+          <div className="flex items-center gap-3 font-mono text-4xl font-black tabular-nums sm:gap-4 sm:text-6xl">
             <Score team={team1} />
             <span className="text-2xl text-faint sm:text-3xl">:</span>
             <Score team={team2} />
@@ -301,13 +301,13 @@ function TeamStatsTable({
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
-      <div className="flex items-center gap-3 border-border border-b px-4 py-3">
+      <div className="flex items-center gap-3 border-b border-border px-4 py-3">
         <TeamAvatar name={team.name} src={team.avatar} className="size-8" />
         <span className="min-w-0 truncate font-semibold">{team.name}</span>
         {team.team_win != null && (
           <span
             className={cn(
-              "ml-auto shrink-0 rounded-md px-2 py-0.5 font-mono font-semibold text-xs",
+              "ml-auto shrink-0 rounded-md px-2 py-0.5 font-mono text-xs font-semibold",
               team.team_win ? "bg-win/15 text-win" : "bg-loss/15 text-loss",
             )}
           >
@@ -317,7 +317,7 @@ function TeamStatsTable({
       </div>
 
       <StatsTable minWidth={600} fixed>
-        <thead className="border-border border-b">
+        <thead className="border-b border-border">
           <tr>
             <StatsTh sticky align="left" className="w-36 sm:w-60">
               Player
@@ -365,13 +365,13 @@ function TeamStatsTable({
             </tr>
           ))}
         </tbody>
-        <tfoot className="border-border border-t bg-foreground/2">
+        <tfoot className="border-t border-border bg-foreground/2">
           <tr>
             <StatsTd
               sticky
               align="left"
               numeric={false}
-              className="bg-[color-mix(in_oklch,var(--card),var(--muted)_20%)] font-mono text-[11px] text-faint uppercase tracking-wider"
+              className="bg-[color-mix(in_oklch,var(--card),var(--muted)_20%)] font-mono text-[11px] tracking-wider text-faint uppercase"
             >
               Team
             </StatsTd>

@@ -6,7 +6,7 @@ export default function Loading() {
   return (
     <div className="flex flex-col gap-8">
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="border-border border-b px-4 py-3 sm:px-6">
+        <div className="border-b border-border px-4 py-3 sm:px-6">
           <Skeleton className="h-5 w-20" />
         </div>
         <div className="flex items-center gap-4 px-4 py-5 sm:px-6">
@@ -16,7 +16,7 @@ export default function Loading() {
             <Skeleton className="h-4 w-40" />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-px border-border border-t bg-border sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px border-t border-border bg-border sm:grid-cols-4">
           {range(4).map((index) => (
             <div
               key={index}

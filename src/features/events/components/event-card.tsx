@@ -78,14 +78,14 @@ export function EventCard({ slug }: { slug: string }) {
 
       <div className="flex min-w-0 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <h1 className="font-black text-xl tracking-tight sm:text-3xl">
+          <h1 className="text-xl font-black tracking-tight sm:text-3xl">
             {event.name}
           </h1>
           <EventStatusPill
             status={getEventStatus(event.start_date, event.end_date)}
           />
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-sm">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <IconCalendar className="size-4 text-faint" />
             {formatEventDates(event.start_date, event.end_date)}

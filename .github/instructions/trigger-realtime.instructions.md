@@ -1,6 +1,7 @@
 ---
-applyTo: **/trigger/**/*.ts
----
+
+## applyTo: **/trigger/**/*.ts
+
 # Trigger.dev Realtime (v4)
 
 **Real-time monitoring and updates for runs**
@@ -124,14 +125,20 @@ npm add @trigger.dev/react-hooks
 
 ```tsx
 "use client";
-import { useTaskTrigger, useRealtimeTaskTrigger } from "@trigger.dev/react-hooks";
+import {
+  useTaskTrigger,
+  useRealtimeTaskTrigger,
+} from "@trigger.dev/react-hooks";
 import type { myTask } from "../trigger/tasks";
 
 function TriggerComponent({ accessToken }: { accessToken: string }) {
   // Basic trigger
-  const { submit, handle, isLoading } = useTaskTrigger<typeof myTask>("my-task", {
-    accessToken,
-  });
+  const { submit, handle, isLoading } = useTaskTrigger<typeof myTask>(
+    "my-task",
+    {
+      accessToken,
+    },
+  );
 
   // Trigger with realtime updates
   const {
@@ -146,7 +153,10 @@ function TriggerComponent({ accessToken }: { accessToken: string }) {
         Trigger Task
       </button>
 
-      <button onClick={() => realtimeSubmit({ data: "realtime" })} disabled={isRealtimeLoading}>
+      <button
+        onClick={() => realtimeSubmit({ data: "realtime" })}
+        disabled={isRealtimeLoading}
+      >
         Trigger with Realtime
       </button>
 
@@ -160,10 +170,19 @@ function TriggerComponent({ accessToken }: { accessToken: string }) {
 
 ```tsx
 "use client";
-import { useRealtimeRun, useRealtimeRunsWithTag } from "@trigger.dev/react-hooks";
+import {
+  useRealtimeRun,
+  useRealtimeRunsWithTag,
+} from "@trigger.dev/react-hooks";
 import type { myTask } from "../trigger/tasks";
 
-function SubscribeComponent({ runId, accessToken }: { runId: string; accessToken: string }) {
+function SubscribeComponent({
+  runId,
+  accessToken,
+}: {
+  runId: string;
+  accessToken: string;
+}) {
   // Subscribe to specific run
   const { run, error } = useRealtimeRun<typeof myTask>(runId, {
     accessToken,
@@ -202,8 +221,17 @@ function SubscribeComponent({ runId, accessToken }: { runId: string; accessToken
 import { useRealtimeRunWithStreams } from "@trigger.dev/react-hooks";
 import type { streamingTask, STREAMS } from "../trigger/tasks";
 
-function StreamComponent({ runId, accessToken }: { runId: string; accessToken: string }) {
-  const { run, streams } = useRealtimeRunWithStreams<typeof streamingTask, STREAMS>(runId, {
+function StreamComponent({
+  runId,
+  accessToken,
+}: {
+  runId: string;
+  accessToken: string;
+}) {
+  const { run, streams } = useRealtimeRunWithStreams<
+    typeof streamingTask,
+    STREAMS
+  >(runId, {
     accessToken,
   });
 
@@ -227,10 +255,18 @@ function StreamComponent({ runId, accessToken }: { runId: string; accessToken: s
 "use client";
 import { useWaitToken } from "@trigger.dev/react-hooks";
 
-function WaitTokenComponent({ tokenId, accessToken }: { tokenId: string; accessToken: string }) {
+function WaitTokenComponent({
+  tokenId,
+  accessToken,
+}: {
+  tokenId: string;
+  accessToken: string;
+}) {
   const { complete } = useWaitToken(tokenId, { accessToken });
 
-  return <button onClick={() => complete({ approved: true })}>Approve Task</button>;
+  return (
+    <button onClick={() => complete({ approved: true })}>Approve Task</button>
+  );
 }
 ```
 
@@ -241,7 +277,13 @@ function WaitTokenComponent({ tokenId, accessToken }: { tokenId: string; accessT
 import { useRun } from "@trigger.dev/react-hooks";
 import type { myTask } from "../trigger/tasks";
 
-function SWRComponent({ runId, accessToken }: { runId: string; accessToken: string }) {
+function SWRComponent({
+  runId,
+  accessToken,
+}: {
+  runId: string;
+  accessToken: string;
+}) {
   const { run, error, isLoading } = useRun<typeof myTask>(runId, {
     accessToken,
     refreshInterval: 0, // Disable polling (recommended)

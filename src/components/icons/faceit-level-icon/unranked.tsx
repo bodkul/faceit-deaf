@@ -12,7 +12,7 @@ export const FaceitLevelUnranked = (props: React.SVGProps<SVGSVGElement>) => (
       strokeWidth="2.4"
     />
     <text
-      className="select-none font-bold font-mono text-[8px] leading-4 tracking-[0.02em]"
+      className="font-mono text-[8px] leading-4 font-bold tracking-[0.02em] select-none"
       x="51%"
       y="49%"
       dominantBaseline="central"

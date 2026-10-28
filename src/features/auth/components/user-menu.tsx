@@ -21,7 +21,7 @@ export function UserMenu({ user }: { user: NonNullable<Session["user"]> }) {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label="Account menu"
-        className="rounded-lg outline-none ring-1 ring-foreground/10 transition-shadow hover:ring-foreground/25 focus-visible:ring-2 focus-visible:ring-ring data-popup-open:ring-foreground/25"
+        className="rounded-lg ring-1 ring-foreground/10 transition-shadow outline-none hover:ring-foreground/25 focus-visible:ring-2 focus-visible:ring-ring data-popup-open:ring-foreground/25"
       >
         <Avatar className="cursor-pointer rounded-md border-none after:rounded-md after:border-none">
           <AvatarImage
@@ -45,10 +45,10 @@ export function UserMenu({ user }: { user: NonNullable<Session["user"]> }) {
               <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="flex min-w-0 flex-1 flex-col">
-              <span className="truncate font-semibold text-foreground text-sm">
+              <span className="truncate text-sm font-semibold text-foreground">
                 {user.name}
               </span>
-              <span className="truncate font-normal text-muted-foreground text-xs">
+              <span className="truncate text-xs font-normal text-muted-foreground">
                 {user.email}
               </span>
             </div>

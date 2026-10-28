@@ -98,7 +98,7 @@ export function PlayerSearch({
                         src={player.avatar ?? undefined}
                         alt={player.nickname ?? ""}
                       />
-                      <AvatarFallback className="rounded-lg text-muted-foreground text-xs">
+                      <AvatarFallback className="rounded-lg text-xs text-muted-foreground">
                         {player.nickname?.charAt(0) ?? "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -116,13 +116,13 @@ export function PlayerSearch({
                             alt={`${player.country} flag`}
                           />
                         )}
-                        <span className="font-medium text-foreground text-sm">
+                        <span className="text-sm font-medium text-foreground">
                           {player.nickname}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-mono text-muted-foreground text-xs">
+                      <span className="font-mono text-xs text-muted-foreground">
                         {player.faceit_elo}
                       </span>
                       <FaceitLevelIcon
@@ -137,10 +137,10 @@ export function PlayerSearch({
           ) : (
             <Empty>
               <EmptyHeader>
-                <EmptyTitle className="text-muted-foreground text-sm">
+                <EmptyTitle className="text-sm text-muted-foreground">
                   No players found
                 </EmptyTitle>
-                <EmptyDescription className="text-faint text-xs">
+                <EmptyDescription className="text-xs text-faint">
                   Try searching for a different nickname
                 </EmptyDescription>
               </EmptyHeader>

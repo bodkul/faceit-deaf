@@ -1,6 +1,7 @@
 ---
-applyTo: **/trigger/**/*.ts
----
+
+## applyTo: **/trigger/**/*.ts
+
 # Trigger.dev Advanced Tasks (v4)
 
 **Advanced patterns and features for writing tasks**
@@ -24,7 +25,7 @@ export const processUser = task({
 // Trigger with tags
 await processUser.trigger(
   { userId: "123", orgId: "abc" },
-  { tags: ["priority", "user_123", "org_abc"] } // Max 10 tags per run
+  { tags: ["priority", "user_123", "org_abc"] }, // Max 10 tags per run
 );
 
 // Subscribe to tagged runs
@@ -114,7 +115,7 @@ export const resilientTask = task({
       async () => {
         return await unstableApiCall(payload);
       },
-      { maxAttempts: 3 }
+      { maxAttempts: 3 },
     );
 
     // Conditional HTTP retries
@@ -178,7 +179,9 @@ export const paymentTask = task({
   },
   run: async (payload: { orderId: string; amount: number }) => {
     // Automatically scoped to this task run, so if the task is retried, the idempotency key will be the same
-    const idempotencyKey = await idempotencyKeys.create(`payment-${payload.orderId}`);
+    const idempotencyKey = await idempotencyKeys.create(
+      `payment-${payload.orderId}`,
+    );
 
     // Ensure payment is processed only once
     await chargeCustomer.trigger(payload, {
@@ -273,10 +276,16 @@ import { useTaskTrigger } from "@trigger.dev/react-hooks";
 import type { myTask } from "../trigger/tasks";
 
 function TriggerButton({ accessToken }: { accessToken: string }) {
-  const { submit, handle, isLoading } = useTaskTrigger<typeof myTask>("my-task", { accessToken });
+  const { submit, handle, isLoading } = useTaskTrigger<typeof myTask>(
+    "my-task",
+    { accessToken },
+  );
 
   return (
-    <button onClick={() => submit({ data: "from frontend" })} disabled={isLoading}>
+    <button
+      onClick={() => submit({ data: "from frontend" })}
+      disabled={isLoading}
+    >
       Trigger Task
     </button>
   );
@@ -376,7 +385,7 @@ export const tracedTask = task({
 
         return userData;
       },
-      { userId: payload.userId }
+      { userId: payload.userId },
     );
 
     logger.debug("User fetched", { user: user.id });

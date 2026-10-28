@@ -37,7 +37,7 @@ export function EventRow({ event }: { event: EventListItem }) {
           <span className="line-clamp-2 font-semibold">{event.name}</span>
           <EventStatusPill status={status} />
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-sm">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <IconCalendar className="size-4 text-faint" />
             {formatEventDates(event.start_date, event.end_date)}

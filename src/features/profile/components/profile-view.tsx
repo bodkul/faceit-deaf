@@ -31,7 +31,7 @@ function useTwitchLinked() {
 
 function ConnectedBadge() {
   return (
-    <Badge className="border-none bg-win/10 text-win focus-visible:outline-none focus-visible:ring-win/20 dark:bg-win/10 dark:text-win dark:focus-visible:ring-win/40 [a]:hover:bg-win/5 dark:[a]:hover:bg-win/5">
+    <Badge className="border-none bg-win/10 text-win focus-visible:ring-win/20 focus-visible:outline-none dark:bg-win/10 dark:text-win dark:focus-visible:ring-win/40 [a]:hover:bg-win/5 dark:[a]:hover:bg-win/5">
       <IconCheck size={12} />
       Connected
     </Badge>
@@ -53,7 +53,7 @@ export function ProfileView() {
 
   if (!session?.user) {
     return (
-      <Empty className="rounded-xl border border-border border-dashed">
+      <Empty className="rounded-xl border border-dashed border-border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <FaceitIcon />
@@ -85,14 +85,14 @@ export function ProfileView() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h2 className="font-black text-foreground text-xl">{user.name}</h2>
-            <p className="text-muted-foreground text-sm">{user.email}</p>
+            <h2 className="text-xl font-black text-foreground">{user.name}</h2>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
           </div>
         </div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
-        <div className="border-border border-b px-5 py-4">
+        <div className="border-b border-border px-5 py-4">
           <h3 className="font-bold text-foreground">Connected accounts</h3>
         </div>
 
@@ -103,8 +103,8 @@ export function ProfileView() {
                 <FaceitIcon className="size-4 text-[#ff5500]" />
               </div>
               <div>
-                <h4 className="font-medium text-sm">FACEIT</h4>
-                <p className="text-muted-foreground text-xs">{user.name}</p>
+                <h4 className="text-sm font-medium">FACEIT</h4>
+                <p className="text-xs text-muted-foreground">{user.name}</p>
               </div>
             </div>
             <ConnectedBadge />
@@ -116,8 +116,8 @@ export function ProfileView() {
                 <IconBrandTwitch className="size-4 text-[#9146ff]" />
               </div>
               <div>
-                <h4 className="font-medium text-sm">Twitch</h4>
-                <p className="text-muted-foreground text-xs">
+                <h4 className="text-sm font-medium">Twitch</h4>
+                <p className="text-xs text-muted-foreground">
                   {twitchLinked === null
                     ? "Checking..."
                     : twitchLinked
@@ -134,7 +134,7 @@ export function ProfileView() {
               <Button
                 size="sm"
                 onClick={() => signIn("twitch", { callbackUrl: "/profile" })}
-                className="border border-[#9146ff]/30 bg-[#9146ff]/10 text-[#9146ff] text-xs hover:bg-[#9146ff]/20"
+                className="border border-[#9146ff]/30 bg-[#9146ff]/10 text-xs text-[#9146ff] hover:bg-[#9146ff]/20"
               >
                 <IconBrandTwitch size={13} className="mr-1.5" />
                 Connect

@@ -56,7 +56,7 @@ export function StatsTh({
     <th
       scope="col"
       className={cn(
-        "h-9 whitespace-nowrap px-3 font-medium font-mono text-[11px] text-faint uppercase tracking-wider first:pl-4 last:pr-4",
+        "h-9 px-3 font-mono text-[11px] font-medium tracking-wider whitespace-nowrap text-faint uppercase first:pl-4 last:pr-4",
         align === "left" && "text-left",
         align === "right" && "text-right",
         align === "center" && "text-center",
@@ -97,7 +97,7 @@ export function StatsTd({
   return (
     <td
       className={cn(
-        "h-11 whitespace-nowrap px-3 first:pl-4 last:pr-4",
+        "h-11 px-3 whitespace-nowrap first:pl-4 last:pr-4",
         numeric && "font-mono tabular-nums",
         align === "left" && "text-left",
         align === "right" && "text-right",

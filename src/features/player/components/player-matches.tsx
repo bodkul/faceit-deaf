@@ -50,7 +50,7 @@ function MatchHistorySection({
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-(--highlight)">
         {children}
         {footer && (
-          <div className="flex items-center justify-between gap-3 border-border border-t px-4 py-3">
+          <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3">
             {footer}
           </div>
         )}
@@ -62,7 +62,7 @@ function MatchHistorySection({
 function MatchHistoryTable({ children }: { children: React.ReactNode }) {
   return (
     <StatsTable minWidth={680}>
-      <thead className="border-border border-b">
+      <thead className="border-b border-border">
         <tr>
           {COLUMNS.map((label, index) => (
             <StatsTh
@@ -115,7 +115,7 @@ export default function MatchHistoryPage({ playerId }: { playerId: string }) {
     return (
       <section className="flex flex-col gap-4">
         <SectionHeader title="Match history" />
-        <Empty className="rounded-xl border border-border border-dashed">
+        <Empty className="rounded-xl border border-dashed border-border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <IconHistory />
@@ -139,7 +139,7 @@ export default function MatchHistoryPage({ playerId }: { playerId: string }) {
 
   const footer = (
     <>
-      <span className="text-muted-foreground text-sm">
+      <span className="text-sm text-muted-foreground">
         Page <span className="font-mono text-foreground">{pageIndex}</span> of{" "}
         <span className="font-mono text-foreground">{totalPages}</span>
       </span>
@@ -203,7 +203,7 @@ export default function MatchHistoryPage({ playerId }: { playerId: string }) {
               <StatsTd align="center">
                 <span
                   className={cn(
-                    "rounded-md px-2 py-0.5 font-semibold text-xs",
+                    "rounded-md px-2 py-0.5 text-xs font-semibold",
                     match.win === true && "bg-win/15 text-win",
                     match.win === false && "bg-loss/15 text-loss",
                     match.win == null && "bg-muted text-muted-foreground",

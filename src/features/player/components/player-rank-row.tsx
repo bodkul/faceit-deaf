@@ -39,7 +39,7 @@ export function PlayerRankRow({
     >
       <span
         className={cn(
-          "w-6 shrink-0 text-center font-mono font-semibold text-sm tabular-nums",
+          "w-6 shrink-0 text-center font-mono text-sm font-semibold tabular-nums",
           podium[rank] ?? "text-faint",
         )}
       >
@@ -48,7 +48,7 @@ export function PlayerRankRow({
 
       <Avatar className={cn("shrink-0", compact ? "size-8" : "size-9")}>
         <AvatarImage src={player.avatar ?? undefined} alt="" />
-        <AvatarFallback className="font-semibold text-xs">
+        <AvatarFallback className="text-xs font-semibold">
           {player.nickname.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
@@ -59,7 +59,7 @@ export function PlayerRankRow({
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
-        <span className="font-mono font-semibold text-sm tabular-nums">
+        <span className="font-mono text-sm font-semibold tabular-nums">
           {player.faceit_elo ?? "—"}
         </span>
         <FaceitLevelIcon elo={player.faceit_elo} className="size-6" />

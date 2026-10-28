@@ -47,7 +47,7 @@ export default async function TeamsPage() {
           ))}
         </div>
       ) : (
-        <Empty className="rounded-xl border border-border border-dashed">
+        <Empty className="rounded-xl border border-dashed border-border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <IconUsersGroup />

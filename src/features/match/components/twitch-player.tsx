@@ -26,16 +26,16 @@ export function TwitchPlayer({
 
   return (
     <div className="overflow-hidden rounded-xl border border-[#9146ff]/25 bg-card">
-      <div className="flex items-center gap-2 border-[#9146ff]/10 border-b px-4 py-2.5">
+      <div className="flex items-center gap-2 border-b border-[#9146ff]/10 px-4 py-2.5">
         <IconBrandTwitch size={16} className="shrink-0 text-[#b58cff]" />
-        <span className="truncate font-medium text-foreground text-sm">
+        <span className="truncate text-sm font-medium text-foreground">
           {nickname}
         </span>
         <a
           href={`https://www.twitch.tv/${login}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="truncate text-muted-foreground text-xs transition-colors hover:text-[#b58cff]"
+          className="truncate text-xs text-muted-foreground transition-colors hover:text-[#b58cff]"
         >
           twitch.tv/{login}
         </a>

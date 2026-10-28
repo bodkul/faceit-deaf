@@ -22,7 +22,7 @@ export function Logo({ className }: { className?: string }) {
       )}
     >
       <LogoIcon className="size-6" />
-      <span className="font-black text-[15px] tracking-tight">csdeaf</span>
+      <span className="text-[15px] font-black tracking-tight">csdeaf</span>
     </Link>
   );
 }
@@ -30,7 +30,7 @@ export function Logo({ className }: { className?: string }) {
 export function NavCount({ count }: { count: number | null | undefined }) {
   if (!count) return null;
   return (
-    <span className="ml-1.5 inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary px-1 font-mono font-semibold text-[10px] text-primary-foreground tabular-nums">
+    <span className="ml-1.5 inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary px-1 font-mono text-[10px] font-semibold text-primary-foreground tabular-nums">
       {count}
     </span>
   );
@@ -62,7 +62,7 @@ export function Header() {
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex h-8 items-center rounded-md px-3 font-medium text-sm transition-colors",
+                  "inline-flex h-8 items-center rounded-md px-3 text-sm font-medium transition-colors",
                   active
                     ? "bg-foreground/[0.07] text-foreground"
                     : "text-muted-foreground hover:bg-foreground/4 hover:text-foreground",

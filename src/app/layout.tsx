@@ -8,7 +8,6 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 
 import { BackgroundGlow } from "@/components/layout/background-glow";
-import { DomainNotice } from "@/components/layout/domain-notice";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { siteConfig } from "@/config/site";
@@ -44,7 +43,6 @@ export default function RootLayout({
                 <div className="relative isolate flex min-h-screen w-full flex-col">
                   <BackgroundGlow />
                   <Header />
-                  <DomainNotice />
                   <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-8 sm:pt-10">
                     {children}
                   </main>

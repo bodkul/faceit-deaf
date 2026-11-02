@@ -54,7 +54,7 @@
     "shadcn": "^4.23.0",
     "supabase": "^2.122.0",
     "tailwindcss": "^4.3.3",
-    "trigger.dev": "4.8.1",
+    "trigger.dev": "4.8.2",
     "typescript": "^7.0.2"
   },
   "overrides": {
